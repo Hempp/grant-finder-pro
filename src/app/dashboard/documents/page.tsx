@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Upload,
   FileText,
@@ -22,39 +22,11 @@ interface Document {
   type: string;
   size: number;
   uploadedAt: string;
+  createdAt?: string;
   parsed: boolean;
   parsedData?: string;
+  content?: string;
 }
-
-// Mock data
-const mockDocuments: Document[] = [
-  {
-    id: "1",
-    name: "TechVenture_Pitch_Deck_2024.pdf",
-    type: "pitch_deck",
-    size: 2450000,
-    uploadedAt: "2024-02-15",
-    parsed: true,
-    parsedData: "Company overview, market analysis, financial projections extracted",
-  },
-  {
-    id: "2",
-    name: "Financial_Statements_Q4_2023.xlsx",
-    type: "financials",
-    size: 156000,
-    uploadedAt: "2024-02-10",
-    parsed: true,
-    parsedData: "Revenue, expenses, balance sheet data extracted",
-  },
-  {
-    id: "3",
-    name: "Business_Plan_v2.docx",
-    type: "business_plan",
-    size: 890000,
-    uploadedAt: "2024-02-08",
-    parsed: false,
-  },
-];
 
 const documentTypes: Record<string, { label: string; color: string }> = {
   pitch_deck: { label: "Pitch Deck", color: "text-purple-400" },
@@ -70,9 +42,38 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function DocumentsPage() {
-  const [documents, setDocuments] = useState<Document[]>(mockDocuments);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch documents on mount
+  useEffect(() => {
+    async function fetchDocuments() {
+      try {
+        const res = await fetch("/api/documents");
+        if (res.ok) {
+          const data = await res.json();
+          // Map API response to our Document interface
+          const docs = data.map((d: Record<string, unknown>) => ({
+            id: d.id,
+            name: d.name,
+            type: d.type || "other",
+            size: d.size || 0,
+            uploadedAt: d.createdAt || d.uploadedAt,
+            parsed: true,
+            parsedData: d.content,
+          }));
+          setDocuments(docs);
+        }
+      } catch (error) {
+        console.error("Failed to fetch documents:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDocuments();
+  }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -98,34 +99,60 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleFiles = async (files: File[]) => {
+  const handleFiles = async (files: globalThis.File[]) => {
     setUploading(true);
 
-    // Simulate upload and parsing
     for (const file of files) {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      try {
+        // Read file content
+        const content = await readFileContent(file);
+        const docType = detectDocumentType(file.name);
 
-      const newDoc: Document = {
-        id: Date.now().toString(),
-        name: file.name,
-        type: detectDocumentType(file.name),
-        size: file.size,
-        uploadedAt: new Date().toISOString().split("T")[0],
-        parsed: false,
-      };
+        // Upload to API
+        const res = await fetch("/api/documents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: file.name,
+            type: docType,
+            size: file.size,
+            content: content,
+          }),
+        });
 
-      setDocuments((prev) => [...prev, newDoc]);
-
-      // Simulate parsing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setDocuments((prev) =>
-        prev.map((d) =>
-          d.id === newDoc.id ? { ...d, parsed: true, parsedData: "Document data extracted" } : d
-        )
-      );
+        if (res.ok) {
+          const newDoc = await res.json();
+          setDocuments((prev) => [...prev, {
+            id: newDoc.id,
+            name: newDoc.name,
+            type: newDoc.type || docType,
+            size: newDoc.size || file.size,
+            uploadedAt: newDoc.createdAt || new Date().toISOString(),
+            parsed: true,
+            parsedData: "Document uploaded successfully",
+          }]);
+        }
+      } catch (error) {
+        console.error("Failed to upload file:", error);
+      }
     }
 
     setUploading(false);
+  };
+
+  const readFileContent = (file: globalThis.File): Promise<string> => {
+    return new Promise((resolve) => {
+      // For text-based files, read content; otherwise just use filename as placeholder
+      if (file.type.includes("text") || file.name.endsWith(".txt") || file.name.endsWith(".md")) {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target?.result as string || "");
+        reader.readAsText(file);
+      } else {
+        // For binary files, we'd need a file upload service
+        // For now, store metadata about the file
+        resolve(`[Binary file: ${file.name}, Size: ${file.size} bytes, Type: ${file.type}]`);
+      }
+    });
   };
 
   const detectDocumentType = (filename: string): string => {
@@ -136,9 +163,26 @@ export default function DocumentsPage() {
     return "other";
   };
 
-  const deleteDocument = (id: string) => {
-    setDocuments((prev) => prev.filter((d) => d.id !== id));
+  const deleteDocument = async (id: string) => {
+    try {
+      const res = await fetch(`/api/documents?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setDocuments((prev) => prev.filter((d) => d.id !== id));
+      }
+    } catch (error) {
+      console.error("Failed to delete document:", error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">

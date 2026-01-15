@@ -80,8 +80,27 @@ export async function POST(request: NextRequest) {
 // PATCH - Update application
 export async function PATCH(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { id, ...updates } = body;
+
+    // Verify the application belongs to the user
+    const existingApp = await prisma.application.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!existingApp) {
+      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
+
+    if (existingApp.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // Handle JSON fields
     if (updates.responses && typeof updates.responses === "object") {
@@ -109,6 +128,49 @@ export async function PATCH(request: NextRequest) {
     console.error("Failed to update application:", error);
     return NextResponse.json(
       { error: "Failed to update application" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Delete application
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Application ID required" }, { status: 400 });
+    }
+
+    // Verify the application belongs to the user
+    const existingApp = await prisma.application.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!existingApp) {
+      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
+
+    if (existingApp.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    await prisma.application.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete application:", error);
+    return NextResponse.json(
+      { error: "Failed to delete application" },
       { status: 500 }
     );
   }

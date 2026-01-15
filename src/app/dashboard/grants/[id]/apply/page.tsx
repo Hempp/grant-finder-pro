@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Copy,
   Check,
+  AlertCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -30,20 +31,37 @@ const steps = [
   { id: 5, name: "Review & Submit", icon: CheckCircle },
 ];
 
-// Mock grant info
-const grantInfo = {
-  title: "SBIR Phase I - AI/ML Innovation",
-  funder: "National Science Foundation",
-  amount: "$275,000",
-  deadline: "2024-03-15",
-};
+interface Grant {
+  id: string;
+  title: string;
+  funder: string;
+  amount: number;
+  deadline: string;
+  description: string;
+  eligibility: string[];
+  requirements: string[];
+}
+
+function formatCurrency(amount: number): string {
+  if (amount >= 1000000) {
+    return `$${(amount / 1000000).toFixed(1)}M`;
+  } else if (amount >= 1000) {
+    return `$${(amount / 1000).toFixed(0)}K`;
+  }
+  return `$${amount.toLocaleString()}`;
+}
 
 export default function ApplyPage() {
   const params = useParams();
   const router = useRouter();
+  const [grant, setGrant] = useState<Grant | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [generating, setGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [applicationId, setApplicationId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     // Project Summary
@@ -65,88 +83,77 @@ export default function ApplyPage() {
     keyPersonnel: "",
 
     // Budget
-    totalBudget: "275000",
+    totalBudget: "",
     personnelCosts: "",
     equipmentCosts: "",
     otherCosts: "",
     budgetJustification: "",
   });
 
+  // Fetch grant data
+  useEffect(() => {
+    async function fetchGrant() {
+      try {
+        const res = await fetch("/api/grants");
+        const data = await res.json();
+        const foundGrant = data.grants?.find((g: Grant) => g.id === params.id);
+
+        if (foundGrant) {
+          setGrant(foundGrant);
+          setFormData(prev => ({
+            ...prev,
+            totalBudget: String(foundGrant.amount || ""),
+          }));
+        } else {
+          setError("Grant not found");
+        }
+      } catch (err) {
+        console.error("Failed to fetch grant:", err);
+        setError("Failed to load grant details");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (params.id) {
+      fetchGrant();
+    }
+  }, [params.id]);
+
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const generateWithAI = async (field: string, prompt: string) => {
+    if (!grant) return;
     setGenerating(true);
 
-    // Simulate AI generation
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          field,
+          context: formData,
+          grantInfo: {
+            title: grant.title,
+            funder: grant.funder,
+            amount: grant.amount,
+            description: grant.description,
+            requirements: grant.requirements,
+          },
+        }),
+      });
 
-    const aiResponses: Record<string, string> = {
-      projectSummary: `Our project addresses the critical challenge of [problem area] through innovative AI/ML technologies. We propose to develop a novel [solution type] that leverages advanced machine learning algorithms to [key capability].
-
-The proposed research will result in a prototype system capable of [specific outcomes], with direct applications in [target market]. Our approach combines cutting-edge [technology] with proven methodologies to deliver measurable improvements in [metrics].
-
-This Phase I effort will establish technical feasibility and lay the groundwork for Phase II commercialization, targeting a $[X]B market opportunity in [industry sector].`,
-
-      problemStatement: `Current solutions in [domain] face significant limitations including [limitation 1], [limitation 2], and [limitation 3]. These challenges result in [negative outcomes] for [stakeholders], costing the industry an estimated $[X]B annually.
-
-Existing approaches rely on [traditional methods] which fail to address [specific gap]. Our research indicates that [percentage]% of [target users] struggle with [pain point], creating an urgent need for innovative solutions.
-
-The proposed technology directly addresses these gaps by [approach], enabling [benefits] that are not possible with current state-of-the-art methods.`,
-
-      technicalApproach: `Our technical approach consists of three integrated phases:
-
-Phase 1 - Foundation Development (Months 1-3):
-• Develop core ML architecture based on [approach]
-• Implement data preprocessing pipeline
-• Establish baseline performance metrics
-
-Phase 2 - Algorithm Innovation (Months 4-6):
-• Design novel [algorithm type] for [specific task]
-• Integrate [technique] for improved accuracy
-• Optimize for computational efficiency
-
-Phase 3 - Validation & Integration (Months 7-9):
-• Conduct comprehensive testing with real-world data
-• Benchmark against existing solutions
-• Prepare for Phase II scale-up
-
-Key innovations include our proprietary [technique], which achieves [X]% improvement over current methods while reducing [resource] requirements by [Y]%.`,
-
-      teamDescription: `Our team combines deep technical expertise with proven commercialization experience:
-
-[Founder Name], CEO & Principal Investigator - [X] years in AI/ML research, previously [role] at [company]. PhD in [field] from [university]. Published [N] papers in top-tier venues.
-
-[Technical Lead], CTO - Former [role] at [tech company], expertise in [specialization]. Led development of [product/system] serving [N] users.
-
-[Domain Expert], Advisor - [X] years industry experience in [sector]. Previously [executive role] at [company]. Deep network in target market.
-
-The team has collectively raised $[X]M in prior funding, published [N] peer-reviewed papers, and holds [N] patents in relevant technologies.`,
-
-      budgetJustification: `Personnel ($185,000):
-• PI at 50% effort: $75,000 - Leads technical development and project management
-• Senior Engineer at 100% effort: $85,000 - Core algorithm development
-• Research Assistant at 50% effort: $25,000 - Data preparation and testing
-
-Equipment ($40,000):
-• Cloud computing resources: $25,000 - Required for model training at scale
-• Development workstations: $10,000 - High-performance systems for team
-• Software licenses: $5,000 - Required development tools
-
-Other Direct Costs ($30,000):
-• Data acquisition: $15,000 - Licensed datasets for training
-• Travel: $10,000 - Conference presentations and partner meetings
-• Publication costs: $5,000 - Open access fees for dissemination
-
-Indirect Costs ($20,000):
-• Facilities and administrative costs at negotiated rate`,
-    };
-
-    const response = aiResponses[field] || `AI-generated content for ${field}. This would be customized based on your organization profile and the specific grant requirements.`;
-
-    updateField(field, response);
-    setGenerating(false);
+      const data = await res.json();
+      if (data.content) {
+        updateField(field, data.content);
+      }
+    } catch (err) {
+      console.error("AI generation failed:", err);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const copyToClipboard = (text: string, field: string) => {
@@ -163,10 +170,99 @@ Indirect Costs ($20,000):
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  const saveApplication = async () => {
+    if (!grant) return;
+    setSaving(true);
+
+    try {
+      const narrative = `
+# ${formData.projectTitle || "Untitled Project"}
+
+## Project Summary
+${formData.projectSummary}
+
+## Problem Statement
+${formData.problemStatement}
+
+## Proposed Solution
+${formData.proposedSolution}
+
+## Expected Outcomes
+${formData.expectedOutcomes}
+
+## Technical Approach
+${formData.technicalApproach}
+
+## Innovation
+${formData.innovationDescription}
+
+## Methodology
+${formData.methodology}
+
+## Milestones
+${formData.milestones}
+
+## Team
+${formData.teamDescription}
+
+## Relevant Experience
+${formData.relevantExperience}
+
+## Key Personnel
+${formData.keyPersonnel}
+      `.trim();
+
+      const budget = `
+Personnel: $${formData.personnelCosts || 0}
+Equipment: $${formData.equipmentCosts || 0}
+Other: $${formData.otherCosts || 0}
+Total: $${formData.totalBudget || 0}
+
+Justification:
+${formData.budgetJustification}
+      `.trim();
+
+      const endpoint = applicationId
+        ? "/api/applications"
+        : "/api/applications";
+      const method = applicationId ? "PATCH" : "POST";
+
+      const res = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: applicationId,
+          grantId: grant.id,
+          status: "in_progress",
+          narrative,
+          budget,
+          responses: JSON.stringify(formData),
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save application");
+      }
+
+      const data = await res.json();
+      if (!applicationId && data.id) {
+        setApplicationId(data.id);
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Failed to save application:", err);
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async () => {
-    // Save application and redirect
-    console.log("Submitting application:", formData);
-    router.push("/dashboard/applications");
+    const saved = await saveApplication();
+    if (saved) {
+      router.push("/dashboard/applications");
+    }
   };
 
   const renderAIButton = (field: string, prompt: string) => (
@@ -205,27 +301,55 @@ Indirect Costs ($20,000):
     </Button>
   );
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
+
+  if (error || !grant) {
+    return (
+      <div className="p-8 max-w-4xl mx-auto">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-white mb-2">Grant Not Found</h2>
+            <p className="text-slate-400 mb-4">{error || "Unable to load grant details."}</p>
+            <Link href="/dashboard/grants">
+              <Button>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Grants
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       {/* Back Button */}
       <Link
-        href={`/dashboard/grants/${params.id}`}
+        href={`/dashboard/grants`}
         className="inline-flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Grant Details
+        Back to Grants
       </Link>
 
       {/* Header */}
       <div className="mb-8">
         <Badge variant="info" className="mb-2">Application</Badge>
-        <h1 className="text-3xl font-bold text-white">{grantInfo.title}</h1>
+        <h1 className="text-3xl font-bold text-white">{grant.title}</h1>
         <div className="flex items-center gap-4 mt-2 text-slate-400">
-          <span>{grantInfo.funder}</span>
+          <span>{grant.funder}</span>
           <span>•</span>
-          <span className="text-emerald-400 font-medium">{grantInfo.amount}</span>
+          <span className="text-emerald-400 font-medium">{formatCurrency(grant.amount)}</span>
           <span>•</span>
-          <span>Due {new Date(grantInfo.deadline).toLocaleDateString()}</span>
+          <span>Due {new Date(grant.deadline).toLocaleDateString()}</span>
         </div>
       </div>
 
@@ -565,9 +689,13 @@ Indirect Costs ($20,000):
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit}>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Save Application
+            <Button onClick={handleSubmit} disabled={saving}>
+              {saving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              {saving ? "Saving..." : "Save Application"}
             </Button>
           )}
         </CardFooter>
