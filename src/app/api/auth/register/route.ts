@@ -6,10 +6,15 @@ export async function POST(request: NextRequest) {
   const steps: string[] = [];
 
   try {
-    steps.push("1. Parsing request body");
-    const body = await request.json();
+    steps.push("1. Getting raw body");
+    const rawBody = await request.text();
+    steps.push("2. Raw body length: " + rawBody.length);
+    steps.push("3. Raw body preview: " + rawBody.substring(0, 100));
+
+    steps.push("4. Parsing JSON");
+    const body = JSON.parse(rawBody);
     const { email, password, name } = body;
-    steps.push("2. Body parsed: " + email);
+    steps.push("5. Body parsed: " + email);
 
     if (!email || !password) {
       return NextResponse.json(
@@ -18,11 +23,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    steps.push("3. Checking if user exists");
+    steps.push("6. Checking if user exists");
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-    steps.push("4. User check complete: " + (existingUser ? "exists" : "not found"));
+    steps.push("7. User check complete: " + (existingUser ? "exists" : "not found"));
 
     if (existingUser) {
       return NextResponse.json(
@@ -31,11 +36,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    steps.push("5. Hashing password");
+    steps.push("8. Hashing password");
     const hashedPassword = await bcrypt.hash(password, 12);
-    steps.push("6. Password hashed");
+    steps.push("9. Password hashed");
 
-    steps.push("7. Creating user");
+    steps.push("10. Creating user");
     const user = await prisma.user.create({
       data: {
         email,
@@ -43,7 +48,7 @@ export async function POST(request: NextRequest) {
         name: name || email.split("@")[0],
       },
     });
-    steps.push("8. User created: " + user.id);
+    steps.push("11. User created: " + user.id);
 
     return NextResponse.json({
       id: user.id,
