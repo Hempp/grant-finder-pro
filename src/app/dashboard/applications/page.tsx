@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -12,8 +12,8 @@ import {
   MoreVertical,
   ArrowRight,
   Plus,
-  Filter,
   Search,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -33,83 +33,25 @@ interface Application {
   submittedAt?: string;
 }
 
-const mockApplications: Application[] = [
-  {
-    id: "1",
-    grantId: "1",
-    grantTitle: "SBIR Phase I - AI/ML Innovation",
-    funder: "National Science Foundation",
-    amount: "$275,000",
-    deadline: "2024-03-15",
-    status: "in_progress",
-    progress: 65,
-    createdAt: "2024-02-01",
-    updatedAt: "2024-02-14",
-  },
-  {
-    id: "2",
-    grantId: "3",
-    grantTitle: "Tech Startup Grant Program",
-    funder: "State of California",
-    amount: "$150,000",
-    deadline: "2024-03-20",
-    status: "ready_for_review",
-    progress: 100,
-    createdAt: "2024-01-28",
-    updatedAt: "2024-02-12",
-  },
-  {
-    id: "3",
-    grantId: "4",
-    grantTitle: "Innovation Fund 2024",
-    funder: "Tech Foundation",
-    amount: "$100,000",
-    deadline: "2024-02-28",
-    status: "submitted",
-    progress: 100,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-02-25",
-    submittedAt: "2024-02-25",
-  },
-  {
-    id: "4",
-    grantId: "5",
-    grantTitle: "Small Business Growth Grant",
-    funder: "SBA",
-    amount: "$50,000",
-    deadline: "2024-01-31",
-    status: "awarded",
-    progress: 100,
-    createdAt: "2024-01-01",
-    updatedAt: "2024-02-10",
-    submittedAt: "2024-01-25",
-  },
-  {
-    id: "5",
-    grantId: "6",
-    grantTitle: "Research & Development Grant",
-    funder: "DOE",
-    amount: "$200,000",
-    deadline: "2024-01-15",
-    status: "rejected",
-    progress: 100,
-    createdAt: "2023-12-01",
-    updatedAt: "2024-02-01",
-    submittedAt: "2024-01-10",
-  },
-  {
-    id: "6",
-    grantId: "7",
-    grantTitle: "Startup Accelerator Grant",
-    funder: "Y Combinator",
-    amount: "$125,000",
-    deadline: "2024-04-15",
-    status: "draft",
-    progress: 20,
-    createdAt: "2024-02-10",
-    updatedAt: "2024-02-10",
-  },
-];
+interface ApiApplication {
+  id: string;
+  grantId: string;
+  status: string;
+  responses?: string;
+  narrative?: string;
+  budget?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt?: string;
+  grant: {
+    id: string;
+    title: string;
+    funder: string;
+    amount: number;
+    deadline: string;
+  };
+}
 
 const statusConfig: Record<string, { label: string; color: "default" | "success" | "warning" | "danger" | "info"; icon: React.ElementType }> = {
   draft: { label: "Draft", color: "default", icon: FileText },
@@ -129,9 +71,53 @@ const filterOptions = [
 ];
 
 export default function ApplicationsPage() {
-  const [applications] = useState<Application[]>(mockApplications);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch applications from API
+  useEffect(() => {
+    async function fetchApplications() {
+      try {
+        const res = await fetch("/api/applications");
+        if (res.ok) {
+          const data: ApiApplication[] = await res.json();
+          // Transform API data to component format
+          const transformed: Application[] = data.map((app) => {
+            // Calculate progress based on filled fields
+            let progress = 0;
+            if (app.responses) progress += 33;
+            if (app.narrative) progress += 34;
+            if (app.budget) progress += 33;
+            if (["submitted", "awarded", "rejected"].includes(app.status)) {
+              progress = 100;
+            }
+
+            return {
+              id: app.id,
+              grantId: app.grantId,
+              grantTitle: app.grant.title,
+              funder: app.grant.funder,
+              amount: `$${app.grant.amount.toLocaleString()}`,
+              deadline: app.grant.deadline,
+              status: app.status,
+              progress,
+              createdAt: app.createdAt,
+              updatedAt: app.updatedAt,
+              submittedAt: app.submittedAt,
+            };
+          });
+          setApplications(transformed);
+        }
+      } catch (error) {
+        console.error("Failed to fetch applications:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchApplications();
+  }, []);
 
   const filteredApplications = applications.filter((app) => {
     if (searchQuery && !app.grantTitle.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -154,6 +140,14 @@ export default function ApplicationsPage() {
     const days = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     return days;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8">

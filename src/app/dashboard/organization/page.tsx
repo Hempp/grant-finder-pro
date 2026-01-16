@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle, Building2, Target, Users, DollarSign, ArrowRight, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle, Building2, Target, Users, DollarSign, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input, Textarea, Select } from "@/components/ui";
@@ -78,6 +78,8 @@ const fundingRanges = [
 
 export default function OrganizationPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     // Basic Info
     name: "",
@@ -102,6 +104,44 @@ export default function OrganizationPage() {
     previousFunding: "",
   });
 
+  // Fetch existing organization data on mount
+  useEffect(() => {
+    async function fetchOrganization() {
+      try {
+        const res = await fetch("/api/organizations");
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            setFormData({
+              name: data.name || "",
+              type: data.type || "",
+              legalStructure: data.legalStructure || "",
+              ein: data.ein || "",
+              website: data.website || "",
+              city: data.city || "",
+              state: data.state || "",
+              mission: data.mission || "",
+              vision: data.vision || "",
+              problemStatement: data.problemStatement || "",
+              solution: data.solution || "",
+              targetMarket: data.targetMarket || "",
+              teamSize: data.teamSize || "",
+              founderBackground: data.founderBackground || "",
+              annualRevenue: data.annualRevenue || "",
+              fundingSeeking: data.fundingSeeking || "",
+              previousFunding: data.previousFunding || "",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch organization:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrganization();
+  }, []);
+
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -115,10 +155,35 @@ export default function OrganizationPage() {
   };
 
   const handleSubmit = async () => {
-    console.log("Saving organization:", formData);
-    // TODO: API call to save organization
-    alert("Profile saved successfully!");
+    setSaving(true);
+    try {
+      const res = await fetch("/api/organizations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        alert("Profile saved successfully!");
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to save profile");
+      }
+    } catch (error) {
+      console.error("Failed to save organization:", error);
+      alert("Failed to save profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -343,9 +408,18 @@ export default function OrganizationPage() {
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit}>
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Save Profile
+            <Button onClick={handleSubmit} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Save Profile
+                </>
+              )}
             </Button>
           )}
         </CardFooter>
