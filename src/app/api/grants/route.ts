@@ -5,16 +5,21 @@ import { calculateMatchScore } from "@/lib/grant-matcher";
 
 export async function GET() {
   try {
-    const session = await auth();
+    let session = null;
+    try {
+      session = await auth();
+    } catch (authError) {
+      console.log("Auth check failed, continuing without session:", authError);
+    }
+
+    // Build where clause - always include public grants
+    const whereClause = session?.user?.id
+      ? { OR: [{ userId: session.user.id }, { userId: null }] }
+      : { userId: null };
 
     // Fetch all grants (both user-specific and public ones)
     const grants = await prisma.grant.findMany({
-      where: {
-        OR: [
-          { userId: session?.user?.id },
-          { userId: null }, // Public grants from seed data
-        ],
-      },
+      where: whereClause,
       orderBy: [
         { matchScore: "desc" },
         { deadline: "asc" },
