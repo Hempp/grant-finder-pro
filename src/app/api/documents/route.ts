@@ -77,6 +77,12 @@ export async function POST(request: NextRequest) {
 // DELETE - Remove document
 export async function DELETE(request: NextRequest) {
   try {
+    // Verify user is authenticated
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -84,6 +90,26 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: "Document ID required" },
         { status: 400 }
+      );
+    }
+
+    // Verify the document exists and belongs to the user
+    const document = await prisma.document.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!document) {
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 }
+      );
+    }
+
+    if (document.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Forbidden" },
+        { status: 403 }
       );
     }
 
