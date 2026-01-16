@@ -5,8 +5,8 @@ interface GrantsGovOpportunity {
   id: string;
   number: string;
   title: string;
-  // Legacy nested structure (v1 API)
-  agency?: {
+  // Agency can be a string (search2 API) or object (v1 API)
+  agency?: string | {
     name: string;
     code: string;
   };
@@ -49,16 +49,19 @@ interface GrantsGovOpportunity {
 }
 
 interface GrantsGovSearchResponse {
-  // New search2 API structure
+  // API wrapper
+  errorcode?: string;
+  msg?: string;
+  token?: string;
+  // Nested data structure (actual API response)
+  data?: {
+    hitCount?: number;
+    oppHits?: GrantsGovOpportunity[];
+    searchParams?: Record<string, unknown>;
+  };
+  // Direct structure (fallback)
   oppHits?: GrantsGovOpportunity[];
   totalRecords?: number;
-  // Legacy structure
-  data?: GrantsGovOpportunity[];
-  meta?: {
-    total: number;
-    page: number;
-    pageSize: number;
-  };
 }
 
 interface ScrapedGrant {
@@ -113,10 +116,10 @@ export async function searchGrantsGov(
       return [];
     }
 
-    const data: GrantsGovSearchResponse = await response.json();
+    const responseData: GrantsGovSearchResponse = await response.json();
 
-    // Handle both API response formats (oppHits for search2, data for legacy)
-    const opportunities = data.oppHits || data.data || [];
+    // Handle nested API response structure: response.data.oppHits
+    const opportunities = responseData.data?.oppHits || responseData.oppHits || [];
 
     console.log(`Found ${opportunities.length} opportunities from Grants.gov`);
 
@@ -124,8 +127,15 @@ export async function searchGrantsGov(
       // Get title (handles both formats)
       const title = opp.oppTitle || opp.title || "Untitled Opportunity";
 
-      // Get agency name (flat or nested)
-      const agencyName = opp.agencyName || opp.agency?.name || "Federal Government";
+      // Get agency name - can be string or object depending on API version
+      let agencyName = "Federal Government";
+      if (typeof opp.agency === "string") {
+        agencyName = opp.agency;
+      } else if (opp.agency?.name) {
+        agencyName = opp.agency.name;
+      } else if (opp.agencyName) {
+        agencyName = opp.agencyName;
+      }
 
       // Get description (flat or nested)
       const description = opp.synopsis || opp.summary?.synopsis || opp.description || null;
@@ -141,13 +151,13 @@ export async function searchGrantsGov(
       const oppId = opp.id || opp.oppNumber || opp.number;
 
       // Get category
-      const category = opp.categoryDescription || opp.category?.name || opp.fundingInstrumentDescription || opp.fundingInstrument?.name || null;
+      const category = opp.categoryDescription || (typeof opp.category === "object" ? opp.category?.name : null) || opp.fundingInstrumentDescription || opp.fundingInstrument?.name || null;
 
       // Get eligibility
       const eligibility = opp.eligibilities?.join(", ") || opp.eligibility?.applicant?.types?.join(", ") || null;
 
       // Get agency code for tags
-      const agencyCode = opp.agencyCode || opp.agency?.code;
+      const agencyCode = opp.agencyCode || (typeof opp.agency === "object" ? opp.agency?.code : null);
 
       return {
         title,
