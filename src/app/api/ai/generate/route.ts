@@ -23,13 +23,19 @@ export async function POST(request: NextRequest) {
 
     // If API key available, use Claude
     if (ANTHROPIC_API_KEY) {
-      const content = await generateWithClaude(field, context, grantInfo, organizationInfo);
-      return NextResponse.json({ content });
+      try {
+        const content = await generateWithClaude(field, context, grantInfo, organizationInfo);
+        return NextResponse.json({ content, source: "claude" });
+      } catch (claudeError) {
+        console.error("Claude API error, falling back to templates:", claudeError);
+        const content = generateContent(field, context, grantInfo, organizationInfo);
+        return NextResponse.json({ content, source: "template", error: String(claudeError) });
+      }
     }
 
     // Fallback to templates if no API key
     const content = generateContent(field, context, grantInfo, organizationInfo);
-    return NextResponse.json({ content });
+    return NextResponse.json({ content, source: "template", reason: "no_api_key" });
   } catch (error) {
     console.error("Failed to generate content:", error);
     return NextResponse.json(
