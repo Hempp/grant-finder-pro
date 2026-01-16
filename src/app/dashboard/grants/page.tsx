@@ -727,7 +727,7 @@ export default function GrantsPage() {
                         <Button size="sm" onClick={() => setSelectedGrant(grant)}>
                           View Details
                         </Button>
-                        <Link href={`/dashboard/applications/new?grantId=${grant.id}`}>
+                        <Link href={`/dashboard/grants/${grant.id}/apply`}>
                           <Button size="sm" variant="secondary">
                             Start Application
                           </Button>
@@ -1010,7 +1010,7 @@ export default function GrantsPage() {
 
               {/* Actions */}
               <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
-                <Link href={`/dashboard/applications/new?grantId=${selectedGrant.id}`} className="flex-1">
+                <Link href={`/dashboard/grants/${selectedGrant.id}/apply`} className="flex-1">
                   <Button className="w-full">
                     Start Application
                   </Button>
