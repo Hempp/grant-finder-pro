@@ -46,10 +46,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Registration error:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorStack = error instanceof Error ? error.stack : undefined;
     return NextResponse.json(
       {
         error: "Failed to create account",
-        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        details: errorMessage,
+        stack: errorStack?.split("\n").slice(0, 5),
         debug: {
           hasDbUrl: !!process.env.DATABASE_URL,
           hasPrismaUrl: !!process.env.POSTGRES_PRISMA_URL,
