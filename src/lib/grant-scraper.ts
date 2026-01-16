@@ -103,16 +103,27 @@ export async function searchGrantsGov(
     if (agency) searchBody.agencies = [agency];
     if (category) searchBody.fundingCategories = [category];
 
+    console.log(`Searching Grants.gov with params:`, JSON.stringify(searchBody));
+
+    // Create an AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     const response = await fetch("https://api.grants.gov/v1/api/search2", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
       body: JSON.stringify(searchBody),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      console.error("Grants.gov API error:", response.status, await response.text());
+      const errorText = await response.text().catch(() => "Unable to read error response");
+      console.error("Grants.gov API error:", response.status, errorText);
       return [];
     }
 
@@ -180,7 +191,15 @@ export async function searchGrantsGov(
       };
     });
   } catch (error) {
-    console.error("Error fetching from Grants.gov:", error);
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        console.error("Grants.gov API request timed out");
+      } else {
+        console.error("Error fetching from Grants.gov:", error.message);
+      }
+    } else {
+      console.error("Error fetching from Grants.gov:", String(error));
+    }
     return [];
   }
 }
