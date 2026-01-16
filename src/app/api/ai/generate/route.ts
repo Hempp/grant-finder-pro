@@ -97,37 +97,38 @@ ${context ? `Previous answers: ${JSON.stringify(context)}` : ""}`;
 
   const userPrompt = fieldPrompts[field] || `Generate professional content for the "${field}" section of this grant application.`;
 
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY!,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-3-haiku-20240307",
-        max_tokens: 1500,
-        system: systemPrompt,
-        messages: [
-          { role: "user", content: userPrompt }
-        ],
-      }),
-    });
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_API_KEY!,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-3-haiku-20240307",
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [
+        { role: "user", content: userPrompt }
+      ],
+    }),
+  });
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Claude API error:", error);
-      throw new Error("Claude API request failed");
-    }
-
-    const data = await response.json();
-    return data.content?.[0]?.text || generateContent(field, context, grantInfo, orgInfo);
-  } catch (error) {
-    console.error("Claude API call failed:", error);
-    // Fallback to templates
-    return generateContent(field, context, grantInfo, orgInfo);
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("Claude API error:", error);
+    throw new Error(`Claude API request failed: ${error}`);
   }
+
+  const data = await response.json();
+  const generatedText = data.content?.[0]?.text;
+
+  if (!generatedText) {
+    console.error("Claude API returned unexpected structure:", JSON.stringify(data));
+    throw new Error("Claude API returned no text content");
+  }
+
+  return generatedText;
 }
 
 function generateContent(
