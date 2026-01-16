@@ -3,7 +3,7 @@ import { getToken } from "next-auth/jwt";
 
 const protectedRoutes = ["/dashboard"];
 const publicAuthRoutes = ["/login", "/signup"];
-const publicApiRoutes = ["/api/auth", "/api/grants"];
+const publicApiRoutes = ["/api/auth", "/api/grants", "/api/test-db"];
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
