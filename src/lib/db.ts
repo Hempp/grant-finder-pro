@@ -8,7 +8,6 @@ const globalForPrisma = globalThis as unknown as {
 
 function createPrismaClient() {
   // Support multiple env var names for Vercel Supabase integration
-  // Prefer non-pooling URL for Prisma (it has its own pooling)
   const connectionString =
     process.env.POSTGRES_URL_NON_POOLING ||
     process.env.DATABASE_URL ||
@@ -16,13 +15,15 @@ function createPrismaClient() {
     process.env.POSTGRES_URL;
 
   if (!connectionString) {
-    throw new Error("No database connection string found");
+    throw new Error("No database connection string found. Available env vars: " +
+      Object.keys(process.env).filter(k => k.includes('POSTGRES') || k.includes('DATABASE')).join(', '));
   }
 
   const pool = new Pool({
     connectionString,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    ssl: { rejectUnauthorized: false },
   });
+
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
