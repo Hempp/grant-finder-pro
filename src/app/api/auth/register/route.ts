@@ -3,9 +3,13 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
+  const steps: string[] = [];
+
   try {
+    steps.push("1. Parsing request body");
     const body = await request.json();
     const { email, password, name } = body;
+    steps.push("2. Body parsed: " + email);
 
     if (!email || !password) {
       return NextResponse.json(
@@ -14,10 +18,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already exists
+    steps.push("3. Checking if user exists");
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
+    steps.push("4. User check complete: " + (existingUser ? "exists" : "not found"));
 
     if (existingUser) {
       return NextResponse.json(
@@ -26,10 +31,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
+    steps.push("5. Hashing password");
     const hashedPassword = await bcrypt.hash(password, 12);
+    steps.push("6. Password hashed");
 
-    // Create user
+    steps.push("7. Creating user");
     const user = await prisma.user.create({
       data: {
         email,
@@ -37,6 +43,7 @@ export async function POST(request: NextRequest) {
         name: name || email.split("@")[0],
       },
     });
+    steps.push("8. User created: " + user.id);
 
     return NextResponse.json({
       id: user.id,
@@ -52,6 +59,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to create account",
         details: errorMessage,
         stack: errorStack?.split("\n").slice(0, 5),
+        steps,
         debug: {
           hasDbUrl: !!process.env.DATABASE_URL,
           hasPrismaUrl: !!process.env.POSTGRES_PRISMA_URL,
