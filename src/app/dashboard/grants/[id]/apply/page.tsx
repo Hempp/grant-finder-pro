@@ -35,11 +35,13 @@ interface Grant {
   id: string;
   title: string;
   funder: string;
-  amount: number;
+  amount: string;
+  amountMin: number | null;
+  amountMax: number | null;
   deadline: string;
   description: string;
-  eligibility: string[];
-  requirements: string[];
+  eligibility: string | string[] | null;
+  requirements: string | string[] | null;
 }
 
 function formatCurrency(amount: number): string {
@@ -102,7 +104,7 @@ export default function ApplyPage() {
           setGrant(foundGrant);
           setFormData(prev => ({
             ...prev,
-            totalBudget: String(foundGrant.amount || ""),
+            totalBudget: String(foundGrant.amountMax || foundGrant.amountMin || ""),
           }));
         } else {
           setError("Grant not found");
@@ -138,7 +140,7 @@ export default function ApplyPage() {
           grantInfo: {
             title: grant.title,
             funder: grant.funder,
-            amount: grant.amount,
+            amount: grant.amountMax || grant.amount,
             description: grant.description,
             requirements: grant.requirements,
           },
@@ -347,7 +349,9 @@ ${formData.budgetJustification}
         <div className="flex items-center gap-4 mt-2 text-slate-400">
           <span>{grant.funder}</span>
           <span>•</span>
-          <span className="text-emerald-400 font-medium">{formatCurrency(grant.amount)}</span>
+          <span className="text-emerald-400 font-medium">
+            {grant.amountMax ? formatCurrency(grant.amountMax) : grant.amount}
+          </span>
           <span>•</span>
           <span>Due {new Date(grant.deadline).toLocaleDateString()}</span>
         </div>
