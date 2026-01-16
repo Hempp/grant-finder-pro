@@ -45,8 +45,17 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Registration error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to create account" },
+      {
+        error: "Failed to create account",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        debug: {
+          hasDbUrl: !!process.env.DATABASE_URL,
+          hasPrismaUrl: !!process.env.POSTGRES_PRISMA_URL,
+          hasPostgresUrl: !!process.env.POSTGRES_URL,
+        }
+      },
       { status: 500 }
     );
   }
