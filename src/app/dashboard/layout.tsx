@@ -16,6 +16,7 @@ import {
   User,
   Menu,
   X,
+  Gift,
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 
@@ -25,6 +26,7 @@ const navigation = [
   { name: "Applications", href: "/dashboard/applications", icon: FileText },
   { name: "Documents", href: "/dashboard/documents", icon: Upload },
   { name: "Organization", href: "/dashboard/organization", icon: Building2 },
+  { name: "Referrals", href: "/dashboard/referrals", icon: Gift },
 ];
 
 export default function DashboardLayout({

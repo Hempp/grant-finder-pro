@@ -44,12 +44,21 @@ model User {
   weeklyDigest       Boolean   @default(true)   // Weekly summary of new grants
   trialReminders     Boolean   @default(true)   // Trial ending notifications
 
+  // Referral program
+  referralCode       String?   @unique          // Unique code for sharing
+  referredById       String?                    // Who referred this user
+  referredBy         User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals          User[]    @relation("Referrals") // Users this person referred
+  referralCredits    Int       @default(0)      // Bonus matches earned from referrals
+
   accounts      Account[]
   sessions      Session[]
   organization  Organization?
   grants        Grant[]
   applications  Application[]
   documents     Document[]
+  referralsSent Referral[]    @relation("ReferralsSent")
+  referralsReceived Referral[] @relation("ReferralsReceived")
 }
 
 model Account {
@@ -257,4 +266,31 @@ model ApplicationTemplate {
   updatedAt       DateTime @updatedAt
 
   @@unique([funderName, grantType])
+}
+
+// Track referral events and rewards
+model Referral {
+  id              String   @id @default(cuid())
+
+  referrerId      String
+  referrer        User     @relation("ReferralsSent", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  refereeId       String
+  referee         User     @relation("ReferralsReceived", fields: [refereeId], references: [id], onDelete: Cascade)
+
+  // Referral status
+  status          String   @default("pending") // pending, completed, rewarded
+
+  // Rewards
+  referrerReward  Int      @default(0)  // Bonus matches given to referrer
+  refereeReward   Int      @default(0)  // Bonus matches given to referee
+  rewardedAt      DateTime?
+
+  // Tracking
+  signupSource    String?  // Where the referral link was shared (email, twitter, etc)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([referrerId, refereeId])
 }

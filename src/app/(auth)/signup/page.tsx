@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Input, Card } from "@/components/ui";
-import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle, Gift } from "lucide-react";
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get("ref");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +40,7 @@ export default function SignupPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, referralCode }),
       });
 
       const data = await res.json();
@@ -77,6 +80,16 @@ export default function SignupPage() {
 
   return (
     <Card className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg border-white/20">
+      {/* Referral Banner */}
+      {referralCode && (
+        <div className="mb-6 p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg flex items-center gap-3">
+          <Gift className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+          <p className="text-sm text-emerald-200">
+            You were referred! Sign up to get <span className="font-semibold">5 bonus grant matches</span>
+          </p>
+        </div>
+      )}
+
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
         <p className="text-slate-300">Start finding grants for your organization</p>
@@ -195,5 +208,19 @@ export default function SignupPage() {
         </Link>
       </div>
     </Card>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <Suspense fallback={
+        <Card className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg border-white/20 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+        </Card>
+      }>
+        <SignupForm />
+      </Suspense>
+    </div>
   );
 }
