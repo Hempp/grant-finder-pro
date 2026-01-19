@@ -185,23 +185,23 @@ export default function DocumentsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Documents</h1>
-        <p className="text-slate-400 mt-1">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">Documents</h1>
+        <p className="text-slate-400 mt-1 text-sm sm:text-base">
           Upload your pitch deck, financials, and other documents. We&apos;ll extract key information for grant applications.
         </p>
       </div>
 
       {/* Upload Area */}
-      <Card className="mb-8">
-        <CardContent className="p-8">
+      <Card className="mb-6 sm:mb-8">
+        <CardContent className="p-4 sm:p-8">
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-12 text-center transition ${
+            className={`border-2 border-dashed rounded-xl p-6 sm:p-12 text-center transition ${
               isDragging
                 ? "border-emerald-500 bg-emerald-500/10"
                 : "border-slate-600 hover:border-slate-500"
@@ -209,17 +209,17 @@ export default function DocumentsPage() {
           >
             {uploading ? (
               <div className="flex flex-col items-center">
-                <Loader2 className="h-12 w-12 text-emerald-400 animate-spin mb-4" />
-                <p className="text-white font-medium">Processing document...</p>
-                <p className="text-slate-400 text-sm mt-1">Extracting information with AI</p>
+                <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-400 animate-spin mb-4" />
+                <p className="text-white font-medium text-sm sm:text-base">Processing document...</p>
+                <p className="text-slate-400 text-xs sm:text-sm mt-1">Extracting information with AI</p>
               </div>
             ) : (
               <>
-                <Upload className="h-12 w-12 text-slate-500 mx-auto mb-4" />
-                <p className="text-white font-medium mb-2">
+                <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-slate-500 mx-auto mb-4" />
+                <p className="text-white font-medium mb-2 text-sm sm:text-base">
                   Drag and drop files here, or click to browse
                 </p>
-                <p className="text-slate-400 text-sm mb-4">
+                <p className="text-slate-400 text-xs sm:text-sm mb-4">
                   Supports PDF, DOCX, XLSX, PPTX up to 50MB
                 </p>
                 <input
@@ -230,7 +230,7 @@ export default function DocumentsPage() {
                   className="hidden"
                   id="file-upload"
                 />
-                <label htmlFor="file-upload" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer transition">
+                <label htmlFor="file-upload" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer transition text-sm sm:text-base">
                   Select Files
                 </label>
               </>
@@ -240,37 +240,37 @@ export default function DocumentsPage() {
       </Card>
 
       {/* Document Types Guide */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <Card className="bg-purple-500/10 border-purple-500/30">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-purple-500/20 p-3 rounded-lg">
-              <FileText className="h-6 w-6 text-purple-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-purple-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
             </div>
-            <div>
-              <h3 className="text-white font-medium">Pitch Deck</h3>
-              <p className="text-slate-400 text-sm">Company overview, market, financials</p>
+            <div className="min-w-0">
+              <h3 className="text-white font-medium text-sm sm:text-base">Pitch Deck</h3>
+              <p className="text-slate-400 text-xs sm:text-sm truncate">Company overview, market, financials</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-emerald-500/10 border-emerald-500/30">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-emerald-500/20 p-3 rounded-lg">
-              <File className="h-6 w-6 text-emerald-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+              <File className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
             </div>
-            <div>
-              <h3 className="text-white font-medium">Financial Statements</h3>
-              <p className="text-slate-400 text-sm">Revenue, P&L, balance sheet</p>
+            <div className="min-w-0">
+              <h3 className="text-white font-medium text-sm sm:text-base">Financial Statements</h3>
+              <p className="text-slate-400 text-xs sm:text-sm truncate">Revenue, P&L, balance sheet</p>
             </div>
           </CardContent>
         </Card>
         <Card className="bg-blue-500/10 border-blue-500/30">
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-blue-500/20 p-3 rounded-lg">
-              <FileText className="h-6 w-6 text-blue-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-blue-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
             </div>
-            <div>
-              <h3 className="text-white font-medium">Business Plan</h3>
-              <p className="text-slate-400 text-sm">Strategy, projections, team</p>
+            <div className="min-w-0">
+              <h3 className="text-white font-medium text-sm sm:text-base">Business Plan</h3>
+              <p className="text-slate-400 text-xs sm:text-sm truncate">Strategy, projections, team</p>
             </div>
           </CardContent>
         </Card>
@@ -278,69 +278,71 @@ export default function DocumentsPage() {
 
       {/* Documents List */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Uploaded Documents</h2>
-          <span className="text-slate-400 text-sm">{documents.length} documents</span>
+        <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-white">Uploaded Documents</h2>
+          <span className="text-slate-400 text-xs sm:text-sm">{documents.length} documents</span>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
           {documents.length === 0 ? (
-            <div className="text-center py-12">
-              <FileText className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400">No documents uploaded yet</p>
-              <p className="text-slate-500 text-sm">Upload your first document to get started</p>
+            <div className="text-center py-8 sm:py-12">
+              <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-400 text-sm sm:text-base">No documents uploaded yet</p>
+              <p className="text-slate-500 text-xs sm:text-sm">Upload your first document to get started</p>
             </div>
           ) : (
             <div className="space-y-3">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition gap-3"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="bg-slate-800 p-3 rounded-lg">
-                      <FileText className={`h-6 w-6 ${documentTypes[doc.type]?.color || "text-slate-400"}`} />
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                      <FileText className={`h-5 w-5 sm:h-6 sm:w-6 ${documentTypes[doc.type]?.color || "text-slate-400"}`} />
                     </div>
-                    <div>
-                      <h3 className="text-white font-medium">{doc.name}</h3>
-                      <div className="flex items-center gap-3 mt-1">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-white font-medium text-sm sm:text-base truncate">{doc.name}</h3>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
                         <Badge variant="default">
                           {documentTypes[doc.type]?.label || "Document"}
                         </Badge>
-                        <span className="text-slate-500 text-sm">
+                        <span className="text-slate-500 text-xs sm:text-sm">
                           {formatFileSize(doc.size)}
                         </span>
-                        <span className="text-slate-500 text-sm">
+                        <span className="text-slate-500 text-xs sm:text-sm hidden xs:inline">
                           {new Date(doc.uploadedAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-2 sm:pt-0 border-t border-slate-700/50 sm:border-0">
                     {doc.parsed ? (
-                      <Badge variant="success">
+                      <Badge variant="success" className="flex-shrink-0">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Parsed
+                        <span className="hidden xs:inline">Parsed</span>
                       </Badge>
                     ) : (
-                      <Badge variant="warning">
+                      <Badge variant="warning" className="flex-shrink-0">
                         <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        Processing
+                        <span className="hidden xs:inline">Processing</span>
                       </Badge>
                     )}
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteDocument(doc.id)}
-                      className="text-red-400 hover:text-red-300"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Download className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteDocument(doc.id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}

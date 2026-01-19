@@ -150,17 +150,17 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Applications</h1>
-          <p className="text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Applications</h1>
+          <p className="text-slate-400 mt-1 text-sm sm:text-base">
             Track and manage your grant applications
           </p>
         </div>
         <Link href="/dashboard/grants">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             New Application
           </Button>
@@ -168,71 +168,71 @@ export default function ApplicationsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <Card>
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-slate-700 p-3 rounded-lg">
-              <FileText className="h-6 w-6 text-slate-300" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-slate-700 p-2 sm:p-3 rounded-lg">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-300" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.total}</p>
-              <p className="text-slate-400 text-sm">Total</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{stats.total}</p>
+              <p className="text-slate-400 text-xs sm:text-sm">Total</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-amber-500/20 p-3 rounded-lg">
-              <AlertCircle className="h-6 w-6 text-amber-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-amber-500/20 p-2 sm:p-3 rounded-lg">
+              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.inProgress}</p>
-              <p className="text-slate-400 text-sm">In Progress</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{stats.inProgress}</p>
+              <p className="text-slate-400 text-xs sm:text-sm">In Progress</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-blue-500/20 p-3 rounded-lg">
-              <CheckCircle className="h-6 w-6 text-blue-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-blue-500/20 p-2 sm:p-3 rounded-lg">
+              <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.submitted}</p>
-              <p className="text-slate-400 text-sm">Submitted</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{stats.submitted}</p>
+              <p className="text-slate-400 text-xs sm:text-sm">Submitted</p>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center gap-4">
-            <div className="bg-emerald-500/20 p-3 rounded-lg">
-              <Award className="h-6 w-6 text-emerald-400" />
+          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+            <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg">
+              <Award className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{stats.awarded}</p>
-              <p className="text-slate-400 text-sm">Awarded</p>
+              <p className="text-xl sm:text-2xl font-bold text-white">{stats.awarded}</p>
+              <p className="text-slate-400 text-xs sm:text-sm">Awarded</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
+        <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
           <input
             type="text"
             placeholder="Search applications..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0">
           {filterOptions.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setFilter(opt.value)}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
+              className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${
                 filter === opt.value
                   ? "bg-emerald-500 text-white"
                   : "bg-slate-800 text-slate-400 hover:text-white"
@@ -246,18 +246,18 @@ export default function ApplicationsPage() {
 
       {/* Applications List */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">
+        <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-white">
             {filter === "all" ? "All Applications" : filterOptions.find((f) => f.value === filter)?.label}
           </h2>
-          <span className="text-slate-400 text-sm">{filteredApplications.length} applications</span>
+          <span className="text-slate-400 text-xs sm:text-sm">{filteredApplications.length} applications</span>
         </CardHeader>
         <CardContent className="p-0">
           {filteredApplications.length === 0 ? (
-            <div className="p-12 text-center">
-              <FileText className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-white font-medium mb-2">No applications found</p>
-              <p className="text-slate-400 mb-4">Start a new application from the grants page</p>
+            <div className="p-8 sm:p-12 text-center">
+              <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
+              <p className="text-white font-medium mb-2 text-sm sm:text-base">No applications found</p>
+              <p className="text-slate-400 mb-4 text-sm">Start a new application from the grants page</p>
               <Link href="/dashboard/grants">
                 <Button>Find Grants</Button>
               </Link>
@@ -272,17 +272,22 @@ export default function ApplicationsPage() {
                 return (
                   <div
                     key={app.id}
-                    className="p-6 hover:bg-slate-800/50 transition"
+                    className="p-4 sm:p-6 hover:bg-slate-800/50 transition"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        {/* Title and badges */}
+                        <div className="flex flex-wrap items-start gap-2 mb-2">
                           <Link
                             href={`/dashboard/applications/${app.id}`}
-                            className="text-lg font-semibold text-white hover:text-emerald-400 transition"
+                            className="text-base sm:text-lg font-semibold text-white hover:text-emerald-400 transition line-clamp-2"
                           >
                             {app.grantTitle}
                           </Link>
+                        </div>
+
+                        {/* Status badges - mobile row */}
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                           <Badge variant={status.color}>
                             <status.icon className="h-3 w-3 mr-1" />
                             {status.label}
@@ -290,16 +295,18 @@ export default function ApplicationsPage() {
                           {isUrgent && (
                             <Badge variant="danger">
                               <Clock className="h-3 w-3 mr-1" />
-                              {daysUntil} days left
+                              {daysUntil}d left
                             </Badge>
                           )}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-slate-400">
-                          <span>{app.funder}</span>
-                          <span>•</span>
+
+                        {/* Meta info */}
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-slate-400">
+                          <span className="truncate max-w-[150px] sm:max-w-none">{app.funder}</span>
+                          <span className="hidden sm:inline">•</span>
                           <span className="text-emerald-400 font-medium">{app.amount}</span>
-                          <span>•</span>
-                          <span>
+                          <span className="hidden sm:inline">•</span>
+                          <span className="text-slate-500">
                             {app.submittedAt
                               ? `Submitted ${new Date(app.submittedAt).toLocaleDateString()}`
                               : `Due ${new Date(app.deadline).toLocaleDateString()}`}
@@ -308,8 +315,8 @@ export default function ApplicationsPage() {
 
                         {/* Progress Bar */}
                         {!["submitted", "awarded", "rejected"].includes(app.status) && (
-                          <div className="flex items-center gap-4 mt-4">
-                            <div className="flex-1 max-w-xs">
+                          <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4">
+                            <div className="flex-1 max-w-full sm:max-w-xs">
                               <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                                 <div
                                   className={`h-full rounded-full transition-all ${
@@ -319,35 +326,38 @@ export default function ApplicationsPage() {
                                 />
                               </div>
                             </div>
-                            <span className="text-slate-400 text-sm">{app.progress}% complete</span>
+                            <span className="text-slate-400 text-xs sm:text-sm whitespace-nowrap">{app.progress}%</span>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      {/* Actions */}
+                      <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t border-slate-700/50 sm:border-0">
                         {app.status === "in_progress" && (
-                          <Link href={`/dashboard/applications/${app.id}`}>
-                            <Button size="sm">
-                              Continue
+                          <Link href={`/dashboard/applications/${app.id}`} className="flex-1 sm:flex-none">
+                            <Button size="sm" className="w-full sm:w-auto">
+                              <span className="sm:hidden">Continue</span>
+                              <span className="hidden sm:inline">Continue</span>
                               <ArrowRight className="h-4 w-4 ml-1" />
                             </Button>
                           </Link>
                         )}
                         {app.status === "ready_for_review" && (
-                          <Link href={`/dashboard/applications/${app.id}`}>
-                            <Button size="sm" variant="secondary">
-                              Review & Submit
+                          <Link href={`/dashboard/applications/${app.id}`} className="flex-1 sm:flex-none">
+                            <Button size="sm" variant="secondary" className="w-full sm:w-auto">
+                              <span className="sm:hidden">Review</span>
+                              <span className="hidden sm:inline">Review & Submit</span>
                             </Button>
                           </Link>
                         )}
                         {app.status === "draft" && (
-                          <Link href={`/dashboard/applications/${app.id}`}>
-                            <Button size="sm" variant="ghost">
+                          <Link href={`/dashboard/applications/${app.id}`} className="flex-1 sm:flex-none">
+                            <Button size="sm" variant="ghost" className="w-full sm:w-auto">
                               Edit Draft
                             </Button>
                           </Link>
                         )}
-                        <button className="p-2 text-slate-400 hover:text-white transition">
+                        <button className="p-2 text-slate-400 hover:text-white transition flex-shrink-0">
                           <MoreVertical className="h-5 w-5" />
                         </button>
                       </div>

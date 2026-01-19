@@ -15,7 +15,7 @@ interface Organization {
   problemStatement: string | null;
   solution: string | null;
   targetMarket: string | null;
-  teamSize: number | null;
+  teamSize: string | null;
   annualRevenue: string | null;
   fundingSeeking: string | null;
 }

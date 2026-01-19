@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { scrapeAllGrants, type ScrapedGrant } from "@/lib/grant-scraper";
+import { sendGrantAlertEmail } from "@/lib/email";
 
 // Verify cron secret to prevent unauthorized access
 const CRON_SECRET = process.env.CRON_SECRET;
@@ -98,6 +99,75 @@ export async function GET(request: NextRequest) {
     console.log(`Grant scraping completed in ${duration}ms`);
     console.log(`Created: ${created}, Updated: ${updated}, Errors: ${errors}`);
 
+    // Send email alerts to users who have alerts enabled
+    let emailsSent = 0;
+    if (created > 0) {
+      try {
+        // Get users with daily alerts enabled
+        const usersWithAlerts = await prisma.user.findMany({
+          where: {
+            alertsEnabled: true,
+            alertFrequency: "daily",
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            alertCategories: true,
+          },
+        });
+
+        // Get newly created grants (last 24 hours)
+        const newGrants = await prisma.grant.findMany({
+          where: {
+            createdAt: {
+              gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+        });
+
+        // Send alerts to each user
+        for (const user of usersWithAlerts) {
+          if (!user.email) continue;
+
+          try {
+            const grantAlerts = newGrants.map((g) => ({
+              title: g.title,
+              funder: g.funder,
+              amount: g.amount,
+              deadline: g.deadline,
+              url: g.url,
+              type: g.type || "federal",
+              category: g.category,
+            }));
+
+            await sendGrantAlertEmail({
+              to: user.email,
+              userName: user.name || undefined,
+              grants: grantAlerts,
+              frequency: "daily",
+            });
+
+            // Update last alert sent time
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { lastAlertSent: new Date() },
+            });
+
+            emailsSent++;
+          } catch (emailErr) {
+            console.error(`Failed to send alert to ${user.email}:`, emailErr);
+          }
+        }
+
+        console.log(`Sent ${emailsSent} email alerts`);
+      } catch (alertErr) {
+        console.error("Failed to send alerts:", alertErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: "Grant scraping completed",
@@ -106,6 +176,7 @@ export async function GET(request: NextRequest) {
         created,
         updated,
         errors,
+        emailsSent,
         duration: `${duration}ms`,
       },
       timestamp: new Date().toISOString(),

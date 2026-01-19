@@ -19,6 +19,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Email alert preferences
+  alertsEnabled   Boolean   @default(false)
+  alertFrequency  String    @default("daily") // daily, weekly, instant
+  alertCategories String?   // JSON array: ["AI", "healthcare", "climate", etc]
+  lastAlertSent   DateTime?
+
   accounts      Account[]
   sessions      Session[]
   organization  Organization?
@@ -81,9 +87,11 @@ model Organization {
   solution        String?
   targetMarket    String?
 
-  teamSize        Int?
+  teamSize        String?  // "1", "2-5", "6-10", etc
+  founderBackground String? // Leadership team background
   annualRevenue   String?
   fundingSeeking  String?
+  previousFunding String?  // History of grants/investments
 
   profileComplete Boolean  @default(false)
   createdAt       DateTime @default(now())
@@ -177,4 +185,57 @@ model Application {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Auto-apply draft
+  draft           ApplicationDraft?
+}
+
+// Stores the AI-generated draft for auto-apply feature
+model ApplicationDraft {
+  id              String   @id @default(cuid())
+  applicationId   String   @unique
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  // Parsed application structure from grant requirements
+  sections        String   // JSON: ApplicationSection[]
+
+  // AI-generated responses for each section
+  responses       String   // JSON: Record<sectionId, ResponseData>
+
+  // Completion tracking
+  completionScore     Int      @default(0)    // 0-100 percentage
+  overallConfidence   Int      @default(0)    // 0-100 AI confidence
+  missingRequirements String?  // JSON array of missing items
+
+  // Metadata
+  funderType          String?  // federal, foundation, corporate, state
+  generationModel     String   @default("claude-opus")
+
+  generatedAt     DateTime @default(now())
+  lastEditedAt    DateTime @updatedAt
+}
+
+// Pre-defined templates for common funders/grant types
+model ApplicationTemplate {
+  id              String   @id @default(cuid())
+
+  funderName      String   // e.g., "NSF", "NIH", "Gates Foundation"
+  grantType       String   // e.g., "sbir_phase1", "r01", "general"
+  funderType      String   // federal, foundation, corporate, state
+
+  // Pre-defined section structure
+  sections        String   // JSON: ApplicationSection[]
+
+  // Writing guidance
+  toneGuidance    String?  // How to write for this funder
+  commonMistakes  String?  // What to avoid
+
+  // Metadata
+  isActive        Boolean  @default(true)
+  usageCount      Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([funderName, grantType])
 }

@@ -186,21 +186,21 @@ export default function OrganizationPage() {
   }
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Organization Profile</h1>
-        <p className="text-slate-400 mt-1">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">Organization Profile</h1>
+        <p className="text-slate-400 mt-1 text-sm sm:text-base">
           Complete your profile to improve grant matching accuracy.
         </p>
       </div>
 
       {/* Progress Steps */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
         {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center">
+          <div key={step.id} className="flex items-center flex-shrink-0">
             <div
-              className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition ${
+              className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition ${
                 currentStep > step.id
                   ? "bg-emerald-500 border-emerald-500"
                   : currentStep === step.id
@@ -209,21 +209,22 @@ export default function OrganizationPage() {
               }`}
             >
               {currentStep > step.id ? (
-                <CheckCircle className="h-5 w-5 text-white" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               ) : (
-                <step.icon className="h-5 w-5" />
+                <step.icon className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </div>
             <span
-              className={`ml-3 font-medium ${
+              className={`ml-2 sm:ml-3 font-medium text-sm sm:text-base ${
                 currentStep >= step.id ? "text-white" : "text-slate-500"
               }`}
             >
-              {step.name}
+              <span className="hidden xs:inline">{step.name}</span>
+              <span className="xs:hidden">{step.id}</span>
             </span>
             {index < steps.length - 1 && (
               <div
-                className={`w-24 h-0.5 mx-4 ${
+                className={`w-8 sm:w-16 lg:w-24 h-0.5 mx-2 sm:mx-4 ${
                   currentStep > step.id ? "bg-emerald-500" : "bg-slate-700"
                 }`}
               />
@@ -250,7 +251,7 @@ export default function OrganizationPage() {
                 value={formData.name}
                 onChange={(e) => updateField("name", e.target.value)}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Select
                   label="Organization Type"
                   options={organizationTypes}
@@ -264,7 +265,7 @@ export default function OrganizationPage() {
                   onChange={(e) => updateField("legalStructure", e.target.value)}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Input
                   label="EIN (Optional)"
                   placeholder="XX-XXXXXXX"
@@ -278,7 +279,7 @@ export default function OrganizationPage() {
                   onChange={(e) => updateField("website", e.target.value)}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Input
                   label="City"
                   placeholder="San Francisco"
@@ -351,8 +352,8 @@ export default function OrganizationPage() {
                 value={formData.founderBackground}
                 onChange={(e) => updateField("founderBackground", e.target.value)}
               />
-              <div className="bg-slate-900/50 p-4 rounded-lg">
-                <p className="text-slate-400 text-sm">
+              <div className="bg-slate-900/50 p-3 sm:p-4 rounded-lg">
+                <p className="text-slate-400 text-xs sm:text-sm">
                   <strong className="text-white">Tip:</strong> Grant reviewers look for teams with relevant expertise.
                   Highlight domain knowledge, technical skills, and any previous successful ventures or projects.
                 </p>
@@ -382,8 +383,8 @@ export default function OrganizationPage() {
                 value={formData.previousFunding}
                 onChange={(e) => updateField("previousFunding", e.target.value)}
               />
-              <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-lg">
-                <p className="text-emerald-400 text-sm">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 sm:p-4 rounded-lg">
+                <p className="text-emerald-400 text-xs sm:text-sm">
                   <strong>Almost done!</strong> Once you save your profile, we&apos;ll start matching
                   you with relevant grant opportunities based on your organization details.
                 </p>

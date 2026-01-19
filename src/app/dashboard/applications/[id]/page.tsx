@@ -22,6 +22,7 @@ import {
   Clock,
   Trash2,
   Send,
+  Wand2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -454,6 +455,12 @@ ${formData.budgetJustification}
           </div>
 
           <div className="flex gap-2">
+            <Link href={`/dashboard/applications/${params.id}/draft`}>
+              <Button variant="secondary">
+                <Wand2 className="h-4 w-4 mr-2" />
+                AI Draft
+              </Button>
+            </Link>
             {isEditable && (
               <Button onClick={() => setMode("edit")}>
                 <Edit3 className="h-4 w-4 mr-2" />

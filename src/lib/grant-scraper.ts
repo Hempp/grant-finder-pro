@@ -1497,21 +1497,38 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
 
   // Fetch from Grants.gov with different keywords
   const keywords = [
+    // General
     "small business",
     "innovation",
     "research",
     "technology",
     "startup",
-    "development",
-    "clean energy",
-    "AI artificial intelligence",
+    // AI & Tech
+    "artificial intelligence",
+    "machine learning",
+    "deep learning",
+    "robotics",
+    "computer vision",
+    // Healthcare
     "healthcare",
-    "education",
+    "biomedical",
+    "medical device",
+    "clinical research",
+    "public health",
+    // Climate & Energy
+    "climate change",
+    "clean energy",
+    "renewable energy",
+    "sustainability",
+    "environmental",
+    // Education
+    "STEM education",
+    "workforce development",
   ];
 
   for (const keyword of keywords) {
     console.log(`Searching Grants.gov for: ${keyword}`);
-    const results = await searchGrantsGov(keyword, undefined, undefined, 25);
+    const results = await searchGrantsGov(keyword, undefined, undefined, 50);
     allGrants.push(...results);
     // Rate limiting
     await new Promise(resolve => setTimeout(resolve, 500));

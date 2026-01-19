@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
@@ -21,10 +21,12 @@ import {
   AlertCircle,
   Globe,
   MapPin,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { AutoApplyModal } from "@/components/auto-apply";
 
 interface Grant {
   id: string;
@@ -72,10 +74,49 @@ function parseArrayField(field: string | string[] | null): string[] {
 
 export default function GrantDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const [grant, setGrant] = useState<Grant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [showAutoApplyModal, setShowAutoApplyModal] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasDocuments, setHasDocuments] = useState(false);
+  const [existingApplicationId, setExistingApplicationId] = useState<string | undefined>(undefined);
+
+  // Fetch user readiness (profile & documents)
+  useEffect(() => {
+    async function checkReadiness() {
+      try {
+        // Check organization profile
+        const orgRes = await fetch("/api/organizations");
+        if (orgRes.ok) {
+          const orgData = await orgRes.json();
+          setHasProfile(Boolean(orgData?.name && orgData?.description));
+        }
+
+        // Check documents
+        const docsRes = await fetch("/api/documents");
+        if (docsRes.ok) {
+          const docsData = await docsRes.json();
+          setHasDocuments(Array.isArray(docsData) && docsData.length > 0);
+        }
+
+        // Check for existing application
+        const appsRes = await fetch("/api/applications");
+        if (appsRes.ok) {
+          const appsData = await appsRes.json();
+          const existingApp = appsData.find((app: { grantId: string }) => app.grantId === params.id);
+          if (existingApp) {
+            setExistingApplicationId(existingApp.id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check readiness:", err);
+      }
+    }
+    checkReadiness();
+  }, [params.id]);
 
   useEffect(() => {
     async function fetchGrant() {
@@ -362,17 +403,36 @@ export default function GrantDetailPage() {
           <Card className="bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border-emerald-500/30">
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="h-8 w-8 text-emerald-400" />
+                <Sparkles className="h-8 w-8 text-emerald-400" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Ready to Apply?</h3>
               <p className="text-slate-400 text-sm mb-4">
-                Our AI will help fill out your application using your profile and documents.
+                Let AI generate a complete application draft based on your profile and documents.
               </p>
-              <Link href={`/dashboard/grants/${params.id}/apply`}>
-                <Button size="lg" className="w-full">
-                  Start Application
+              <div className="space-y-3">
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={() => setShowAutoApplyModal(true)}
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Auto-Apply with AI
                 </Button>
-              </Link>
+                <Link href={`/dashboard/grants/${params.id}/apply`} className="block">
+                  <Button size="lg" variant="secondary" className="w-full">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Manual Application
+                  </Button>
+                </Link>
+              </div>
+              {existingApplicationId && (
+                <Link
+                  href={`/dashboard/applications/${existingApplicationId}`}
+                  className="block mt-3 text-sm text-emerald-400 hover:text-emerald-300 transition"
+                >
+                  View existing application →
+                </Link>
+              )}
             </CardContent>
           </Card>
 
@@ -480,6 +540,25 @@ export default function GrantDetailPage() {
           </Card>
         </div>
       </div>
+
+      {/* Auto-Apply Modal */}
+      <AutoApplyModal
+        isOpen={showAutoApplyModal}
+        onClose={() => setShowAutoApplyModal(false)}
+        grant={{
+          id: grant.id,
+          title: grant.title,
+          funder: grant.funder,
+          amount: grant.amountMax ? formatCurrency(grant.amountMax) : grant.amount,
+          deadline: grant.deadline ? new Date(grant.deadline) : null,
+        }}
+        hasProfile={hasProfile}
+        hasDocuments={hasDocuments}
+        applicationId={existingApplicationId}
+        onGenerate={(applicationId) => {
+          router.push(`/dashboard/applications/${applicationId}/draft`);
+        }}
+      />
     </div>
   );
 }

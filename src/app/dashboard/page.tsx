@@ -164,42 +164,42 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-400 mt-1">Welcome back! Here&apos;s your grant overview.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
+          <p className="text-slate-400 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
         </div>
-        <div className="flex gap-3">
-          <Link href="/dashboard/grants">
-            <Button variant="secondary">
-              <Search className="h-4 w-4 mr-2" />
-              Find Grants
+        <div className="flex gap-2 sm:gap-3">
+          <Link href="/dashboard/grants" className="flex-1 sm:flex-none">
+            <Button variant="secondary" className="w-full sm:w-auto text-sm sm:text-base">
+              <Search className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">Find</span> Grants
             </Button>
           </Link>
-          <Link href="/dashboard/documents">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Upload Document
+          <Link href="/dashboard/documents" className="flex-1 sm:flex-none">
+            <Button className="w-full sm:w-auto text-sm sm:text-base">
+              <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+              Upload
             </Button>
           </Link>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
         {statCards.map((stat) => (
           <Card key={stat.label}>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-slate-400 text-sm">{stat.label}</p>
-                  <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
-                  <p className="text-emerald-400 text-sm mt-1">{stat.change}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-slate-400 text-xs sm:text-sm truncate">{stat.label}</p>
+                  <p className="text-xl sm:text-3xl font-bold text-white mt-1">{stat.value}</p>
+                  <p className="text-emerald-400 text-xs sm:text-sm mt-1 truncate">{stat.change}</p>
                 </div>
-                <div className="bg-emerald-500/20 p-3 rounded-xl">
-                  <stat.icon className="h-6 w-6 text-emerald-400" />
+                <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0 ml-2">
+                  <stat.icon className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-400" />
                 </div>
               </div>
             </CardContent>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Recent Grants */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -315,46 +315,46 @@ export default function DashboardPage() {
       <Card className="mt-8">
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <Link
               href="/dashboard/organization"
-              className="flex flex-col items-center p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
             >
-              <div className="bg-emerald-500/20 p-3 rounded-xl mb-3">
-                <TrendingUp className="h-6 w-6 text-emerald-400" />
+              <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
               </div>
-              <span className="text-white font-medium">Complete Profile</span>
-              <span className="text-slate-500 text-sm mt-1">Improve match accuracy</span>
+              <span className="text-white font-medium text-sm sm:text-base">Complete Profile</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Improve match accuracy</span>
             </Link>
             <Link
               href="/dashboard/documents"
-              className="flex flex-col items-center p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
             >
-              <div className="bg-blue-500/20 p-3 rounded-xl mb-3">
-                <FileText className="h-6 w-6 text-blue-400" />
+              <div className="bg-blue-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               </div>
-              <span className="text-white font-medium">Upload Pitch Deck</span>
-              <span className="text-slate-500 text-sm mt-1">Auto-extract info</span>
+              <span className="text-white font-medium text-sm sm:text-base">Upload Docs</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Auto-extract info</span>
             </Link>
             <Link
               href="/dashboard/grants"
-              className="flex flex-col items-center p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
             >
-              <div className="bg-purple-500/20 p-3 rounded-xl mb-3">
-                <Search className="h-6 w-6 text-purple-400" />
+              <div className="bg-purple-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
               </div>
-              <span className="text-white font-medium">Discover Grants</span>
-              <span className="text-slate-500 text-sm mt-1">Find new opportunities</span>
+              <span className="text-white font-medium text-sm sm:text-base">Discover Grants</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Find opportunities</span>
             </Link>
             <Link
               href="/dashboard/applications"
-              className="flex flex-col items-center p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
             >
-              <div className="bg-amber-500/20 p-3 rounded-xl mb-3">
-                <Clock className="h-6 w-6 text-amber-400" />
+              <div className="bg-amber-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
               </div>
-              <span className="text-white font-medium">Track Deadlines</span>
-              <span className="text-slate-500 text-sm mt-1">Never miss a date</span>
+              <span className="text-white font-medium text-sm sm:text-base">Track Deadlines</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Never miss a date</span>
             </Link>
           </div>
         </CardContent>

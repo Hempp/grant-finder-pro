@@ -1,7 +1,97 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { calculateMatchScore } from "@/lib/grant-matcher";
+
+interface BulkGrant {
+  title: string;
+  funder: string;
+  description?: string;
+  amount?: string;
+  amountMin?: number | null;
+  amountMax?: number | null;
+  deadline?: string | null;
+  url?: string;
+  type?: string;
+  category?: string;
+  eligibility?: string;
+  state?: string;
+  tags?: string[];
+  source?: string;
+  agencyName?: string;
+  oppNumber?: string;
+}
+
+// POST - Bulk save grants
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const grants: BulkGrant[] = body.grants || [];
+
+    if (!grants.length) {
+      return NextResponse.json({ error: "No grants provided" }, { status: 400 });
+    }
+
+    let created = 0;
+    let skipped = 0;
+
+    for (const grant of grants) {
+      try {
+        // Check for existing grant by title + funder or oppNumber
+        const existing = await prisma.grant.findFirst({
+          where: {
+            OR: [
+              { title: grant.title, funder: grant.funder },
+              ...(grant.oppNumber ? [{ url: { contains: grant.oppNumber } }] : []),
+            ],
+          },
+        });
+
+        if (!existing) {
+          await prisma.grant.create({
+            data: {
+              title: grant.title,
+              funder: grant.funder,
+              description: grant.description || grant.title,
+              amount: grant.amount || "Varies",
+              amountMin: grant.amountMin,
+              amountMax: grant.amountMax,
+              deadline: grant.deadline ? new Date(grant.deadline) : null,
+              url: grant.url || "",
+              type: grant.type || "federal",
+              category: grant.category || "Research",
+              eligibility: grant.eligibility || "See grant details",
+              state: grant.state || "ALL",
+              tags: JSON.stringify(grant.tags || []),
+              source: grant.source || "api",
+              agencyName: grant.agencyName,
+              status: "discovered",
+              scrapedAt: new Date(),
+            },
+          });
+          created++;
+        } else {
+          skipped++;
+        }
+      } catch {
+        skipped++;
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      created,
+      skipped,
+      total: grants.length,
+    });
+  } catch (error) {
+    console.error("Bulk save failed:", error);
+    return NextResponse.json(
+      { error: "Bulk save failed", details: String(error) },
+      { status: 500 }
+    );
+  }
+}
 
 export async function GET() {
   try {

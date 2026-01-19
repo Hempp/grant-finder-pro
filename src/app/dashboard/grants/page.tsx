@@ -321,20 +321,20 @@ export default function GrantsPage() {
   const highMatchCount = grants.filter((g) => (g.matchScore || 0) >= 80).length;
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Grant Discovery</h1>
-          <p className="text-slate-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Grant Discovery</h1>
+          <p className="text-slate-400 mt-1 text-sm sm:text-base">
             {loading ? "Loading..." : `${grants.length} grants across all 50 states`}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <div className="relative group">
-            <Button variant="secondary" disabled={filteredGrants.length === 0}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
+            <Button variant="secondary" disabled={filteredGrants.length === 0} className="text-sm sm:text-base">
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
             <div className="absolute right-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
@@ -354,16 +354,17 @@ export default function GrantsPage() {
               </button>
             </div>
           </div>
-          <Button onClick={handleScan} disabled={scanning}>
+          <Button onClick={handleScan} disabled={scanning} className="text-sm sm:text-base">
             {scanning ? (
               <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Scanning...
+                <RefreshCw className="h-4 w-4 sm:mr-2 animate-spin" />
+                <span className="hidden sm:inline">Scanning...</span>
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Scan for New Grants
+                <Sparkles className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Scan for New Grants</span>
+                <span className="sm:hidden">Scan</span>
               </>
             )}
           </Button>
@@ -372,22 +373,22 @@ export default function GrantsPage() {
 
       {/* AI Matching Banner */}
       {!hasProfile ? (
-        <Card className="mb-6 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border-purple-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="bg-purple-500/20 p-3 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-purple-400" />
+        <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border-purple-500/30">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-between">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-purple-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">Unlock AI-Powered Grant Matching</h3>
-                  <p className="text-slate-400 text-sm">
-                    Complete your organization profile to get personalized match scores based on your mission, industry, and location.
+                  <h3 className="text-white font-semibold text-sm sm:text-base">Unlock AI-Powered Grant Matching</h3>
+                  <p className="text-slate-400 text-xs sm:text-sm">
+                    Complete your profile to get personalized match scores.
                   </p>
                 </div>
               </div>
-              <Link href="/dashboard/organization">
-                <Button>
+              <Link href="/dashboard/organization" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto text-sm">
                   Complete Profile
                 </Button>
               </Link>
@@ -395,17 +396,17 @@ export default function GrantsPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card className="mb-6 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-emerald-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="bg-emerald-500/20 p-3 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-emerald-400" />
+        <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-emerald-500/30">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-between">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">AI Matching Active</h3>
-                  <p className="text-slate-400 text-sm">
-                    Grants are personalized based on your organization profile. {highMatchCount} high-match opportunities found.
+                  <h3 className="text-white font-semibold text-sm sm:text-base">AI Matching Active</h3>
+                  <p className="text-slate-400 text-xs sm:text-sm">
+                    {highMatchCount} high-match opportunities found.
                   </p>
                 </div>
               </div>
@@ -413,6 +414,7 @@ export default function GrantsPage() {
                 variant="secondary"
                 onClick={recalculateMatches}
                 disabled={recalculating}
+                className="w-full sm:w-auto text-sm"
               >
                 {recalculating ? (
                   <>
@@ -422,7 +424,7 @@ export default function GrantsPage() {
                 ) : (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Recalculate Matches
+                    Recalculate
                   </>
                 )}
               </Button>
@@ -432,70 +434,71 @@ export default function GrantsPage() {
       )}
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
         <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-emerald-400 text-sm font-medium">Total Grants</p>
-                <p className="text-2xl font-bold text-white">{grants.length}</p>
+                <p className="text-emerald-400 text-xs sm:text-sm font-medium">Total Grants</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{grants.length}</p>
               </div>
-              <Globe className="h-8 w-8 text-emerald-500/50" />
+              <Globe className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-500/50" />
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-400 text-sm font-medium">Matching Results</p>
-                <p className="text-2xl font-bold text-white">{filteredGrants.length}</p>
+                <p className="text-blue-400 text-xs sm:text-sm font-medium">Matching</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{filteredGrants.length}</p>
               </div>
-              <Search className="h-8 w-8 text-blue-500/50" />
+              <Search className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500/50" />
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-400 text-sm font-medium">Saved Grants</p>
-                <p className="text-2xl font-bold text-white">{savedCount}</p>
+                <p className="text-amber-400 text-xs sm:text-sm font-medium">Saved</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{savedCount}</p>
               </div>
-              <Star className="h-8 w-8 text-amber-500/50" />
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500/50" />
             </div>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20">
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-400 text-sm font-medium">High Match (80%+)</p>
-                <p className="text-2xl font-bold text-white">{highMatchCount}</p>
+                <p className="text-purple-400 text-xs sm:text-sm font-medium">80%+ Match</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{highMatchCount}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-purple-500/50" />
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500/50" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <div className="flex gap-4">
+      <Card className="mb-4 sm:mb-6">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
               <input
                 type="text"
-                placeholder="Search grants by title, funder, keyword, or tag..."
+                placeholder="Search grants..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base"
               />
             </div>
             <Button
               variant="secondary"
               onClick={() => setShowFilters(!showFilters)}
+              className="w-full sm:w-auto"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -504,7 +507,7 @@ export default function GrantsPage() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-5 gap-4 mt-4 pt-4 border-t border-slate-700">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-4 pt-4 border-t border-slate-700">
               <Select
                 label="State"
                 options={US_STATES}
@@ -608,12 +611,12 @@ export default function GrantsPage() {
 
             return (
               <Card key={grant.id} className="hover:border-slate-600 transition">
-                <CardContent className="p-6">
-                  <div className="flex gap-6">
-                    {/* Match Score */}
-                    <div className="flex-shrink-0 text-center">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    {/* Match Score - hidden on mobile, shown inline in header */}
+                    <div className="hidden sm:block flex-shrink-0 text-center">
                       <div
-                        className={`w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold ${
+                        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold ${
                           (grant.matchScore || 0) >= 80
                             ? "bg-emerald-500/20 text-emerald-400 ring-2 ring-emerald-500/50"
                             : (grant.matchScore || 0) >= 60
@@ -628,17 +631,31 @@ export default function GrantsPage() {
 
                     {/* Grant Info */}
                     <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          {/* Mobile: Show match score inline */}
+                          <div className="flex items-center gap-2 sm:hidden mb-2">
+                            <div
+                              className={`px-2 py-1 rounded-full text-xs font-bold ${
+                                (grant.matchScore || 0) >= 80
+                                  ? "bg-emerald-500/20 text-emerald-400"
+                                  : (grant.matchScore || 0) >= 60
+                                  ? "bg-amber-500/20 text-amber-400"
+                                  : "bg-slate-700 text-slate-400"
+                              }`}
+                            >
+                              {grant.matchScore || 0}% Match
+                            </div>
+                          </div>
                           <h3
-                            className="text-xl font-semibold text-white hover:text-emerald-400 transition cursor-pointer"
+                            className="text-base sm:text-xl font-semibold text-white hover:text-emerald-400 transition cursor-pointer line-clamp-2"
                             onClick={() => setSelectedGrant(grant)}
                           >
                             {grant.title}
                           </h3>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <Building2 className="h-4 w-4 text-slate-500" />
-                            <span className="text-slate-400">{grant.funder}</span>
+                            <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
+                            <span className="text-slate-400 text-sm truncate max-w-[150px] sm:max-w-none">{grant.funder}</span>
                             <Badge
                               variant={
                                 grant.type === "federal"
@@ -653,7 +670,7 @@ export default function GrantsPage() {
                               {grant.type ? grant.type.charAt(0).toUpperCase() + grant.type.slice(1) : "Unknown"}
                             </Badge>
                             {grant.state && (
-                              <Badge variant="default" className="flex items-center gap-1">
+                              <Badge variant="default" className="hidden sm:flex items-center gap-1">
                                 <MapPin className="h-3 w-3" />
                                 {getStateName(grant.state)}
                               </Badge>
@@ -662,47 +679,47 @@ export default function GrantsPage() {
                         </div>
                         <button
                           onClick={() => toggleSave(grant.id, grant.status)}
-                          className={`p-2 rounded-lg transition ${
+                          className={`p-2 rounded-lg transition flex-shrink-0 ${
                             grant.status === "saved"
                               ? "bg-amber-500/20 text-amber-400"
                               : "bg-slate-800 text-slate-500 hover:text-white"
                           }`}
                         >
                           {grant.status === "saved" ? (
-                            <Star className="h-5 w-5 fill-current" />
+                            <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-current" />
                           ) : (
-                            <StarOff className="h-5 w-5" />
+                            <StarOff className="h-4 w-4 sm:h-5 sm:w-5" />
                           )}
                         </button>
                       </div>
 
-                      <p className="text-slate-400 mt-3 line-clamp-2">{grant.description}</p>
+                      <p className="text-slate-400 mt-2 sm:mt-3 line-clamp-2 text-sm sm:text-base">{grant.description}</p>
 
-                      <div className="flex items-center gap-6 mt-4 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-emerald-400" />
-                          <span className="text-white font-semibold">{grant.amount || "Varies"}</span>
+                      <div className="flex items-center gap-3 sm:gap-6 mt-3 sm:mt-4 flex-wrap">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-400" />
+                          <span className="text-white font-semibold text-sm sm:text-base">{grant.amount || "Varies"}</span>
                         </div>
                         {grant.deadline && (
-                          <div className="flex items-center gap-2">
-                            <Clock className={`h-4 w-4 ${isPast ? "text-slate-500" : isUrgent ? "text-red-400" : "text-slate-500"}`} />
-                            <span className={isPast ? "text-slate-500" : isUrgent ? "text-red-400 font-medium" : "text-slate-400"}>
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <Clock className={`h-3 w-3 sm:h-4 sm:w-4 ${isPast ? "text-slate-500" : isUrgent ? "text-red-400" : "text-slate-500"}`} />
+                            <span className={`text-sm sm:text-base ${isPast ? "text-slate-500" : isUrgent ? "text-red-400 font-medium" : "text-slate-400"}`}>
                               {isPast
-                                ? "Deadline passed"
+                                ? "Passed"
                                 : daysUntil === 0
-                                ? "Due today!"
-                                : `${daysUntil} days left`}
+                                ? "Today!"
+                                : `${daysUntil}d left`}
                             </span>
                           </div>
                         )}
                         {!grant.deadline && (
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-emerald-400" />
-                            <span className="text-emerald-400">Rolling deadline</span>
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-400" />
+                            <span className="text-emerald-400 text-sm sm:text-base">Rolling</span>
                           </div>
                         )}
                         {grant.eligibility && (
-                          <span className="text-slate-500 text-sm">{grant.eligibility.substring(0, 60)}...</span>
+                          <span className="text-slate-500 text-xs sm:text-sm hidden lg:inline">{grant.eligibility.substring(0, 60)}...</span>
                         )}
                       </div>
 
@@ -723,13 +740,13 @@ export default function GrantsPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-3 mt-4">
-                        <Button size="sm" onClick={() => setSelectedGrant(grant)}>
-                          View Details
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 sm:mt-4">
+                        <Button size="sm" onClick={() => setSelectedGrant(grant)} className="text-xs sm:text-sm">
+                          Details
                         </Button>
                         <Link href={`/dashboard/grants/${grant.id}/apply`}>
-                          <Button size="sm" variant="secondary">
-                            Start Application
+                          <Button size="sm" variant="secondary" className="text-xs sm:text-sm">
+                            Apply
                           </Button>
                         </Link>
                         {grant.url && (
@@ -737,7 +754,7 @@ export default function GrantsPage() {
                             href={grant.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-slate-400 hover:text-white text-sm transition"
+                            className="hidden sm:flex items-center gap-1 text-slate-400 hover:text-white text-sm transition"
                           >
                             <ExternalLink className="h-4 w-4" />
                             Official Site
@@ -765,11 +782,11 @@ export default function GrantsPage() {
 
       {/* Grant Detail Modal */}
       {selectedGrant && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <CardHeader className="flex flex-row items-start justify-between p-6 border-b border-slate-700">
-              <div>
-                <h2 className="text-2xl font-bold text-white">{selectedGrant.title}</h2>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
+          <Card className="max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-start justify-between p-4 sm:p-6 border-b border-slate-700">
+              <div className="flex-1 min-w-0 pr-3">
+                <h2 className="text-lg sm:text-2xl font-bold text-white line-clamp-2">{selectedGrant.title}</h2>
                 <div className="flex items-center gap-2 mt-2">
                   <Badge
                     variant={
@@ -802,26 +819,26 @@ export default function GrantsPage() {
                 <X className="h-5 w-5" />
               </button>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Match Score & Amount */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                  <div className={`text-3xl font-bold ${
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-4 text-center">
+                  <div className={`text-xl sm:text-3xl font-bold ${
                     (selectedGrant.matchScore || 0) >= 80 ? "text-emerald-400" :
                     (selectedGrant.matchScore || 0) >= 60 ? "text-amber-400" : "text-slate-400"
                   }`}>
                     {selectedGrant.matchScore || 0}%
                   </div>
-                  <p className="text-slate-400 text-sm mt-1">Match Score</p>
+                  <p className="text-slate-400 text-xs sm:text-sm mt-1">Match</p>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-emerald-400">
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-4 text-center">
+                  <div className="text-lg sm:text-3xl font-bold text-emerald-400 truncate">
                     {selectedGrant.amount || "Varies"}
                   </div>
-                  <p className="text-slate-400 text-sm mt-1">Funding Amount</p>
+                  <p className="text-slate-400 text-xs sm:text-sm mt-1">Amount</p>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-4 text-center">
-                  <div className={`text-3xl font-bold ${
+                <div className="bg-slate-800/50 rounded-lg p-2 sm:p-4 text-center">
+                  <div className={`text-xl sm:text-3xl font-bold ${
                     getDaysUntilDeadline(selectedGrant.deadline) !== null &&
                     getDaysUntilDeadline(selectedGrant.deadline)! <= 14
                       ? "text-red-400"
@@ -829,11 +846,11 @@ export default function GrantsPage() {
                   }`}>
                     {selectedGrant.deadline
                       ? getDaysUntilDeadline(selectedGrant.deadline) !== null && getDaysUntilDeadline(selectedGrant.deadline)! > 0
-                        ? `${getDaysUntilDeadline(selectedGrant.deadline)} days`
+                        ? `${getDaysUntilDeadline(selectedGrant.deadline)}d`
                         : "Passed"
                       : "Rolling"}
                   </div>
-                  <p className="text-slate-400 text-sm mt-1">Until Deadline</p>
+                  <p className="text-slate-400 text-xs sm:text-sm mt-1">Deadline</p>
                 </div>
               </div>
 
@@ -1009,43 +1026,47 @@ export default function GrantsPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-4 border-t border-slate-700">
                 <Link href={`/dashboard/grants/${selectedGrant.id}/apply`} className="flex-1">
-                  <Button className="w-full">
+                  <Button className="w-full text-sm sm:text-base">
                     Start Application
                   </Button>
                 </Link>
-                <Button
-                  variant="secondary"
-                  onClick={() => toggleSave(selectedGrant.id, selectedGrant.status)}
-                >
-                  {selectedGrant.status === "saved" ? (
-                    <>
-                      <Star className="h-4 w-4 mr-2 fill-current" />
-                      Saved
-                    </>
-                  ) : (
-                    <>
-                      <StarOff className="h-4 w-4 mr-2" />
-                      Save Grant
-                    </>
+                <div className="flex gap-2 sm:gap-3">
+                  <Button
+                    variant="secondary"
+                    onClick={() => toggleSave(selectedGrant.id, selectedGrant.status)}
+                    className="flex-1 sm:flex-none text-sm sm:text-base"
+                  >
+                    {selectedGrant.status === "saved" ? (
+                      <>
+                        <Star className="h-4 w-4 sm:mr-2 fill-current" />
+                        <span className="hidden sm:inline">Saved</span>
+                      </>
+                    ) : (
+                      <>
+                        <StarOff className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Save</span>
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => exportSingleGrantToPDF(selectedGrant)}
+                    className="flex-1 sm:flex-none text-sm sm:text-base"
+                  >
+                    <FileText className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">PDF</span>
+                  </Button>
+                  {selectedGrant.url && (
+                    <a href={selectedGrant.url} target="_blank" rel="noopener noreferrer" className="flex-1 sm:flex-none">
+                      <Button variant="secondary" className="w-full text-sm sm:text-base">
+                        <ExternalLink className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Link</span>
+                      </Button>
+                    </a>
                   )}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => exportSingleGrantToPDF(selectedGrant)}
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Export PDF
-                </Button>
-                {selectedGrant.url && (
-                  <a href={selectedGrant.url} target="_blank" rel="noopener noreferrer">
-                    <Button variant="secondary">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Official Site
-                    </Button>
-                  </a>
-                )}
+                </div>
               </div>
             </CardContent>
           </Card>
