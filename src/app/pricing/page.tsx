@@ -25,6 +25,7 @@ const plans = [
     name: "Free",
     description: "Get started with grant discovery",
     price: 0,
+    priceAnnual: 0,
     features: [
       { text: "3 grant matches per month", included: true },
       { text: "Basic search filters", included: true },
@@ -42,6 +43,7 @@ const plans = [
     name: "Pro",
     description: "For serious grant seekers",
     price: 49,
+    priceAnnual: 490,
     features: [
       { text: "Unlimited grant matches", included: true },
       { text: "Advanced AI matching", included: true },
@@ -59,6 +61,7 @@ const plans = [
     name: "Teams",
     description: "For organizations and consultants",
     price: 149,
+    priceAnnual: 1490,
     features: [
       { text: "Everything in Pro", included: true },
       { text: "Unlimited Auto-Apply drafts", included: true },
@@ -80,6 +83,7 @@ function PricingContent() {
   const { subscription, canStartTrial, startTrial, isOnTrial } = useSubscription();
   const [loading, setLoading] = useState<string | null>(null);
   const [trialStarted, setTrialStarted] = useState(false);
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
 
   const canceled = searchParams.get("canceled");
 
@@ -118,7 +122,7 @@ function PricingContent() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, interval: billingInterval }),
       });
 
       const data = await res.json();
@@ -202,6 +206,33 @@ function PricingContent() {
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Choose the plan that fits your needs. Upgrade or downgrade anytime.
           </p>
+
+          {/* Billing Toggle */}
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <button
+              onClick={() => setBillingInterval("monthly")}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                billingInterval === "monthly"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingInterval("annual")}
+              className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+                billingInterval === "annual"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Annual
+              <Badge variant="success" className="text-xs">
+                Save 17%
+              </Badge>
+            </button>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -230,8 +261,24 @@ function PricingContent() {
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-white">${plan.price}</span>
-                  <span className="text-slate-400">/month</span>
+                  {billingInterval === "monthly" ? (
+                    <>
+                      <span className="text-4xl font-bold text-white">${plan.price}</span>
+                      <span className="text-slate-400">/month</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-4xl font-bold text-white">
+                        ${plan.priceAnnual > 0 ? Math.round(plan.priceAnnual / 12) : 0}
+                      </span>
+                      <span className="text-slate-400">/month</span>
+                      {plan.priceAnnual > 0 && (
+                        <p className="text-sm text-emerald-400 mt-1">
+                          ${plan.priceAnnual}/year (2 months free)
+                        </p>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 <ul className="space-y-3 mb-6">

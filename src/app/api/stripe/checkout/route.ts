@@ -10,16 +10,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { plan } = await request.json();
+    const { plan, interval = "monthly" } = await request.json();
 
     if (!plan || !PLANS[plan as PlanType]) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
+    if (interval !== "monthly" && interval !== "annual") {
+      return NextResponse.json({ error: "Invalid billing interval" }, { status: 400 });
+    }
+
     const selectedPlan = PLANS[plan as PlanType];
 
-    if (!selectedPlan.priceId) {
-      return NextResponse.json({ error: "This plan has no price ID configured" }, { status: 400 });
+    // Get the correct price ID based on interval
+    const priceId = interval === "annual" && "priceIdAnnual" in selectedPlan
+      ? selectedPlan.priceIdAnnual
+      : selectedPlan.priceId;
+
+    if (!priceId) {
+      return NextResponse.json({ error: "This plan has no price ID configured for the selected interval" }, { status: 400 });
     }
 
     // Get or create Stripe customer
@@ -56,7 +65,7 @@ export async function POST(request: NextRequest) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price: selectedPlan.priceId,
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -65,11 +74,13 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId: user.id,
         plan: plan,
+        interval: interval,
       },
       subscription_data: {
         metadata: {
           userId: user.id,
           plan: plan,
+          interval: interval,
         },
       },
     });

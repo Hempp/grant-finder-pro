@@ -51,7 +51,9 @@ export const PLANS = {
     name: "Pro",
     description: "For serious grant seekers",
     price: 49,
+    priceAnnual: 490, // 2 months free
     priceId: process.env.STRIPE_PRO_PRICE_ID,
+    priceIdAnnual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID,
     features: [
       "Unlimited grant matches",
       "Advanced AI matching",
@@ -71,7 +73,9 @@ export const PLANS = {
     name: "Teams",
     description: "For organizations and consultants",
     price: 149,
+    priceAnnual: 1490, // 2 months free
     priceId: process.env.STRIPE_TEAMS_PRICE_ID,
+    priceIdAnnual: process.env.STRIPE_TEAMS_ANNUAL_PRICE_ID,
     features: [
       "Everything in Pro",
       "Unlimited Auto-Apply drafts",
@@ -94,6 +98,10 @@ export type PlanType = keyof typeof PLANS;
 export function getPlanByPriceId(priceId: string): PlanType | null {
   for (const [plan, config] of Object.entries(PLANS)) {
     if (config.priceId === priceId) {
+      return plan as PlanType;
+    }
+    // Check annual price ID
+    if ("priceIdAnnual" in config && config.priceIdAnnual === priceId) {
       return plan as PlanType;
     }
   }
