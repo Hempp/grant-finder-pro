@@ -14,6 +14,12 @@ import {
   Loader2,
   ChevronRight,
 } from "lucide-react";
+import {
+  ReferralHeroIllustration,
+  EmptyReferralsIllustration,
+  RewardBadgeIllustration,
+  ShareIllustration,
+} from "@/components/illustrations/ReferralIllustration";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -121,13 +127,14 @@ export default function ReferralsPage() {
         </p>
       </div>
 
-      {/* Reward Banner */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Reward Banner with Hero Illustration */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/20 via-purple-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 hidden lg:block">
+          <ReferralHeroIllustration className="w-80 h-60" />
+        </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-              <Sparkles className="h-7 w-7 text-emerald-400" />
-            </div>
+            <RewardBadgeIllustration className="w-16 h-16 flex-shrink-0" />
             <div>
               <h2 className="text-xl font-bold text-white">Give {data.rewards.refereeReward}, Get {data.rewards.referrerReward}</h2>
               <p className="text-slate-300">
@@ -135,7 +142,7 @@ export default function ReferralsPage() {
               </p>
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-right bg-slate-900/50 rounded-lg px-4 py-3">
             <p className="text-sm text-slate-400">Your available credits</p>
             <p className="text-3xl font-bold text-emerald-400">{data.stats.creditsAvailable}</p>
           </div>
@@ -143,14 +150,17 @@ export default function ReferralsPage() {
       </div>
 
       {/* Share Section */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6 mb-8">
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6 mb-8 relative overflow-hidden">
+        <div className="absolute right-4 top-4 opacity-20 hidden md:block">
+          <ShareIllustration className="w-32 h-28" />
+        </div>
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <Share2 className="h-5 w-5 text-purple-400" />
           Share Your Referral Link
         </h3>
 
         {/* Referral Link */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-6 relative z-10">
           <input
             type="text"
             value={data.referralLink}
@@ -238,7 +248,7 @@ export default function ReferralsPage() {
 
         {data.referrals.length === 0 ? (
           <div className="text-center py-12">
-            <Users className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+            <EmptyReferralsIllustration className="w-48 h-40 mx-auto mb-4" />
             <p className="text-slate-400 mb-2">No referrals yet</p>
             <p className="text-sm text-slate-500">
               Share your link to start earning bonus matches!
