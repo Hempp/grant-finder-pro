@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Sparkles,
   Loader2,
@@ -9,6 +10,8 @@ import {
   FileText,
   Building2,
   Clock,
+  Zap,
+  Lock,
 } from "lucide-react";
 import { Modal, ModalContent, ModalFooter, Button, Badge } from "@/components/ui";
 
@@ -20,6 +23,12 @@ interface Grant {
   deadline: Date | null;
 }
 
+interface SubscriptionInfo {
+  canUseAutoApply: boolean;
+  autoApplyRemaining: number | "unlimited";
+  plan: string;
+}
+
 interface AutoApplyModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +37,7 @@ interface AutoApplyModalProps {
   hasDocuments: boolean;
   applicationId?: string;
   onGenerate: (applicationId: string) => void;
+  subscription?: SubscriptionInfo;
 }
 
 type Step = "ready" | "generating" | "complete" | "error";
@@ -40,8 +50,13 @@ export default function AutoApplyModal({
   hasDocuments,
   applicationId,
   onGenerate,
+  subscription,
 }: AutoApplyModalProps) {
   const [step, setStep] = useState<Step>("ready");
+
+  // Check if user can use Auto-Apply
+  const canUseAutoApply = subscription?.canUseAutoApply ?? false;
+  const autoApplyRemaining = subscription?.autoApplyRemaining ?? 0;
   const [progress, setProgress] = useState(0);
   const [currentAction, setCurrentAction] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -93,6 +108,12 @@ export default function AutoApplyModal({
 
       if (!generateRes.ok) {
         const errData = await generateRes.json();
+        // Handle subscription-specific errors
+        if (errData.code === "UPGRADE_REQUIRED" || errData.code === "LIMIT_REACHED") {
+          setError(errData.error);
+          setStep("error");
+          return;
+        }
         throw new Error(errData.error || "Failed to generate application");
       }
 
@@ -130,6 +151,70 @@ export default function AutoApplyModal({
   const renderContent = () => {
     switch (step) {
       case "ready":
+        // Show upgrade prompt if user can't use Auto-Apply
+        if (!canUseAutoApply) {
+          return (
+            <>
+              <ModalContent>
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Lock className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Upgrade to Unlock Auto-Apply
+                  </h3>
+                  <p className="text-slate-400 text-sm">
+                    Auto-Apply uses AI to generate complete grant applications in seconds.
+                    Upgrade to Pro or Teams to access this powerful feature.
+                  </p>
+                </div>
+
+                {/* Feature Highlights */}
+                <div className="bg-slate-900/50 rounded-lg p-4 mb-6 space-y-3">
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                    <span className="text-slate-300">AI-generated narratives tailored to each grant</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                    <span className="text-slate-300">Auto-fills based on your profile & documents</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                    <span className="text-slate-300">Save hours of writing time per application</span>
+                  </div>
+                </div>
+
+                {/* Plan Comparison */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="p-3 bg-slate-700/30 rounded-lg text-center">
+                    <p className="text-emerald-400 font-semibold">Pro</p>
+                    <p className="text-slate-400 text-xs">5 drafts/month</p>
+                    <p className="text-white font-medium mt-1">$49/mo</p>
+                  </div>
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-center">
+                    <p className="text-cyan-400 font-semibold">Teams</p>
+                    <p className="text-slate-400 text-xs">Unlimited drafts</p>
+                    <p className="text-white font-medium mt-1">$149/mo</p>
+                  </div>
+                </div>
+              </ModalContent>
+
+              <ModalFooter>
+                <Button variant="ghost" onClick={onClose}>
+                  Maybe Later
+                </Button>
+                <Link href="/pricing">
+                  <Button>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Upgrade Now
+                  </Button>
+                </Link>
+              </ModalFooter>
+            </>
+          );
+        }
+
         return (
           <>
             <ModalContent>
@@ -144,6 +229,11 @@ export default function AutoApplyModal({
                   Our AI will analyze the grant requirements and generate a complete
                   application draft based on your profile and documents.
                 </p>
+                {autoApplyRemaining !== "unlimited" && (
+                  <p className="text-emerald-400 text-xs mt-2">
+                    {autoApplyRemaining} draft{autoApplyRemaining !== 1 ? "s" : ""} remaining this month
+                  </p>
+                )}
               </div>
 
               {/* Grant Info */}

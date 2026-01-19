@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input, Textarea, Select } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const steps = [
   { id: 1, name: "Project Summary", icon: FileText },
@@ -56,6 +58,7 @@ function formatCurrency(amount: number): string {
 export default function ApplyPage() {
   const params = useParams();
   const router = useRouter();
+  const { isPro, canUseFeature, canStartTrial } = useSubscription();
   const [grant, setGrant] = useState<Grant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +67,7 @@ export default function ApplyPage() {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   const [formData, setFormData] = useState({
     // Project Summary
@@ -128,6 +132,13 @@ export default function ApplyPage() {
 
   const generateWithAI = async (field: string, prompt: string) => {
     if (!grant) return;
+
+    // Check if user can use Auto-Apply feature
+    if (!canUseFeature("autoApply")) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+
     setGenerating(true);
 
     try {
@@ -333,6 +344,28 @@ ${formData.budgetJustification}
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full">
+            <UpgradePrompt
+              feature="AI-Powered Generation"
+              description={canStartTrial
+                ? "Start your 14-day free trial to unlock Auto-Apply and AI-powered content generation."
+                : "Upgrade to Pro to unlock Auto-Apply and AI-powered content generation."
+              }
+              variant="card"
+            />
+            <button
+              onClick={() => setShowUpgradePrompt(false)}
+              className="w-full mt-3 text-slate-400 hover:text-white text-sm py-2"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Back Button */}
       <Link
         href={`/dashboard/grants`}

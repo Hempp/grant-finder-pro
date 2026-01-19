@@ -17,6 +17,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { TrialBanner } from "@/components/subscription/TrialBanner";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -164,6 +165,7 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
+        <TrialBanner />
         {children}
       </main>
     </div>

@@ -19,11 +19,30 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // Email alert preferences
-  alertsEnabled   Boolean   @default(false)
-  alertFrequency  String    @default("daily") // daily, weekly, instant
-  alertCategories String?   // JSON array: ["AI", "healthcare", "climate", etc]
-  lastAlertSent   DateTime?
+  // Subscription & Billing
+  plan                  String    @default("free") // free, pro, teams
+  stripeCustomerId      String?   @unique
+  stripeSubscriptionId  String?   @unique
+  stripePriceId         String?
+  stripeCurrentPeriodEnd DateTime?
+
+  // Free Trial
+  trialEndsAt           DateTime?
+  hasUsedTrial          Boolean   @default(false)
+
+  // Usage tracking
+  matchesUsedThisMonth  Int       @default(0)
+  autoApplyUsedThisMonth Int      @default(0)
+  usageResetDate        DateTime  @default(now())
+
+  // Email notification preferences
+  alertsEnabled      Boolean   @default(true)
+  alertFrequency     String    @default("daily") // daily, weekly, instant
+  alertCategories    String?   // JSON array: ["AI", "healthcare", "climate", etc]
+  lastAlertSent      DateTime?
+  deadlineReminders  Boolean   @default(true)   // 7-day and 3-day deadline alerts
+  weeklyDigest       Boolean   @default(true)   // Weekly summary of new grants
+  trialReminders     Boolean   @default(true)   // Trial ending notifications
 
   accounts      Account[]
   sessions      Session[]

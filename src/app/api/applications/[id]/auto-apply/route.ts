@@ -7,6 +7,7 @@ import {
   gatherUserContext,
 } from "@/lib/auto-apply/grant-writer";
 import { GrantContext, UserContext } from "@/lib/auto-apply/types";
+import { PLANS, PlanType } from "@/lib/stripe";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -22,6 +23,70 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
     const userId = session.user.id;
+
+    // Check subscription and usage limits
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        plan: true,
+        autoApplyUsedThisMonth: true,
+        usageResetDate: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const plan = (user.plan as PlanType) || "free";
+    const planLimits = PLANS[plan].limits;
+
+    // Check if user has auto-apply access
+    if (planLimits.autoApplyPerMonth === 0) {
+      return NextResponse.json(
+        {
+          error: "Auto-Apply requires a Pro or Teams subscription",
+          code: "UPGRADE_REQUIRED"
+        },
+        { status: 403 }
+      );
+    }
+
+    // Check if user has reached their limit (if not unlimited)
+    if (planLimits.autoApplyPerMonth !== -1) {
+      // Check if usage needs reset
+      const now = new Date();
+      const resetDate = user.usageResetDate ? new Date(user.usageResetDate) : now;
+      const daysSinceReset = Math.floor(
+        (now.getTime() - resetDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      let currentUsage = user.autoApplyUsedThisMonth;
+
+      // Reset usage if needed
+      if (daysSinceReset >= 30) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            autoApplyUsedThisMonth: 0,
+            usageResetDate: now,
+          },
+        });
+        currentUsage = 0;
+      }
+
+      if (currentUsage >= planLimits.autoApplyPerMonth) {
+        return NextResponse.json(
+          {
+            error: `You've used all ${planLimits.autoApplyPerMonth} Auto-Apply drafts this month. Upgrade to Teams for unlimited.`,
+            code: "LIMIT_REACHED",
+            used: currentUsage,
+            limit: planLimits.autoApplyPerMonth
+          },
+          { status: 403 }
+        );
+      }
+    }
 
     // Fetch the application with grant details
     const application = await prisma.application.findUnique({
@@ -154,13 +219,21 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       },
     });
 
-    // Update application status
-    await prisma.application.update({
-      where: { id },
-      data: {
-        status: result.completionScore >= 80 ? "ready_for_review" : "in_progress",
-      },
-    });
+    // Update application status and increment usage counter
+    await Promise.all([
+      prisma.application.update({
+        where: { id },
+        data: {
+          status: result.completionScore >= 80 ? "ready_for_review" : "in_progress",
+        },
+      }),
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          autoApplyUsedThisMonth: { increment: 1 },
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       draft: {

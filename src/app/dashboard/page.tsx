@@ -17,6 +17,8 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Grant {
   id: string;
@@ -95,6 +97,7 @@ export default function DashboardPage() {
     inProgressCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const { isPro, canStartTrial } = useSubscription();
 
   useEffect(() => {
     async function fetchData() {
@@ -206,6 +209,20 @@ export default function DashboardPage() {
           </Card>
         ))}
       </div>
+
+      {/* Upgrade Prompt for Free Users */}
+      {!isPro && (
+        <div className="mb-6 sm:mb-8">
+          <UpgradePrompt
+            feature="Unlimited Grant Matches"
+            description={canStartTrial
+              ? "Start your 14-day free trial to unlock unlimited AI-powered grant matches and Auto-Apply."
+              : "Upgrade to Pro for unlimited AI-powered grant matches, Auto-Apply, and daily alerts."
+            }
+            variant="banner"
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Recent Grants */}

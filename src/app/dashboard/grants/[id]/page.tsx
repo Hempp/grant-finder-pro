@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { AutoApplyModal } from "@/components/auto-apply";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Grant {
   id: string;
@@ -75,6 +76,7 @@ function parseArrayField(field: string | string[] | null): string[] {
 export default function GrantDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { subscription, canUseFeature } = useSubscription();
   const [grant, setGrant] = useState<Grant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -557,6 +559,11 @@ export default function GrantDetailPage() {
         applicationId={existingApplicationId}
         onGenerate={(applicationId) => {
           router.push(`/dashboard/applications/${applicationId}/draft`);
+        }}
+        subscription={{
+          canUseAutoApply: canUseFeature("autoApply"),
+          autoApplyRemaining: subscription?.usage?.autoApplyRemaining ?? 0,
+          plan: subscription?.plan ?? "free",
         }}
       />
     </div>
