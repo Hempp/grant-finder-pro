@@ -593,7 +593,7 @@ async function autoFillField(
     const profileValue = getValueFromProfile(field, org);
     if (profileValue) {
       value = profileValue;
-      confidence = 90;
+      confidence = 0.90; // 90% confidence for profile data
       source = "profile";
     }
   }
@@ -603,7 +603,7 @@ async function autoFillField(
     const docValue = getValueFromDocuments(field, documentData);
     if (docValue) {
       value = docValue;
-      confidence = 75;
+      confidence = 0.75; // 75% confidence for document data
       source = "document";
     }
   }
@@ -613,7 +613,7 @@ async function autoFillField(
     const prevValue = getValueFromPreviousApps(field, userContext.previousApplications);
     if (prevValue) {
       value = prevValue;
-      confidence = 65;
+      confidence = 0.65; // 65% confidence for previous app data
       source = "previous";
     }
   }
