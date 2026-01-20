@@ -590,3 +590,153 @@ export async function sendWeeklyDigestEmail(
     throw error;
   }
 }
+
+// Payment failure notification email
+export async function sendPaymentFailedEmail(to: string, userName?: string) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log("RESEND_API_KEY not configured, skipping email");
+    return null;
+  }
+
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantfinder.pro";
+  const greeting = userName ? `Hi ${userName}` : "Hi there";
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; margin-top: 20px; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 32px 40px; text-align: center;">
+          <h1 style="color: white; font-size: 24px; margin: 0;">Payment Failed</h1>
+        </div>
+        <div style="padding: 32px 40px;">
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            ${greeting},
+          </p>
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            We were unable to process your payment for Grant Finder Pro. Your subscription may be interrupted if this isn't resolved soon.
+          </p>
+
+          <div style="background-color: #0f172a; border-radius: 8px; padding: 24px; margin: 24px 0;">
+            <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 16px;">What to do:</h3>
+            <ul style="color: #94a3b8; margin: 0; padding-left: 20px; line-height: 1.8;">
+              <li>Verify your payment method is up to date</li>
+              <li>Check that your card hasn't expired</li>
+              <li>Ensure sufficient funds are available</li>
+              <li>Contact your bank if the issue persists</li>
+            </ul>
+          </div>
+
+          <a href="${APP_URL}/dashboard/settings?tab=billing" style="display: block; margin-top: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px; text-align: center;">
+            Update Payment Method
+          </a>
+
+          <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin: 24px 0 0;">
+            If you need assistance, please contact our support team at support@grantfinder.pro
+          </p>
+        </div>
+        <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
+          <p style="color: #64748b; font-size: 12px; margin: 0;">
+            Grant Finder Pro - Funding your vision
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) return null;
+
+    const result = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
+      to,
+      subject: "Action Required: Payment Failed for Grant Finder Pro",
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to send payment failed email:", error);
+    throw error;
+  }
+}
+
+// Subscription canceled notification email
+export async function sendSubscriptionCanceledEmail(to: string, userName?: string) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log("RESEND_API_KEY not configured, skipping email");
+    return null;
+  }
+
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantfinder.pro";
+  const greeting = userName ? `Hi ${userName}` : "Hi there";
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; margin-top: 20px; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #64748b 0%, #475569 100%); padding: 32px 40px; text-align: center;">
+          <h1 style="color: white; font-size: 24px; margin: 0;">Subscription Canceled</h1>
+        </div>
+        <div style="padding: 32px 40px;">
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            ${greeting},
+          </p>
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            Your Grant Finder Pro subscription has been canceled. We're sorry to see you go!
+          </p>
+
+          <div style="background-color: #0f172a; border-radius: 8px; padding: 24px; margin: 24px 0;">
+            <h3 style="color: #e2e8f0; margin: 0 0 12px; font-size: 16px;">What happens now:</h3>
+            <ul style="color: #94a3b8; margin: 0; padding-left: 20px; line-height: 1.8;">
+              <li>Your account has been downgraded to the free plan</li>
+              <li>You'll have limited access to grant matching (5/month)</li>
+              <li>AI auto-apply features are no longer available</li>
+              <li>Your saved grants and applications remain accessible</li>
+            </ul>
+          </div>
+
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            Changed your mind? You can resubscribe anytime and pick up where you left off.
+          </p>
+
+          <a href="${APP_URL}/pricing" style="display: block; margin-top: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px; text-align: center;">
+            Resubscribe to Pro
+          </a>
+        </div>
+        <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
+          <p style="color: #64748b; font-size: 12px; margin: 0;">
+            We'd love to hear your feedback - reply to this email anytime.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) return null;
+
+    const result = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
+      to,
+      subject: "Your Grant Finder Pro subscription has been canceled",
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to send subscription canceled email:", error);
+    throw error;
+  }
+}

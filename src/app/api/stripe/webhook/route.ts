@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { getStripe, getPlanByPriceId } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import { sendPaymentFailedEmail, sendSubscriptionCanceledEmail } from "@/lib/email";
 import Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
@@ -115,6 +116,16 @@ export async function POST(request: NextRequest) {
           },
         });
 
+        // Send cancellation notification email
+        if (user.email) {
+          try {
+            await sendSubscriptionCanceledEmail(user.email, user.name || undefined);
+            console.log(`Cancellation email sent to ${user.email}`);
+          } catch (emailError) {
+            console.error(`Failed to send cancellation email to ${user.email}:`, emailError);
+          }
+        }
+
         console.log(`Subscription canceled for user ${user.id}`);
         break;
       }
@@ -157,7 +168,15 @@ export async function POST(request: NextRequest) {
           });
 
           if (user) {
-            // Could send email notification here
+            // Send payment failed email notification
+            if (user.email) {
+              try {
+                await sendPaymentFailedEmail(user.email, user.name || undefined);
+                console.log(`Payment failed email sent to ${user.email}`);
+              } catch (emailError) {
+                console.error(`Failed to send payment failed email to ${user.email}:`, emailError);
+              }
+            }
             console.log(`Payment failed for user ${user.id}`);
           }
         }

@@ -59,6 +59,15 @@ model User {
   documents     Document[]
   referralsSent Referral[]    @relation("ReferralsSent")
   referralsReceived Referral[] @relation("ReferralsReceived")
+
+  // Performance indexes
+  @@index([plan])
+  @@index([alertsEnabled, alertFrequency])
+  @@index([deadlineReminders])
+  @@index([weeklyDigest])
+  @@index([trialEndsAt, trialReminders, plan])
+  @@index([stripeCustomerId])
+  @@index([createdAt])
 }
 
 model Account {
@@ -124,6 +133,11 @@ model Organization {
   profileComplete Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Performance indexes
+  @@index([userId])
+  @@index([type])
+  @@index([profileComplete])
 }
 
 model Document {
@@ -142,6 +156,11 @@ model Document {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Performance indexes
+  @@index([userId])
+  @@index([type])
+  @@index([parsed])
 }
 
 model Grant {
@@ -187,6 +206,18 @@ model Grant {
   updatedAt       DateTime @updatedAt
 
   applications    Application[]
+
+  // Performance indexes for common queries
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([category])
+  @@index([deadline])
+  @@index([matchScore])
+  @@index([state])
+  @@index([createdAt])
+  @@index([title, funder])  // For upsert lookups
+  @@index([userId, status, matchScore])  // Composite for dashboard queries
 }
 
 model Application {
@@ -216,6 +247,13 @@ model Application {
 
   // Auto-apply draft
   draft           ApplicationDraft?
+
+  // Performance indexes
+  @@index([userId])
+  @@index([grantId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([userId, status])  // Composite for user's applications by status
 }
 
 // Stores the AI-generated draft for auto-apply feature
@@ -291,6 +329,12 @@ model Referral {
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Performance indexes
+  @@index([referrerId])
+  @@index([refereeId])
+  @@index([status])
+  @@index([createdAt])
 
   @@unique([referrerId, refereeId])
 }
