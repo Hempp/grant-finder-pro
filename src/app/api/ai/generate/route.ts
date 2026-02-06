@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -18,6 +20,18 @@ interface GenerateRequest {
 // AI content generation endpoint using Claude API
 export async function POST(request: NextRequest) {
   try {
+    // Auth check
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 requests per minute for AI operations
+    const rateLimitResult = await rateLimit("ai", `user:${session.user.id}`);
+    if (!rateLimitResult.success && rateLimitResult.response) {
+      return rateLimitResult.response;
+    }
+
     const body: GenerateRequest = await request.json();
     const { field, context, grantInfo, organizationInfo } = body;
 

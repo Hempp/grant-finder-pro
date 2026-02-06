@@ -12,11 +12,14 @@ import {
   Plus,
   CheckCircle,
   AlertCircle,
-  Loader2,
+  Sparkles,
+  Target,
+  Calendar,
 } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui";
+import { Card, CardContent, CardHeader, StatsCard } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Skeleton, SkeletonGrantCard } from "@/components/ui/skeleton";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
 
@@ -86,6 +89,36 @@ function calculateApplicationProgress(app: Application): number {
   return Math.round((filled / fields.length) * 100);
 }
 
+function getDeadlineStatus(deadline: string): { label: string; color: string } {
+  const daysUntil = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  if (daysUntil < 0) return { label: "Expired", color: "text-slate-500" };
+  if (daysUntil <= 7) return { label: `${daysUntil}d left`, color: "text-red-400" };
+  if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: "text-amber-400" };
+  return { label: `${daysUntil}d left`, color: "text-slate-400" };
+}
+
+// Loading skeleton for stats
+function StatsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i}>
+          <CardContent className="p-3 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 space-y-2">
+                <Skeleton width="60%" height={14} />
+                <Skeleton width="40%" height={32} />
+                <Skeleton width="80%" height={14} />
+              </div>
+              <Skeleton variant="circle" width={48} height={48} />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [grants, setGrants] = useState<Grant[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -151,27 +184,15 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
-      </div>
-    );
-  }
-
-  const statCards = [
-    { label: "Grants Found", value: String(stats.grantsFound), icon: Search, change: "Available opportunities" },
-    { label: "Applications", value: String(stats.applicationsCount), icon: FileText, change: `${stats.inProgressCount} in progress` },
-    { label: "Total Requested", value: formatCurrency(stats.totalRequested), icon: DollarSign, change: `Across ${stats.applicationsCount} apps` },
-    { label: "Match Score Avg", value: `${stats.avgMatchScore}%`, icon: TrendingUp, change: stats.avgMatchScore >= 70 ? "Above average" : "Build your profile" },
-  ];
-
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+            Dashboard
+            <Sparkles className="h-6 w-6 text-emerald-400" />
+          </h1>
           <p className="text-slate-400 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
         </div>
         <div className="flex gap-2 sm:gap-3">
@@ -182,7 +203,7 @@ export default function DashboardPage() {
             </Button>
           </Link>
           <Link href="/dashboard/documents" className="flex-1 sm:flex-none">
-            <Button className="w-full sm:w-auto text-sm sm:text-base">
+            <Button variant="gradient" className="w-full sm:w-auto text-sm sm:text-base">
               <Plus className="h-4 w-4 mr-1 sm:mr-2" />
               Upload
             </Button>
@@ -191,28 +212,41 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-        {statCards.map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="p-3 sm:p-6">
-              <div className="flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="text-slate-400 text-xs sm:text-sm truncate">{stat.label}</p>
-                  <p className="text-xl sm:text-3xl font-bold text-white mt-1">{stat.value}</p>
-                  <p className="text-emerald-400 text-xs sm:text-sm mt-1 truncate">{stat.change}</p>
-                </div>
-                <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0 ml-2">
-                  <stat.icon className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {loading ? (
+        <StatsSkeleton />
+      ) : (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <StatsCard
+            title="Grants Found"
+            value={stats.grantsFound}
+            description="Available opportunities"
+            icon={<Search className="h-6 w-6" />}
+          />
+          <StatsCard
+            title="Applications"
+            value={stats.applicationsCount}
+            description={`${stats.inProgressCount} in progress`}
+            icon={<FileText className="h-6 w-6" />}
+          />
+          <StatsCard
+            title="Total Requested"
+            value={formatCurrency(stats.totalRequested)}
+            description={`Across ${stats.applicationsCount} apps`}
+            icon={<DollarSign className="h-6 w-6" />}
+          />
+          <StatsCard
+            title="Match Score"
+            value={`${stats.avgMatchScore}%`}
+            description={stats.avgMatchScore >= 70 ? "Above average" : "Build your profile"}
+            trend={stats.avgMatchScore >= 70 ? { value: 12, isPositive: true, label: "vs last month" } : undefined}
+            icon={<Target className="h-6 w-6" />}
+          />
+        </div>
+      )}
 
       {/* Upgrade Prompt for Free Users */}
-      {!isPro && (
-        <div className="mb-6 sm:mb-8">
+      {!isPro && !loading && (
+        <div className="mb-6 sm:mb-8 animate-fade-in-up">
           <UpgradePrompt
             feature="Unlimited Grant Matches"
             description={canStartTrial
@@ -226,96 +260,171 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Recent Grants */}
-        <Card>
+        <Card variant="elevated" hover glow>
           <CardHeader className="flex flex-row items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Top Matching Grants</h2>
-            <Link href="/dashboard/grants" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1">
-              View all <ArrowRight className="h-4 w-4" />
+            <div className="flex items-center gap-2">
+              <div className="bg-emerald-500/20 p-2 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-emerald-400" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">Top Matching Grants</h2>
+            </div>
+            <Link href="/dashboard/grants" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1 group">
+              View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </CardHeader>
           <CardContent className="space-y-4">
-            {grants.length === 0 ? (
-              <p className="text-slate-400 text-center py-8">No grants found. Complete your profile to get personalized matches.</p>
-            ) : (
-              grants.map((grant) => (
-                <Link
-                  key={grant.id}
-                  href={`/dashboard/grants/${grant.id}/apply`}
-                  className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition block"
-                >
-                  <div className="flex-1">
-                    <h3 className="text-white font-medium">{grant.title}</h3>
-                    <p className="text-slate-400 text-sm">{grant.funder}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="text-emerald-400 font-semibold">{formatCurrency(grant.amount)}</span>
-                      <span className="text-slate-500 text-sm flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {new Date(grant.deadline).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-emerald-400">{grant.matchScore || 0}%</div>
-                    <div className="text-slate-500 text-xs">Match</div>
-                  </div>
+            {loading ? (
+              <>
+                <SkeletonGrantCard />
+                <SkeletonGrantCard />
+              </>
+            ) : grants.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-slate-800/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-slate-600" />
+                </div>
+                <p className="text-slate-400 mb-2">No grants found yet</p>
+                <p className="text-slate-500 text-sm mb-4">Complete your profile to get personalized matches.</p>
+                <Link href="/dashboard/organization">
+                  <Button variant="outline" size="sm">
+                    Complete Profile
+                  </Button>
                 </Link>
-              ))
+              </div>
+            ) : (
+              grants.map((grant, index) => {
+                const deadline = getDeadlineStatus(grant.deadline);
+                return (
+                  <Link
+                    key={grant.id}
+                    href={`/dashboard/grants/${grant.id}/apply`}
+                    className="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 block border border-transparent hover:border-slate-700 group"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-medium truncate group-hover:text-emerald-400 transition-colors">{grant.title}</h3>
+                      <p className="text-slate-400 text-sm truncate">{grant.funder}</p>
+                      <div className="flex items-center gap-4 mt-2">
+                        <span className="text-emerald-400 font-semibold">{formatCurrency(grant.amount)}</span>
+                        <span className={`text-sm flex items-center gap-1 ${deadline.color}`}>
+                          <Clock className="h-3 w-3" />
+                          {deadline.label}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-center ml-4">
+                      <div className="relative">
+                        <svg className="w-16 h-16 transform -rotate-90">
+                          <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" />
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                            strokeDasharray={`${(grant.matchScore || 0) * 1.76} 176`}
+                            className="text-emerald-400"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-lg font-bold text-emerald-400">{grant.matchScore || 0}%</span>
+                        </div>
+                      </div>
+                      <div className="text-slate-500 text-xs mt-1">Match</div>
+                    </div>
+                  </Link>
+                );
+              })
             )}
           </CardContent>
         </Card>
 
         {/* Recent Applications */}
-        <Card>
+        <Card variant="elevated" hover glow glowColor="purple">
           <CardHeader className="flex flex-row items-center justify-between">
-            <h2 className="text-xl font-semibold text-white">Recent Applications</h2>
-            <Link href="/dashboard/applications" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1">
-              View all <ArrowRight className="h-4 w-4" />
+            <div className="flex items-center gap-2">
+              <div className="bg-purple-500/20 p-2 rounded-lg">
+                <FileText className="h-5 w-5 text-purple-400" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">Recent Applications</h2>
+            </div>
+            <Link href="/dashboard/applications" className="text-purple-400 hover:text-purple-300 text-sm flex items-center gap-1 group">
+              View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </CardHeader>
           <CardContent className="space-y-4">
-            {applications.length === 0 ? (
-              <p className="text-slate-400 text-center py-8">No applications yet. Start by applying to a grant!</p>
+            {loading ? (
+              <>
+                <SkeletonGrantCard />
+                <SkeletonGrantCard />
+              </>
+            ) : applications.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-slate-800/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FileText className="h-8 w-8 text-slate-600" />
+                </div>
+                <p className="text-slate-400 mb-2">No applications yet</p>
+                <p className="text-slate-500 text-sm mb-4">Start by applying to a matching grant!</p>
+                <Link href="/dashboard/grants">
+                  <Button variant="outline" size="sm">
+                    Browse Grants
+                  </Button>
+                </Link>
+              </div>
             ) : (
-              applications.map((app) => {
+              applications.map((app, index) => {
                 const progress = calculateApplicationProgress(app);
+                const deadline = getDeadlineStatus(app.grant.deadline);
                 return (
                   <div
                     key={app.id}
-                    className="p-4 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition"
+                    className="p-4 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 border border-transparent hover:border-slate-700"
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-white font-medium">{app.grant.title}</h3>
+                      <h3 className="text-white font-medium truncate flex-1">{app.grant.title}</h3>
                       <Badge variant={statusColors[app.status] || "default"}>
                         {statusLabels[app.status]}
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex-1 mr-4">
                         <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-emerald-500 rounded-full transition-all"
+                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
                       </div>
-                      <span className="text-slate-400 text-sm">{progress}%</span>
+                      <span className="text-slate-400 text-sm font-medium">{progress}%</span>
                     </div>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="text-slate-500 text-sm flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                    <div className="flex items-center justify-between">
+                      <span className={`text-sm flex items-center gap-1 ${deadline.color}`}>
+                        <Calendar className="h-3 w-3" />
                         Due {new Date(app.grant.deadline).toLocaleDateString()}
                       </span>
                       {app.status === "ready_for_review" && (
-                        <Button size="sm" variant="ghost" className="text-emerald-400">
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Review
-                        </Button>
+                        <Link href={`/dashboard/applications/${app.id}`}>
+                          <Button size="sm" variant="ghost" className="text-emerald-400 hover:text-emerald-300">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Review
+                          </Button>
+                        </Link>
                       )}
                       {app.status === "in_progress" && (
                         <Link href={`/dashboard/grants/${app.grant.id}/apply`}>
-                          <Button size="sm" variant="ghost" className="text-amber-400">
+                          <Button size="sm" variant="ghost" className="text-amber-400 hover:text-amber-300">
                             <AlertCircle className="h-4 w-4 mr-1" />
                             Continue
+                          </Button>
+                        </Link>
+                      )}
+                      {app.status === "draft" && (
+                        <Link href={`/dashboard/grants/${app.grant.id}/apply`}>
+                          <Button size="sm" variant="ghost" className="text-slate-400 hover:text-white">
+                            <ArrowRight className="h-4 w-4 mr-1" />
+                            Start
                           </Button>
                         </Link>
                       )}
@@ -329,50 +438,31 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="mt-8">
+      <Card className="mt-8" variant="gradient">
         <CardContent className="p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-emerald-400" />
+            Quick Actions
+          </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <Link
-              href="/dashboard/organization"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
-            >
-              <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
-                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Complete Profile</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Improve match accuracy</span>
-            </Link>
-            <Link
-              href="/dashboard/documents"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
-            >
-              <div className="bg-blue-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
-                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Upload Docs</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Auto-extract info</span>
-            </Link>
-            <Link
-              href="/dashboard/grants"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
-            >
-              <div className="bg-purple-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
-                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Discover Grants</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Find opportunities</span>
-            </Link>
-            <Link
-              href="/dashboard/applications"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-900 transition text-center"
-            >
-              <div className="bg-amber-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3">
-                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Track Deadlines</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Never miss a date</span>
-            </Link>
+            {[
+              { href: "/dashboard/organization", icon: TrendingUp, label: "Complete Profile", desc: "Improve match accuracy", color: "emerald" },
+              { href: "/dashboard/documents", icon: FileText, label: "Upload Docs", desc: "Auto-extract info", color: "blue" },
+              { href: "/dashboard/grants", icon: Search, label: "Discover Grants", desc: "Find opportunities", color: "purple" },
+              { href: "/dashboard/applications", icon: Clock, label: "Track Deadlines", desc: "Never miss a date", color: "amber" },
+            ].map((action) => (
+              <Link
+                key={action.href}
+                href={action.href}
+                className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 text-center border border-transparent hover:border-slate-700 group hover:-translate-y-1"
+              >
+                <div className={`bg-${action.color}-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}>
+                  <action.icon className={`h-5 w-5 sm:h-6 sm:w-6 text-${action.color}-400`} />
+                </div>
+                <span className="text-white font-medium text-sm sm:text-base">{action.label}</span>
+                <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">{action.desc}</span>
+              </Link>
+            ))}
           </div>
         </CardContent>
       </Card>

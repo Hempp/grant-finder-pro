@@ -2,9 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { generateReferralCode, REFERRAL_CONFIG } from "@/lib/referral";
+import { rateLimit, getIdentifier } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 requests per minute for auth endpoints
+    const identifier = await getIdentifier();
+    const rateLimitResult = await rateLimit("auth", identifier);
+    if (!rateLimitResult.success && rateLimitResult.response) {
+      return rateLimitResult.response;
+    }
+
     const body = await request.json();
     const { email, password, name, referralCode } = body;
 

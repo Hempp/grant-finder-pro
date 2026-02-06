@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { calculateMatchScore, getTopMatches } from "@/lib/grant-matcher";
+import { rateLimit, getIdentifier } from "@/lib/rate-limit";
 
 /**
  * POST /api/grants/match
@@ -15,6 +16,12 @@ export async function POST() {
         { error: "Unauthorized" },
         { status: 401 }
       );
+    }
+
+    // Rate limit: 10 requests per minute for AI operations
+    const rateLimitResult = await rateLimit("ai", `user:${session.user.id}`);
+    if (!rateLimitResult.success && rateLimitResult.response) {
+      return rateLimitResult.response;
     }
 
     // Get user's organization profile
