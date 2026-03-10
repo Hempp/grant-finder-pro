@@ -48,6 +48,10 @@ interface Application {
   createdAt: string;
   updatedAt: string;
   submittedAt?: string;
+  outcomeReportedAt?: string | null;
+  outcomeNotes?: string | null;
+  feedbackReceived?: string | null;
+  awardAmount?: number | null;
   grant: {
     id: string;
     title: string;
@@ -113,6 +117,13 @@ export default function ApplicationDetailPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+
+  // Outcome modal state
+  const [showOutcomeModal, setShowOutcomeModal] = useState(false);
+  const [outcomeResult, setOutcomeResult] = useState<"awarded" | "rejected" | "no_response" | null>(null);
+  const [outcomeNotes, setOutcomeNotes] = useState("");
+  const [outcomeFeedback, setOutcomeFeedback] = useState("");
+  const [submittingOutcome, setSubmittingOutcome] = useState(false);
 
   const [formData, setFormData] = useState<FormData>({
     projectTitle: "",
@@ -338,6 +349,38 @@ ${formData.budgetJustification}
     }
   };
 
+  const handleOutcomeSubmit = async () => {
+    if (!application || !outcomeResult) return;
+    setSubmittingOutcome(true);
+
+    try {
+      const res = await fetch(`/api/applications/${application.id}/outcome`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          result: outcomeResult,
+          notes: outcomeNotes || undefined,
+          feedback: outcomeFeedback || undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to report outcome");
+      }
+
+      const data = await res.json();
+      setApplication({ ...application, ...data.application });
+      setShowOutcomeModal(false);
+      setOutcomeResult(null);
+      setOutcomeNotes("");
+      setOutcomeFeedback("");
+    } catch (err) {
+      console.error("Failed to submit outcome:", err);
+    } finally {
+      setSubmittingOutcome(false);
+    }
+  };
+
   const renderAIButton = (field: string) => (
     <Button
       type="button"
@@ -469,6 +512,131 @@ ${formData.budgetJustification}
             )}
           </div>
         </div>
+
+        {/* Outcome Reporting Banner */}
+        {application.status === "submitted" &&
+          !application.outcomeReportedAt &&
+          new Date(application.grant.deadline) < new Date() && (
+            <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h3 className="text-amber-400 font-semibold text-sm sm:text-base">
+                    Have you heard back?
+                  </h3>
+                  <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                    The deadline has passed. Let us know the outcome to help improve recommendations for you and others.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowOutcomeModal(true)}
+                  className="self-start sm:self-center flex-shrink-0"
+                >
+                  Report Outcome
+                </Button>
+              </div>
+            </div>
+          )}
+
+        {/* Outcome Modal */}
+        {showOutcomeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            <div className="w-full max-w-lg rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6 shadow-xl">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
+                Report Outcome
+              </h2>
+
+              <p className="text-slate-400 text-xs sm:text-sm mb-4">
+                What was the result of your application for &quot;{application.grant.title}&quot;?
+              </p>
+
+              {/* Result Buttons */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
+                <button
+                  onClick={() => setOutcomeResult("awarded")}
+                  className={`flex-1 rounded-lg px-4 py-3 text-sm font-medium border transition ${
+                    outcomeResult === "awarded"
+                      ? "bg-emerald-500/20 border-emerald-500 text-emerald-400"
+                      : "border-slate-600 text-slate-400 hover:border-emerald-500/50"
+                  }`}
+                >
+                  Awarded
+                </button>
+                <button
+                  onClick={() => setOutcomeResult("rejected")}
+                  className={`flex-1 rounded-lg px-4 py-3 text-sm font-medium border transition ${
+                    outcomeResult === "rejected"
+                      ? "bg-red-500/20 border-red-500 text-red-400"
+                      : "border-slate-600 text-slate-400 hover:border-red-500/50"
+                  }`}
+                >
+                  Rejected
+                </button>
+                <button
+                  onClick={() => setOutcomeResult("no_response")}
+                  className={`flex-1 rounded-lg px-4 py-3 text-sm font-medium border transition ${
+                    outcomeResult === "no_response"
+                      ? "bg-slate-500/20 border-slate-400 text-slate-300"
+                      : "border-slate-600 text-slate-400 hover:border-slate-400/50"
+                  }`}
+                >
+                  No Response
+                </button>
+              </div>
+
+              {/* Notes */}
+              <div className="mb-3">
+                <label className="block text-sm font-medium text-slate-300 mb-1">
+                  Notes (optional)
+                </label>
+                <textarea
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  rows={3}
+                  placeholder="Any notes about the outcome..."
+                  value={outcomeNotes}
+                  onChange={(e) => setOutcomeNotes(e.target.value)}
+                />
+              </div>
+
+              {/* Feedback */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-300 mb-1">
+                  Feedback received (optional)
+                </label>
+                <textarea
+                  className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  rows={3}
+                  placeholder="Any feedback from the funder..."
+                  value={outcomeFeedback}
+                  onChange={(e) => setOutcomeFeedback(e.target.value)}
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setShowOutcomeModal(false);
+                    setOutcomeResult(null);
+                    setOutcomeNotes("");
+                    setOutcomeFeedback("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleOutcomeSubmit}
+                  disabled={!outcomeResult || submittingOutcome}
+                >
+                  {submittingOutcome ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : null}
+                  {submittingOutcome ? "Submitting..." : "Submit Outcome"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Application Details */}
         <div className="space-y-6">
