@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import {
+  calculateReadinessScore,
+  type DocumentSummary,
+} from "@/lib/readiness-score";
 
 // GET - Fetch organization for current user
 export async function GET() {
@@ -53,6 +57,43 @@ export async function POST(request: NextRequest) {
         profileComplete: isProfileComplete(body),
       },
     });
+
+    // Auto-calculate readiness score after profile save
+    try {
+      const documents = await prisma.document.findMany({
+        where: { userId },
+        select: { type: true },
+      });
+      const docTypes = new Set(documents.map((d) => d.type));
+      const docs: DocumentSummary = {
+        hasPitchDeck: docTypes.has("pitch_deck"),
+        hasFinancials: docTypes.has("financials"),
+        hasBusinessPlan: docTypes.has("business_plan"),
+        totalDocuments: documents.length,
+      };
+
+      const [totalApps, awardedApps] = await Promise.all([
+        prisma.application.count({ where: { userId } }),
+        prisma.application.count({ where: { userId, status: "awarded" } }),
+      ]);
+
+      const readiness = calculateReadinessScore(organization, docs, {
+        total: totalApps,
+        awarded: awardedApps,
+      });
+
+      await prisma.organization.update({
+        where: { userId },
+        data: {
+          readinessScore: readiness.score,
+          readinessDetails: JSON.stringify(readiness.breakdown),
+          lastAssessedAt: new Date(),
+        },
+      });
+    } catch (readinessError) {
+      console.error("Failed to calculate readiness score:", readinessError);
+      // Non-blocking — profile save still succeeds
+    }
 
     return NextResponse.json(organization);
   } catch (error) {
