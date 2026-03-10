@@ -165,6 +165,56 @@ export async function GET() {
       };
     });
 
+    // Apply outcome-based match boosts if user has an organization
+    if (organization) {
+      const grantIds = grantsWithScores.map((g) => g.id);
+
+      const outcomes = await prisma.grantOutcome.findMany({
+        where: { grantId: { in: grantIds } },
+        select: { grantId: true, result: true, orgType: true, orgState: true, teamSize: true },
+      });
+
+      if (outcomes.length > 0) {
+        // Group outcomes by grantId
+        const outcomesByGrant = new Map<string, typeof outcomes>();
+        for (const o of outcomes) {
+          const existing = outcomesByGrant.get(o.grantId) || [];
+          existing.push(o);
+          outcomesByGrant.set(o.grantId, existing);
+        }
+
+        for (const grant of grantsWithScores) {
+          const grantOutcomes = outcomesByGrant.get(grant.id);
+          if (!grantOutcomes) continue;
+
+          // Find similar-org outcomes (at least 1 matching attribute)
+          const similarOutcomes = grantOutcomes.filter((o) => {
+            let matches = 0;
+            if (organization.type && o.orgType === organization.type) matches++;
+            if (organization.state && o.orgState === organization.state) matches++;
+            if (organization.teamSize && o.teamSize === organization.teamSize) matches++;
+            return matches >= 1;
+          });
+
+          if (similarOutcomes.length >= 2) {
+            const awarded = similarOutcomes.filter((o) => o.result === "awarded").length;
+            const winRate = awarded / similarOutcomes.length;
+
+            let matchBoost = 0;
+            if (winRate > 0.5) {
+              matchBoost = Math.round(5 + winRate * 5); // +5 to +10
+            } else if (winRate < 0.2) {
+              matchBoost = -5;
+            }
+
+            if (matchBoost !== 0 && grant.matchScore != null) {
+              grant.matchScore = Math.max(0, Math.min(100, grant.matchScore + matchBoost));
+            }
+          }
+        }
+      }
+    }
+
     // Sort by personalized match score
     grantsWithScores.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
 

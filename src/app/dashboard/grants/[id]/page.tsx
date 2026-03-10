@@ -22,6 +22,11 @@ import {
   Globe,
   MapPin,
   Sparkles,
+  Brain,
+  TrendingUp,
+  Info,
+  BarChart3,
+  Shield,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -85,6 +90,11 @@ export default function GrantDetailPage() {
   const [hasProfile, setHasProfile] = useState(false);
   const [hasDocuments, setHasDocuments] = useState(false);
   const [existingApplicationId, setExistingApplicationId] = useState<string | undefined>(undefined);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [insights, setInsights] = useState<any>(null);
 
   // Fetch user readiness (profile & documents)
   useEffect(() => {
@@ -145,6 +155,62 @@ export default function GrantDetailPage() {
       fetchGrant();
     }
   }, [params.id]);
+
+  // Fetch existing analysis and insights
+  useEffect(() => {
+    if (!params.id) return;
+
+    async function fetchAnalysis() {
+      try {
+        const res = await fetch(`/api/grants/${params.id}/analyze`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.analyzed) {
+            setAnalysis(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch analysis:", err);
+      }
+    }
+
+    async function fetchInsights() {
+      try {
+        const res = await fetch(`/api/grants/${params.id}/insights`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasData) {
+            setInsights(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch insights:", err);
+      }
+    }
+
+    fetchAnalysis();
+    fetchInsights();
+  }, [params.id]);
+
+  const handleAnalyze = async () => {
+    if (!params.id) return;
+    setAnalyzing(true);
+    try {
+      const res = await fetch(`/api/grants/${params.id}/analyze`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setAnalysis(data);
+      } else {
+        console.error("Analysis failed:", data.error);
+      }
+    } catch (err) {
+      console.error("Analysis request failed:", err);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -397,6 +463,186 @@ export default function GrantDetailPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* AI Analysis Section */}
+          {!analysis && subscription?.plan !== "free" && (
+            <Card className="border-dashed border-emerald-500/30">
+              <CardContent className="p-4 sm:p-6 text-center">
+                <Brain className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-white mb-2">AI Application Intelligence</h3>
+                <p className="text-slate-400 text-xs sm:text-sm mb-4">
+                  Analyze this grant to uncover scoring criteria, required sections, and eligibility requirements.
+                </p>
+                <Button
+                  onClick={handleAnalyze}
+                  disabled={analyzing}
+                  className="w-full sm:w-auto"
+                >
+                  {analyzing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="h-4 w-4 mr-2" />
+                      Analyze Grant
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {analysis?.analyzed && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-emerald-400" />
+                    AI Application Intelligence
+                  </h2>
+                  <Badge variant={analysis.confidence >= 70 ? "success" : analysis.confidence >= 40 ? "warning" : "default"}>
+                    {analysis.confidence}% confidence
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Scoring Criteria */}
+                {analysis.scoringCriteria?.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-emerald-400" />
+                      Scoring Criteria
+                    </h3>
+                    <div className="space-y-3">
+                      {analysis.scoringCriteria.map((criterion: { name: string; maxPoints: number; description: string; weight: number }, idx: number) => {
+                        const barColor = criterion.weight >= 0.3 ? "bg-emerald-500" : criterion.weight >= 0.15 ? "bg-amber-500" : "bg-slate-500";
+                        return (
+                          <div key={idx}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-slate-300 text-xs sm:text-sm">{criterion.name}</span>
+                              <span className="text-slate-400 text-xs">{criterion.maxPoints} pts</span>
+                            </div>
+                            <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full ${barColor} rounded-full`}
+                                style={{ width: `${Math.min(100, (criterion.weight || 0.2) * 100)}%` }}
+                              />
+                            </div>
+                            <p className="text-slate-500 text-xs mt-1">{criterion.description}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Required Sections */}
+                {analysis.requiredSections?.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-400" />
+                      Required Sections
+                    </h3>
+                    <div className="space-y-2">
+                      {analysis.requiredSections.map((section: { title: string; wordLimit: number | null; instructions: string; required: boolean }, idx: number) => (
+                        <div key={idx} className="flex items-start gap-3 p-2 bg-slate-900/50 rounded-lg">
+                          <div className="mt-0.5">
+                            {section.required ? (
+                              <CheckCircle className="h-4 w-4 text-emerald-400" />
+                            ) : (
+                              <Info className="h-4 w-4 text-slate-500" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-slate-300 text-xs sm:text-sm font-medium">{section.title}</span>
+                              {section.wordLimit && (
+                                <span className="text-slate-500 text-xs">({section.wordLimit} words)</span>
+                              )}
+                            </div>
+                            <p className="text-slate-500 text-xs mt-0.5">{section.instructions}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Eligibility Requirements */}
+                {analysis.eligibilityReqs?.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-amber-400" />
+                      Eligibility Requirements
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {analysis.eligibilityReqs.map((req: { requirement: string; type: string }, idx: number) => {
+                        const typeColor: Record<string, "info" | "success" | "warning" | "default"> = {
+                          organization: "info",
+                          financial: "success",
+                          geographic: "warning",
+                          programmatic: "default",
+                        };
+                        return (
+                          <Badge key={idx} variant={typeColor[req.type] || "default"}>
+                            {req.requirement}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Evaluation Notes */}
+                {analysis.evaluationNotes && (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <h3 className="text-sm font-semibold text-emerald-400 mb-1 flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Tips for a Strong Application
+                    </h3>
+                    <p className="text-slate-300 text-xs sm:text-sm">{analysis.evaluationNotes}</p>
+                  </div>
+                )}
+
+                {analysis.pdfPageCount && (
+                  <p className="text-slate-600 text-xs">
+                    Analyzed from {analysis.pdfPageCount}-page NOFO document
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Outcome Insights */}
+          {insights?.hasData && (
+            <Card>
+              <CardHeader>
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-cyan-400" />
+                  Community Insights
+                </h2>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
+                  <span className="text-slate-400 text-xs sm:text-sm">Award Rate</span>
+                  <span className={`font-semibold text-sm ${insights.awardRate >= 50 ? "text-emerald-400" : insights.awardRate >= 25 ? "text-amber-400" : "text-red-400"}`}>
+                    {insights.awardRate}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
+                  <span className="text-slate-400 text-xs sm:text-sm">Total Reports</span>
+                  <span className="text-slate-300 font-semibold text-sm">{insights.total}</span>
+                </div>
+                {insights.personalInsight && (
+                  <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg">
+                    <p className="text-cyan-300 text-xs sm:text-sm">{insights.personalInsight}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}
