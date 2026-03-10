@@ -117,8 +117,8 @@ export default function DraftOverview({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="bg-purple-500/20 p-2 rounded-lg">
-                <FileText className="h-5 w-5 text-purple-400" />
+              <div className="bg-emerald-500/15 p-2 rounded-lg">
+                <FileText className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-white">{sections.length}</p>

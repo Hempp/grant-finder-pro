@@ -511,7 +511,7 @@ ${formData.budgetJustification}
           <Card>
             <CardHeader>
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Target className="h-5 w-5 text-purple-400" />
+                <Target className="h-5 w-5 text-emerald-400" />
                 Technical Approach
               </h2>
             </CardHeader>

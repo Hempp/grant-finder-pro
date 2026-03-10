@@ -124,7 +124,7 @@ function SettingsContent() {
         {/* Profile Section */}
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
-            <User className="h-5 w-5 text-purple-400" />
+            <User className="h-5 w-5 text-emerald-400" />
             Profile Information
           </h2>
           <div className="space-y-4">

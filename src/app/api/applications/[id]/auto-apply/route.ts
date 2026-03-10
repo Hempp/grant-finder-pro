@@ -42,10 +42,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const planLimits = PLANS[plan].limits;
 
     // Check if user has auto-apply access
-    if (planLimits.autoApplyPerMonth === 0) {
+    if ((planLimits.autoApplyPerMonth as number) <= 0 && planLimits.autoApplyPerMonth !== -1) {
       return NextResponse.json(
         {
-          error: "Auto-Apply requires a Pro or Teams subscription",
+          error: "Auto-Apply requires a paid subscription",
           code: "UPGRADE_REQUIRED"
         },
         { status: 403 }

@@ -83,14 +83,14 @@ export default function ReferralsPage() {
 
   const shareVia = (platform: string) => {
     if (!data?.referralLink) return;
-    const text = `I've been using Grant Finder Pro to discover funding opportunities. Sign up with my link and we both get bonus grant matches!`;
+    const text = `I've been using GrantPilot to discover funding opportunities. Sign up with my link and we both get bonus grant matches!`;
     const url = encodeURIComponent(data.referralLink);
     const encodedText = encodeURIComponent(text);
 
     const shareUrls: Record<string, string> = {
       twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-      email: `mailto:?subject=${encodeURIComponent("Check out Grant Finder Pro!")}&body=${encodedText}%0A%0A${url}`,
+      email: `mailto:?subject=${encodeURIComponent("Check out GrantPilot!")}&body=${encodedText}%0A%0A${url}`,
     };
 
     if (shareUrls[platform]) {
@@ -128,7 +128,7 @@ export default function ReferralsPage() {
       </div>
 
       {/* Reward Banner with Hero Illustration */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/20 via-purple-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
+      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 hidden lg:block">
           <ReferralHeroIllustration className="w-80 h-60" />
         </div>
@@ -155,7 +155,7 @@ export default function ReferralsPage() {
           <ShareIllustration className="w-32 h-28" />
         </div>
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Share2 className="h-5 w-5 text-purple-400" />
+          <Share2 className="h-5 w-5 text-emerald-400" />
           Share Your Referral Link
         </h3>
 

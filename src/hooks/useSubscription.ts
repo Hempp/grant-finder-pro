@@ -20,6 +20,7 @@ interface SubscriptionData {
     savedGrants: number;
     autoApplyPerMonth: number;
     documents: number;
+    teamMembers: number;
   };
   usage: {
     matchesUsed: number;
@@ -54,7 +55,7 @@ export function useSubscription() {
       // Default to free plan on error
       setSubscription({
         plan: "free",
-        planName: "Free",
+        planName: "Starter",
         features: [...PLANS.free.features],
         limits: { ...PLANS.free.limits },
         usage: {
@@ -112,8 +113,9 @@ export function useSubscription() {
     [subscription]
   );
 
-  const isPro = subscription?.plan === "pro" || subscription?.plan === "teams";
-  const isTeams = subscription?.plan === "teams";
+  const isGrowth = subscription?.plan === "growth";
+  const isPro = subscription?.plan === "pro" || subscription?.plan === "organization";
+  const isOrganization = subscription?.plan === "organization";
   const isOnTrial = subscription?.trial?.isActive ?? false;
   const canStartTrial = subscription?.trial?.canStartTrial ?? false;
 
@@ -141,8 +143,9 @@ export function useSubscription() {
     error,
     refetch: fetchSubscription,
     canUseFeature,
+    isGrowth,
     isPro,
-    isTeams,
+    isOrganization,
     // Trial
     isOnTrial,
     canStartTrial,

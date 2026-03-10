@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Upload, Search, FileText, CheckCircle, Sparkles, TrendingUp, Zap, Shield, Clock, Users } from "lucide-react";
+import { ArrowRight, Upload, Search, FileText, CheckCircle, Sparkles, TrendingUp, Zap, Shield, Clock, Users, Crosshair, Bell, RefreshCw } from "lucide-react";
 import { auth } from "@/lib/auth";
 
 export default async function LandingPage() {
@@ -20,7 +20,7 @@ export default async function LandingPage() {
               <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-400 transition-transform group-hover:scale-110" />
               <div className="absolute inset-0 bg-emerald-400/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <span className="text-xl sm:text-2xl font-bold text-white">Grant Finder Pro</span>
+            <span className="text-xl sm:text-2xl font-bold text-white">GrantPilot</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             {session?.user ? (
@@ -60,21 +60,22 @@ export default async function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-emerald-400 text-sm font-medium">AI-Powered Grant Discovery</span>
+            <span className="text-emerald-400 text-sm font-medium">AI-Powered Grant Intelligence</span>
           </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-          Find & Apply for Grants
+          Find Grants You&apos;ll Win.
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 animate-gradient bg-[length:200%_auto]">
-            Automatically
+            Apply with Confidence.
           </span>
         </h1>
 
         <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 px-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          Upload your pitch deck. We find matching grants, fill out applications with AI,
-          and you just review and submit. It&apos;s that simple.
+          AI reads grant requirements, drafts proposals from your data,
+          and predicts your score before you submit. The only grant platform
+          with a win guarantee.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
@@ -96,9 +97,9 @@ export default async function LandingPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-3xl mx-auto mt-16 sm:mt-24 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
           {[
-            { value: "$50B+", label: "Grants Available" },
-            { value: "10K+", label: "Opportunities" },
-            { value: "85%", label: "Time Saved" },
+            { value: "$592B+", label: "In Annual Grants" },
+            { value: "95%", label: "Win Rate (6+ Apps)" },
+            { value: "100hrs", label: "Saved Per Application" },
           ].map((stat, i) => (
             <div key={stat.label} className="text-center p-4 rounded-2xl bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/50 transition stagger-1" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
               <div className="text-2xl sm:text-4xl font-bold text-white">{stat.value}</div>
@@ -125,16 +126,17 @@ export default async function LandingPage() {
             How It Works
           </h2>
           <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-            From upload to funded in four simple steps
+            From profile to funded in five simple steps
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8">
           {[
-            { icon: Upload, title: "Upload Your Docs", desc: "Pitch deck, financials, website URL - we extract everything we need.", num: 1 },
-            { icon: Search, title: "Find Matching Grants", desc: "AI scans federal, state, and foundation grants matching your profile.", num: 2 },
-            { icon: FileText, title: "AI Fills Applications", desc: "Our expert grant writer AI completes applications using your data.", num: 3 },
-            { icon: CheckCircle, title: "Review & Submit", desc: "You control the final review. Verify everything, then hit submit.", num: 4 },
+            { icon: Upload, title: "Build Your Profile", desc: "Tell us about your organization, upload docs. Takes 10 minutes.", num: 1 },
+            { icon: Search, title: "Discover Matches", desc: "AI scans federal, state, and foundation grants matched to your profile.", num: 2 },
+            { icon: Crosshair, title: "Check Readiness", desc: "See your Grant Readiness Score before you invest time applying.", num: 3 },
+            { icon: FileText, title: "AI Drafts Application", desc: "AI reads the RFP, maps scoring criteria, and drafts each section from your data.", num: 4 },
+            { icon: CheckCircle, title: "Review & Submit", desc: "See your predicted score. Edit with AI suggestions. Submit with confidence.", num: 5 },
           ].map((step, i) => (
             <div
               key={step.title}
@@ -169,12 +171,12 @@ export default async function LandingPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {[
-                { icon: Search, title: "Smart Discovery", desc: "Scrapes grants.gov, SBIR, foundations, and state programs to find your matches.", color: "emerald" },
-                { icon: Sparkles, title: "AI Grant Writer", desc: "30+ years of grant expertise encoded. Writes compelling narratives that win.", color: "purple" },
-                { icon: TrendingUp, title: "Track Everything", desc: "Monitor applications from draft to awarded. Never miss a deadline.", color: "blue" },
-                { icon: Zap, title: "Auto-Apply", desc: "One click to start an application. AI pre-fills based on your profile.", color: "amber" },
-                { icon: Shield, title: "Secure & Private", desc: "Your data is encrypted and never shared. SOC2 compliant infrastructure.", color: "cyan" },
-                { icon: Users, title: "Team Collaboration", desc: "Invite team members, assign tasks, and track progress together.", color: "pink" },
+                { icon: Sparkles, title: "AI Application Intelligence", desc: "AI reads the RFP, understands scoring criteria, and writes to win.", color: "emerald" },
+                { icon: Crosshair, title: "Grant Readiness Score", desc: "Know if you're ready before you invest 100 hours applying.", color: "purple" },
+                { icon: TrendingUp, title: "Scoring Coverage Map", desc: "See your predicted score per criterion. Fix weak spots before submitting.", color: "blue" },
+                { icon: Shield, title: "Grant Guarantee", desc: "Pro plans: win a grant in 12 months or get a full refund.", color: "amber" },
+                { icon: Bell, title: "Regulatory Radar", desc: "Real-time alerts on funding changes and new grant programs.", color: "cyan" },
+                { icon: RefreshCw, title: "Smart Content Library", desc: "Write once, reuse everywhere. AI adapts tone and length per funder.", color: "pink" },
               ].map((feature) => (
                 <div key={feature.title} className="group text-center p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/60 hover:border-slate-600 transition-all duration-300">
                   <div className={`bg-${feature.color}-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
@@ -197,7 +199,7 @@ export default async function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             { quote: "We secured $500K in SBIR funding within 3 months. The AI-written narratives were impressive.", author: "Sarah Chen", role: "CEO, BioTech Innovations" },
-            { quote: "Grant Finder Pro saved us 40+ hours per application. Game changer for our small team.", author: "Marcus Williams", role: "Founder, CleanEnergy Labs" },
+            { quote: "GrantPilot saved us 40+ hours per application. Game changer for our small team.", author: "Marcus Williams", role: "Founder, CleanEnergy Labs" },
             { quote: "The matching algorithm found opportunities we never knew existed. Highly recommend!", author: "Dr. Emily Park", role: "Research Director, AI Health" },
           ].map((testimonial) => (
             <div key={testimonial.author} className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/80 transition">
@@ -241,7 +243,7 @@ export default async function LandingPage() {
             </div>
             <p className="text-slate-500 text-sm mt-6">
               <Clock className="h-4 w-4 inline mr-1" />
-              14-day free trial. No credit card required.
+              21-day free Pro trial. No credit card required.
             </p>
           </div>
         </div>
@@ -252,7 +254,7 @@ export default async function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-emerald-400" />
-            <span className="text-lg font-semibold text-white">Grant Finder Pro</span>
+            <span className="text-lg font-semibold text-white">GrantPilot</span>
           </div>
           <div className="flex items-center gap-6 text-slate-500 text-sm">
             <Link href="/pricing" className="hover:text-white transition">Pricing</Link>

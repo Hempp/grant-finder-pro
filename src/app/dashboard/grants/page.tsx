@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -230,51 +230,54 @@ export default function GrantsPage() {
     }
   };
 
-  const filteredGrants = grants
-    .filter((g) => {
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesSearch =
-          g.title.toLowerCase().includes(query) ||
-          g.funder.toLowerCase().includes(query) ||
-          (g.description && g.description.toLowerCase().includes(query)) ||
-          (g.tags && g.tags.toLowerCase().includes(query));
-        if (!matchesSearch) return false;
-      }
-      // State filter - show both state-specific AND national grants
-      if (stateFilter) {
-        if (stateFilter === "ALL") {
-          if (g.state !== "ALL") return false;
-        } else {
-          if (g.state !== stateFilter && g.state !== "ALL") return false;
+  // Memoize filtered and sorted grants to prevent unnecessary recalculations
+  const filteredGrants = useMemo(() => {
+    return grants
+      .filter((g) => {
+        // Search filter
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          const matchesSearch =
+            g.title.toLowerCase().includes(query) ||
+            g.funder.toLowerCase().includes(query) ||
+            (g.description && g.description.toLowerCase().includes(query)) ||
+            (g.tags && g.tags.toLowerCase().includes(query));
+          if (!matchesSearch) return false;
         }
-      }
-      // Type filter
-      if (typeFilter && g.type !== typeFilter) return false;
-      // Category filter
-      if (categoryFilter && g.category !== categoryFilter) return false;
-      // Amount filter
-      if (amountFilter) {
-        const [min, max] = amountFilter.split("-").map((v) =>
-          v.endsWith("+") ? Infinity : parseInt(v)
-        );
-        if (g.amountMax && (g.amountMax < min || (max !== Infinity && g.amountMin && g.amountMin > max))) {
-          return false;
+        // State filter - show both state-specific AND national grants
+        if (stateFilter) {
+          if (stateFilter === "ALL") {
+            if (g.state !== "ALL") return false;
+          } else {
+            if (g.state !== stateFilter && g.state !== "ALL") return false;
+          }
         }
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortBy === "match") return (b.matchScore || 0) - (a.matchScore || 0);
-      if (sortBy === "deadline") {
-        if (!a.deadline) return 1;
-        if (!b.deadline) return -1;
-        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      }
-      if (sortBy === "amount") return (b.amountMax || 0) - (a.amountMax || 0);
-      return 0;
-    });
+        // Type filter
+        if (typeFilter && g.type !== typeFilter) return false;
+        // Category filter
+        if (categoryFilter && g.category !== categoryFilter) return false;
+        // Amount filter
+        if (amountFilter) {
+          const [min, max] = amountFilter.split("-").map((v) =>
+            v.endsWith("+") ? Infinity : parseInt(v)
+          );
+          if (g.amountMax && (g.amountMax < min || (max !== Infinity && g.amountMin && g.amountMin > max))) {
+            return false;
+          }
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "match") return (b.matchScore || 0) - (a.matchScore || 0);
+        if (sortBy === "deadline") {
+          if (!a.deadline) return 1;
+          if (!b.deadline) return -1;
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        }
+        if (sortBy === "amount") return (b.amountMax || 0) - (a.amountMax || 0);
+        return 0;
+      });
+  }, [grants, searchQuery, stateFilter, typeFilter, categoryFilter, amountFilter, sortBy]);
 
   const handleScan = async () => {
     setScanning(true);
@@ -283,11 +286,12 @@ export default function GrantsPage() {
     setScanning(false);
   };
 
-  const getDaysUntilDeadline = (deadline: string | null) => {
+  // Memoize deadline calculation helper
+  const getDaysUntilDeadline = useCallback((deadline: string | null) => {
     if (!deadline) return null;
     const days = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     return days;
-  };
+  }, []);
 
   const exportToCSV = () => {
     const headers = ["Title", "Funder", "Type", "State", "Amount", "Deadline", "Match Score", "URL"];
@@ -310,15 +314,17 @@ export default function GrantsPage() {
     a.click();
   };
 
-  const getStateName = (code: string | null) => {
+  // Memoize state name lookup
+  const getStateName = useCallback((code: string | null) => {
     if (!code) return "Unknown";
     if (code === "ALL") return "National";
     const state = US_STATES.find((s) => s.value === code);
     return state?.label || code;
-  };
+  }, []);
 
-  const savedCount = grants.filter((g) => g.status === "saved").length;
-  const highMatchCount = grants.filter((g) => (g.matchScore || 0) >= 80).length;
+  // Memoize grant statistics
+  const savedCount = useMemo(() => grants.filter((g) => g.status === "saved").length, [grants]);
+  const highMatchCount = useMemo(() => grants.filter((g) => (g.matchScore || 0) >= 80).length, [grants]);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -373,12 +379,12 @@ export default function GrantsPage() {
 
       {/* AI Matching Banner */}
       {!hasProfile ? (
-        <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border-purple-500/30">
+        <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border-emerald-500/20">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-between">
               <div className="flex items-center gap-3 sm:gap-4">
-                <div className="bg-purple-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+                <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-lg flex-shrink-0">
+                  <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-sm sm:text-base">Unlock AI-Powered Grant Matching</h3>
@@ -468,14 +474,14 @@ export default function GrantsPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20">
+        <Card className="bg-gradient-to-br from-teal-500/10 to-teal-600/5 border-teal-500/20">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-400 text-xs sm:text-sm font-medium">80%+ Match</p>
+                <p className="text-teal-400 text-xs sm:text-sm font-medium">80%+ Match</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">{highMatchCount}</p>
               </div>
-              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500/50" />
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-teal-500/50" />
             </div>
           </CardContent>
         </Card>
@@ -856,8 +862,8 @@ export default function GrantsPage() {
 
               {/* AI Match Analysis */}
               {selectedGrant.matchBreakdown && (
-                <div className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-purple-500/20 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-purple-400 mb-3 flex items-center gap-2">
+                <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-500/20 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-emerald-400 mb-3 flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
                     AI Match Analysis
                   </h3>
@@ -865,9 +871,9 @@ export default function GrantsPage() {
                     {/* Location Match */}
                     <div className="flex items-center gap-3">
                       <div className="w-24 text-slate-400 text-sm">Location</div>
-                      <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
+                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.location}%` }}
                         />
                       </div>

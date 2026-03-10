@@ -20,7 +20,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Subscription & Billing
-  plan                  String    @default("free") // free, pro, teams
+  plan                  String    @default("free") // free, growth, pro, organization
   stripeCustomerId      String?   @unique
   stripeSubscriptionId  String?   @unique
   stripePriceId         String?

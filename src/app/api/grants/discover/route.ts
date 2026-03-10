@@ -2,6 +2,7 @@
 // Allows triggering grant search on demand
 
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { searchGrantsGov, getCorporateGrants, getStateGrants, type ScrapedGrant } from "@/lib/grant-scraper";
 
@@ -14,7 +15,22 @@ interface DiscoverRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: DiscoverRequest = await request.json();
+    // SECURITY: Require authentication for grant discovery
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let body: DiscoverRequest;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const { keyword, type = "all", state, save = false } = body;
 
     const grants: ScrapedGrant[] = [];

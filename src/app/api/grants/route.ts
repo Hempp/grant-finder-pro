@@ -22,10 +22,25 @@ interface BulkGrant {
   oppNumber?: string;
 }
 
-// POST - Bulk save grants
+// POST - Bulk save grants (requires authentication)
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // SECURITY: Require authentication for bulk grant operations
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const grants: BulkGrant[] = body.grants || [];
 
     if (!grants.length) {

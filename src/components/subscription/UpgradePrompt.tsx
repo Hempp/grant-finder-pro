@@ -42,11 +42,11 @@ export function UpgradePrompt({
 
   if (variant === "banner") {
     return (
-      <div className="bg-gradient-to-r from-purple-500/10 to-emerald-500/10 border border-purple-500/20 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-purple-400" />
+            <div className="h-10 w-10 rounded-full bg-emerald-500/15 flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-emerald-400" />
             </div>
             <div>
               <p className="font-medium text-white">{feature}</p>
@@ -68,10 +68,10 @@ export function UpgradePrompt({
 
   // Default: card variant
   return (
-    <Card className="border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-emerald-500/5">
+    <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-emerald-500/5">
       <CardContent className="p-6 text-center">
-        <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4">
-          <Zap className="h-6 w-6 text-purple-400" />
+        <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
+          <Zap className="h-6 w-6 text-emerald-400" />
         </div>
         <h3 className="text-lg font-semibold text-white mb-2">
           Unlock {feature}

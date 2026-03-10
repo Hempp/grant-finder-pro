@@ -214,7 +214,7 @@ export default function SectionEditor({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Wand2 className="h-5 w-5 text-purple-400" />
+            <Wand2 className="h-5 w-5 text-emerald-400" />
             <h3 className="text-white font-medium">AI Regenerate</h3>
           </div>
         </CardHeader>

@@ -29,7 +29,7 @@ interface Document {
 }
 
 const documentTypes: Record<string, { label: string; color: string }> = {
-  pitch_deck: { label: "Pitch Deck", color: "text-purple-400" },
+  pitch_deck: { label: "Pitch Deck", color: "text-emerald-400" },
   financials: { label: "Financials", color: "text-emerald-400" },
   business_plan: { label: "Business Plan", color: "text-blue-400" },
   other: { label: "Other", color: "text-slate-400" },
@@ -241,10 +241,10 @@ export default function DocumentsPage() {
 
       {/* Document Types Guide */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <Card className="bg-purple-500/10 border-purple-500/30">
+        <Card className="bg-emerald-500/10 border-emerald-500/20">
           <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-            <div className="bg-purple-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
-              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+            <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-lg flex-shrink-0">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
             </div>
             <div className="min-w-0">
               <h3 className="text-white font-medium text-sm sm:text-base">Pitch Deck</h3>

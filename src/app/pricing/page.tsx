@@ -15,6 +15,8 @@ import {
   AlertCircle,
   CheckCircle,
   Gift,
+  Shield,
+  Building2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, Button, Badge } from "@/components/ui";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -22,57 +24,85 @@ import { useSubscription } from "@/hooks/useSubscription";
 const plans = [
   {
     id: "free",
-    name: "Free",
+    name: "Starter",
     description: "Get started with grant discovery",
     price: 0,
     priceAnnual: 0,
     features: [
-      { text: "3 grant matches per month", included: true },
-      { text: "Basic search filters", included: true },
-      { text: "Save up to 5 grants", included: true },
-      { text: "Email alerts (weekly)", included: true },
-      { text: "Auto-Apply AI drafts", included: false },
-      { text: "Advanced AI matching", included: false },
-      { text: "Priority support", included: false },
+      { text: "5 grant matches per month", included: true },
+      { text: "1 auto-apply draft per month", included: true },
+      { text: "Save up to 10 grants", included: true },
+      { text: "Weekly email digest", included: true },
+      { text: "Basic Grant Readiness Score", included: true },
+      { text: "AI Application Intelligence", included: false },
+      { text: "Grant Guarantee", included: false },
     ],
-    cta: "Current Plan",
+    cta: "Get Started Free",
     popular: false,
+    icon: Sparkles,
+    iconColor: "text-slate-400",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    description: "For growing organizations",
+    price: 24,
+    priceAnnual: 228,
+    features: [
+      { text: "25 grant matches per month", included: true },
+      { text: "5 auto-apply drafts per month", included: true },
+      { text: "Save up to 50 grants", included: true },
+      { text: "Daily email alerts", included: true },
+      { text: "Full Grant Readiness Score", included: true },
+      { text: "Content Reuse Library", included: true },
+      { text: "Grant Guarantee", included: false },
+    ],
+    cta: "Start Growing",
+    popular: false,
+    icon: Zap,
+    iconColor: "text-emerald-400",
   },
   {
     id: "pro",
     name: "Pro",
     description: "For serious grant seekers",
-    price: 49,
-    priceAnnual: 490,
+    price: 59,
+    priceAnnual: 588,
     features: [
       { text: "Unlimited grant matches", included: true },
-      { text: "Advanced AI matching", included: true },
-      { text: "5 Auto-Apply drafts per month", included: true },
-      { text: "Unlimited saved grants", included: true },
-      { text: "Daily email alerts", included: true },
-      { text: "Priority support", included: true },
-      { text: "Team collaboration", included: false },
+      { text: "20 auto-apply drafts per month", included: true },
+      { text: "AI Application Intelligence", included: true },
+      { text: "Scoring Criteria Coverage Map", included: true },
+      { text: "Real-time alerts", included: true },
+      { text: "ROI Dashboard", included: true },
+      { text: "Grant Guarantee: win or refund", included: true },
+      { text: "Up to 3 team members", included: true },
     ],
-    cta: "Upgrade to Pro",
+    cta: "Go Pro",
     popular: true,
+    icon: Shield,
+    iconColor: "text-amber-400",
   },
   {
-    id: "teams",
-    name: "Teams",
-    description: "For organizations and consultants",
-    price: 149,
-    priceAnnual: 1490,
+    id: "organization",
+    name: "Organization",
+    description: "For teams and consultants",
+    price: 199,
+    priceAnnual: 2028,
     features: [
       { text: "Everything in Pro", included: true },
-      { text: "Unlimited Auto-Apply drafts", included: true },
-      { text: "Team collaboration (up to 5)", included: true },
-      { text: "Grant success analytics", included: true },
-      { text: "Application pipeline tracking", included: true },
+      { text: "Unlimited auto-apply drafts", included: true },
+      { text: "Up to 10 team members", included: true },
+      { text: "Smart Budget Builder", included: true },
+      { text: "Competitive Intelligence", included: true },
+      { text: "Custom AI tone & templates", included: true },
       { text: "Dedicated success manager", included: true },
-      { text: "API access", included: true },
+      { text: "Full reporting & export", included: true },
     ],
-    cta: "Upgrade to Teams",
+    cta: "Contact Sales",
     popular: false,
+    icon: Building2,
+    iconColor: "text-cyan-400",
   },
 ];
 
@@ -99,7 +129,6 @@ function PricingContent() {
 
     if (result.success) {
       setTrialStarted(true);
-      // Redirect to dashboard after short delay
       setTimeout(() => {
         router.push("/dashboard?trial=started");
       }, 2000);
@@ -149,7 +178,7 @@ function PricingContent() {
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-slate-900" />
             </div>
-            <span className="font-bold text-white text-lg">Grant Finder Pro</span>
+            <span className="font-bold text-white text-lg">GrantPilot</span>
           </Link>
           <div className="flex items-center gap-4">
             {session ? (
@@ -186,7 +215,7 @@ function PricingContent() {
           <div className="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
             <CheckCircle className="h-5 w-5 text-emerald-400" />
             <p className="text-emerald-400">
-              Your 14-day Pro trial has started! Redirecting to dashboard...
+              Your 21-day Pro trial has started! Redirecting to dashboard...
             </p>
           </div>
         )}
@@ -205,6 +234,7 @@ function PricingContent() {
           </h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Choose the plan that fits your needs. Upgrade or downgrade anytime.
+            All paid plans include a 21-day free trial.
           </p>
 
           {/* Billing Toggle */}
@@ -229,14 +259,14 @@ function PricingContent() {
             >
               Annual
               <Badge variant="success" className="text-xs">
-                Save 17%
+                Save up to 21%
               </Badge>
             </button>
           </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <Card
               key={plan.id}
@@ -254,8 +284,7 @@ function PricingContent() {
               <CardHeader className="pb-0">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-bold text-white">{plan.name}</h3>
-                  {plan.id === "pro" && <Zap className="h-5 w-5 text-emerald-400" />}
-                  {plan.id === "teams" && <Users className="h-5 w-5 text-cyan-400" />}
+                  <plan.icon className={`h-5 w-5 ${plan.iconColor}`} />
                 </div>
                 <p className="text-slate-400 text-sm">{plan.description}</p>
               </CardHeader>
@@ -274,7 +303,7 @@ function PricingContent() {
                       <span className="text-slate-400">/month</span>
                       {plan.priceAnnual > 0 && (
                         <p className="text-sm text-emerald-400 mt-1">
-                          ${plan.priceAnnual}/year (2 months free)
+                          ${plan.priceAnnual}/year
                         </p>
                       )}
                     </>
@@ -314,7 +343,7 @@ function PricingContent() {
                       ) : (
                         <>
                           <Gift className="h-4 w-4 mr-2" />
-                          Start 14-Day Free Trial
+                          Start 21-Day Free Trial
                         </>
                       )}
                     </Button>
@@ -355,7 +384,7 @@ function PricingContent() {
           ))}
         </div>
 
-        {/* FAQ / Trust Signals */}
+        {/* Trust Signals */}
         <div className="mt-16 text-center">
           <div className="flex items-center justify-center gap-8 flex-wrap text-slate-400 text-sm">
             <div className="flex items-center gap-2">
@@ -370,6 +399,10 @@ function PricingContent() {
               <CheckCircle className="h-4 w-4 text-emerald-400" />
               Secure payment via Stripe
             </div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-amber-400" />
+              Grant Guarantee on Pro+
+            </div>
           </div>
         </div>
 
@@ -379,6 +412,32 @@ function PricingContent() {
             Frequently Asked Questions
           </h2>
           <div className="space-y-4">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-white font-medium mb-2">
+                  What is the Grant Guarantee?
+                </h3>
+                <p className="text-slate-400">
+                  Pro and Organization plans include our Grant Guarantee: if you don&apos;t
+                  win a grant within 12 months of subscribing, we&apos;ll refund your
+                  subscription in full. We&apos;re that confident in our matching and
+                  AI application intelligence.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-white font-medium mb-2">
+                  What is AI Application Intelligence?
+                </h3>
+                <p className="text-slate-400">
+                  Our AI reads the grant RFP, extracts every requirement and scoring criterion,
+                  then drafts your application section-by-section using your organization&apos;s
+                  data. You see a predicted score before you submit, with specific recommendations
+                  to strengthen weak areas.
+                </p>
+              </CardContent>
+            </Card>
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-white font-medium mb-2">
@@ -397,19 +456,7 @@ function PricingContent() {
                 </h3>
                 <p className="text-slate-400">
                   Yes! You can upgrade or downgrade at any time. Changes take effect
-                  immediately, and we'll prorate your billing.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-white font-medium mb-2">
-                  What is Auto-Apply?
-                </h3>
-                <p className="text-slate-400">
-                  Auto-Apply uses AI to automatically draft grant applications based
-                  on your organization profile and documents. It saves hours of
-                  writing time and ensures professional, tailored responses.
+                  immediately, and we&apos;ll prorate your billing.
                 </p>
               </CardContent>
             </Card>
@@ -420,7 +467,7 @@ function PricingContent() {
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center text-slate-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Grant Finder Pro. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} GrantPilot. All rights reserved.</p>
         </div>
       </footer>
     </div>

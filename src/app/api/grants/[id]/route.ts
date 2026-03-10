@@ -44,12 +44,42 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const body = await request.json();
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
     const { status } = body;
+
+    // SECURITY: Check if grant exists and verify ownership
+    const existingGrant = await prisma.grant.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!existingGrant) {
+      return NextResponse.json(
+        { error: "Grant not found" },
+        { status: 404 }
+      );
+    }
+
+    // Allow update only if:
+    // 1. Grant has no owner (public grant being saved by user)
+    // 2. Grant already belongs to the current user
+    if (existingGrant.userId && existingGrant.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Forbidden: You do not own this grant" },
+        { status: 403 }
+      );
+    }
 
     const grant = await prisma.grant.update({
       where: { id },
-      data: { 
+      data: {
         status,
         userId: session.user.id, // Associate with user when saving
       },

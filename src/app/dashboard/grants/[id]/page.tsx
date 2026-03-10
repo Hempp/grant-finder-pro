@@ -379,7 +379,7 @@ export default function GrantDetailPage() {
           <Card>
             <CardHeader>
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-purple-400" />
+                <Calendar className="h-5 w-5 text-emerald-400" />
                 Deadline
               </h2>
             </CardHeader>

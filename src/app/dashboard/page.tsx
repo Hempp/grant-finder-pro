@@ -191,9 +191,9 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
             Dashboard
-            <Sparkles className="h-6 w-6 text-emerald-400" />
+            <Sparkles className="h-6 w-6 text-emerald-400 animate-breathe" />
           </h1>
-          <p className="text-slate-400 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
         </div>
         <div className="flex gap-2 sm:gap-3">
           <Link href="/dashboard/grants" className="flex-1 sm:flex-none">
@@ -246,11 +246,11 @@ export default function DashboardPage() {
 
       {/* Upgrade Prompt for Free Users */}
       {!isPro && !loading && (
-        <div className="mb-6 sm:mb-8 animate-fade-in-up">
+        <div className="mb-6 sm:mb-8 animate-reveal">
           <UpgradePrompt
             feature="Unlimited Grant Matches"
             description={canStartTrial
-              ? "Start your 14-day free trial to unlock unlimited AI-powered grant matches and Auto-Apply."
+              ? "Start your 21-day free trial to unlock unlimited AI-powered grant matches and Auto-Apply."
               : "Upgrade to Pro for unlimited AI-powered grant matches, Auto-Apply, and daily alerts."
             }
             variant="banner"
@@ -341,15 +341,15 @@ export default function DashboardPage() {
         </Card>
 
         {/* Recent Applications */}
-        <Card variant="elevated" hover glow glowColor="purple">
+        <Card variant="elevated" hover glow glowColor="blue">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="bg-purple-500/20 p-2 rounded-lg">
-                <FileText className="h-5 w-5 text-purple-400" />
+              <div className="bg-teal-500/15 p-2 rounded-lg">
+                <FileText className="h-5 w-5 text-teal-400" />
               </div>
               <h2 className="text-xl font-semibold text-white">Recent Applications</h2>
             </div>
-            <Link href="/dashboard/applications" className="text-purple-400 hover:text-purple-300 text-sm flex items-center gap-1 group">
+            <Link href="/dashboard/applications" className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1 group">
               View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </CardHeader>
@@ -390,9 +390,9 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex-1 mr-4">
-                        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
@@ -445,24 +445,46 @@ export default function DashboardPage() {
             Quick Actions
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {[
-              { href: "/dashboard/organization", icon: TrendingUp, label: "Complete Profile", desc: "Improve match accuracy", color: "emerald" },
-              { href: "/dashboard/documents", icon: FileText, label: "Upload Docs", desc: "Auto-extract info", color: "blue" },
-              { href: "/dashboard/grants", icon: Search, label: "Discover Grants", desc: "Find opportunities", color: "purple" },
-              { href: "/dashboard/applications", icon: Clock, label: "Track Deadlines", desc: "Never miss a date", color: "amber" },
-            ].map((action) => (
-              <Link
-                key={action.href}
-                href={action.href}
-                className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 text-center border border-transparent hover:border-slate-700 group hover:-translate-y-1"
-              >
-                <div className={`bg-${action.color}-500/20 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}>
-                  <action.icon className={`h-5 w-5 sm:h-6 sm:w-6 text-${action.color}-400`} />
-                </div>
-                <span className="text-white font-medium text-sm sm:text-base">{action.label}</span>
-                <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">{action.desc}</span>
-              </Link>
-            ))}
+            <Link
+              href="/dashboard/organization"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-emerald-500/20 group card-interactive"
+            >
+              <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
+              </div>
+              <span className="text-white font-medium text-sm sm:text-base">Complete Profile</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Improve match accuracy</span>
+            </Link>
+            <Link
+              href="/dashboard/documents"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-cyan-500/20 group card-interactive"
+            >
+              <div className="bg-cyan-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
+              </div>
+              <span className="text-white font-medium text-sm sm:text-base">Upload Docs</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Auto-extract info</span>
+            </Link>
+            <Link
+              href="/dashboard/grants"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-teal-500/20 group card-interactive"
+            >
+              <div className="bg-teal-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-teal-400" />
+              </div>
+              <span className="text-white font-medium text-sm sm:text-base">Discover Grants</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Find opportunities</span>
+            </Link>
+            <Link
+              href="/dashboard/applications"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-amber-500/20 group card-interactive"
+            >
+              <div className="bg-amber-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
+              </div>
+              <span className="text-white font-medium text-sm sm:text-base">Track Deadlines</span>
+              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Never miss a date</span>
+            </Link>
           </div>
         </CardContent>
       </Card>

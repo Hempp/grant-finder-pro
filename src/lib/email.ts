@@ -95,7 +95,7 @@ export async function sendGrantAlertEmail({
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); padding: 32px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Grant Finder Pro</h1>
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">GrantPilot</h1>
           <p style="color: #e0e7ff; margin: 8px 0 0 0; font-size: 14px;">Your Daily Grant Opportunities</p>
         </div>
 
@@ -224,7 +224,7 @@ export async function sendWelcomeEmail(to: string, userName?: string) {
     const result = await client.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
       to,
-      subject: "Welcome to Grant Finder Pro Alerts! 🎯",
+      subject: "Welcome to GrantPilot Alerts! 🎯",
       html,
     });
     return result;
@@ -618,7 +618,7 @@ export async function sendPaymentFailedEmail(to: string, userName?: string) {
             ${greeting},
           </p>
           <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-            We were unable to process your payment for Grant Finder Pro. Your subscription may be interrupted if this isn't resolved soon.
+            We were unable to process your payment for GrantPilot. Your subscription may be interrupted if this isn't resolved soon.
           </p>
 
           <div style="background-color: #0f172a; border-radius: 8px; padding: 24px; margin: 24px 0;">
@@ -641,7 +641,7 @@ export async function sendPaymentFailedEmail(to: string, userName?: string) {
         </div>
         <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
           <p style="color: #64748b; font-size: 12px; margin: 0;">
-            Grant Finder Pro - Funding your vision
+            GrantPilot - Funding your vision
           </p>
         </div>
       </div>
@@ -656,7 +656,7 @@ export async function sendPaymentFailedEmail(to: string, userName?: string) {
     const result = await client.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
       to,
-      subject: "Action Required: Payment Failed for Grant Finder Pro",
+      subject: "Action Required: Payment Failed for GrantPilot",
       html,
     });
     return result;
@@ -693,7 +693,7 @@ export async function sendSubscriptionCanceledEmail(to: string, userName?: strin
             ${greeting},
           </p>
           <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
-            Your Grant Finder Pro subscription has been canceled. We're sorry to see you go!
+            Your GrantPilot subscription has been canceled. We're sorry to see you go!
           </p>
 
           <div style="background-color: #0f172a; border-radius: 8px; padding: 24px; margin: 24px 0;">
@@ -731,7 +731,7 @@ export async function sendSubscriptionCanceledEmail(to: string, userName?: strin
     const result = await client.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
       to,
-      subject: "Your Grant Finder Pro subscription has been canceled",
+      subject: "Your GrantPilot subscription has been canceled",
       html,
     });
     return result;

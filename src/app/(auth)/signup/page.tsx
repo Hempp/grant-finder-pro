@@ -79,12 +79,12 @@ function SignupForm() {
   ];
 
   return (
-    <Card className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg border-white/20">
+    <Card className="w-full max-w-md p-8 glass-card animate-reveal">
       {/* Referral Banner */}
       {referralCode && (
-        <div className="mb-6 p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg flex items-center gap-3">
+        <div className="mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 animate-fade-in-down">
           <Gift className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-          <p className="text-sm text-emerald-200">
+          <p className="text-sm text-emerald-300">
             You were referred! Sign up to get <span className="font-semibold">5 bonus grant matches</span>
           </p>
         </div>
@@ -92,58 +92,68 @@ function SignupForm() {
 
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
-        <p className="text-slate-300">Start finding grants for your organization</p>
+        <p className="text-slate-400">Start finding grants for your organization</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
-            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm animate-shake"
+          >
+            <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
             {error}
           </div>
         )}
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200">Name</label>
+          <label htmlFor="name" className="text-sm font-medium text-slate-300">Name</label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
             <Input
+              id="name"
               type="text"
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+              className="pl-10 glass-input text-white placeholder:text-slate-500"
               required
+              aria-required="true"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200">Email</label>
+          <label htmlFor="email" className="text-sm font-medium text-slate-300">Email</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
             <Input
+              id="email"
               type="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+              className="pl-10 glass-input text-white placeholder:text-slate-500"
               required
+              aria-required="true"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200">Password</label>
+          <label htmlFor="password" className="text-sm font-medium text-slate-300">Password</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
             <Input
+              id="password"
               type="password"
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+              className="pl-10 glass-input text-white placeholder:text-slate-500"
               required
+              aria-required="true"
             />
           </div>
           {password && (
@@ -151,11 +161,11 @@ function SignupForm() {
               {passwordRequirements.map((req, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
                   {req.met ? (
-                    <CheckCircle className="h-3 w-3 text-green-400" />
+                    <CheckCircle className="h-3 w-3 text-emerald-400" />
                   ) : (
-                    <div className="h-3 w-3 rounded-full border border-slate-500" />
+                    <div className="h-3 w-3 rounded-full border border-slate-600" />
                   )}
-                  <span className={req.met ? "text-green-400" : "text-slate-400"}>
+                  <span className={req.met ? "text-emerald-400" : "text-slate-500"}>
                     {req.text}
                   </span>
                 </div>
@@ -165,16 +175,18 @@ function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-200">Confirm Password</label>
+          <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">Confirm Password</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
             <Input
+              id="confirmPassword"
               type="password"
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+              className="pl-10 glass-input text-white placeholder:text-slate-500"
               required
+              aria-required="true"
             />
           </div>
           {confirmPassword && password !== confirmPassword && (
@@ -184,7 +196,8 @@ function SignupForm() {
 
         <Button
           type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+          className="w-full btn-magnetic"
+          variant="gradient"
           disabled={loading}
         >
           {loading ? (
@@ -198,11 +211,11 @@ function SignupForm() {
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-slate-300">
+      <div className="mt-6 text-center text-slate-400">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-purple-400 hover:text-purple-300 font-medium"
+          className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
         >
           Sign in
         </Link>
@@ -213,14 +226,12 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-      <Suspense fallback={
-        <Card className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg border-white/20 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-        </Card>
-      }>
-        <SignupForm />
-      </Suspense>
-    </div>
+    <Suspense fallback={
+      <Card className="w-full max-w-md p-8 glass-card flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      </Card>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }

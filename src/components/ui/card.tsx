@@ -23,12 +23,12 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     const baseStyles = "rounded-xl transition-all duration-300";
 
     const variants = {
-      default: "bg-slate-800/50 border border-slate-700",
-      elevated: "bg-slate-800 border border-slate-700 shadow-xl shadow-black/20",
-      outline: "bg-transparent border-2 border-slate-600",
-      ghost: "bg-slate-800/30 border border-transparent",
-      gradient: "bg-gradient-to-br from-slate-800 via-slate-800/90 to-slate-900 border border-slate-700",
-      interactive: "bg-slate-800/50 border border-slate-700 cursor-pointer hover:bg-slate-800/80 hover:border-slate-600",
+      default: "bg-slate-900/60 border border-slate-800",
+      elevated: "bg-slate-900/80 border border-slate-800 shadow-xl shadow-black/30",
+      outline: "bg-transparent border-2 border-slate-700",
+      ghost: "bg-slate-900/30 border border-transparent",
+      gradient: "bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800",
+      interactive: "bg-slate-900/60 border border-slate-800 cursor-pointer hover:bg-slate-900/80 hover:border-slate-700",
     };
 
     const hoverStyles = hover
@@ -67,7 +67,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={`p-6 border-b border-slate-700/50 flex items-start justify-between gap-4 ${className}`}
+        className={`p-6 border-b border-slate-800/50 flex items-start justify-between gap-4 ${className}`}
         {...props}
       >
         <div className="flex-1 min-w-0">{children}</div>
@@ -153,7 +153,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={`p-6 border-t border-slate-700/50 flex items-center gap-3 ${justifyStyles[justify]} ${className}`}
+        className={`p-6 border-t border-slate-800/50 flex items-center gap-3 ${justifyStyles[justify]} ${className}`}
         {...props}
       >
         {children}

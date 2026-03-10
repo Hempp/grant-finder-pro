@@ -47,25 +47,27 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-slate-950 flex flex-col lg:flex-row">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-slate-800/50 border-b border-slate-700 p-4 flex items-center justify-between">
+      <div className="lg:hidden glass-dark border-b border-slate-800 p-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Sparkles className="h-7 w-7 text-emerald-400" />
-          <span className="text-lg font-bold text-white">Grant Finder</span>
+          <span className="text-lg font-bold text-white">GrantPilot</span>
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 text-slate-400 hover:text-white transition"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
         </button>
       </div>
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={closeMobileMenu}
         />
       )}
@@ -73,20 +75,22 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-slate-800/95 lg:bg-slate-800/50 border-r border-slate-700 flex flex-col
+        w-64 bg-slate-950/95 lg:bg-slate-950/80 backdrop-blur-xl border-r border-slate-800/60 flex flex-col
         transform transition-transform duration-300 ease-in-out
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         {/* Logo - Desktop only */}
-        <div className="hidden lg:block p-6 border-b border-slate-700">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-emerald-400" />
-            <span className="text-xl font-bold text-white">Grant Finder</span>
+        <div className="hidden lg:block p-6 border-b border-slate-800/60">
+          <Link href="/" className="flex items-center gap-2 group">
+            <Sparkles className="h-8 w-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span className="text-xl font-bold text-white">
+              Grant<span className="text-emerald-400">Pilot</span>
+            </span>
           </Link>
         </div>
 
         {/* Mobile close button area */}
-        <div className="lg:hidden p-4 border-b border-slate-700 flex items-center justify-between">
+        <div className="lg:hidden p-4 border-b border-slate-800/60 flex items-center justify-between">
           <span className="text-lg font-bold text-white">Menu</span>
           <button
             onClick={closeMobileMenu}
@@ -98,9 +102,9 @@ export default function DashboardLayout({
 
         {/* User info */}
         {session?.user && (
-          <div className="p-4 border-b border-slate-700">
+          <div className="p-4 border-b border-slate-800/60">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+              <div className="h-10 w-10 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0 ring-1 ring-emerald-500/20">
                 {session.user.image ? (
                   <img
                     src={session.user.image}
@@ -108,14 +112,14 @@ export default function DashboardLayout({
                     className="h-10 w-10 rounded-full"
                   />
                 ) : (
-                  <User className="h-5 w-5 text-purple-400" />
+                  <User className="h-5 w-5 text-emerald-400" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
                   {session.user.name || "User"}
                 </p>
-                <p className="text-xs text-slate-400 truncate">
+                <p className="text-xs text-slate-500 truncate">
                   {session.user.email}
                 </p>
               </div>
@@ -124,7 +128,7 @@ export default function DashboardLayout({
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -132,43 +136,46 @@ export default function DashboardLayout({
                 key={item.name}
                 href={item.href}
                 onClick={closeMobileMenu}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-emerald-500/20 text-emerald-400"
-                    : "text-slate-400 hover:bg-slate-700/50 hover:text-white"
+                    ? "bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400 ml-0 pl-3.5"
+                    : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:translate-x-1"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
-                <span className="font-medium">{item.name}</span>
+                <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <span className="font-medium text-sm">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Bottom section */}
-        <div className="p-4 border-t border-slate-700 space-y-1">
+        <div className="p-3 border-t border-slate-800/60 space-y-0.5">
           <Link
             href="/dashboard/settings"
             onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-700/50 hover:text-white transition"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200 hover:translate-x-1"
           >
             <Settings className="h-5 w-5" />
-            <span className="font-medium">Settings</span>
+            <span className="font-medium text-sm">Settings</span>
           </Link>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-slate-700/50 hover:text-white transition w-full"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 w-full"
           >
             <LogOut className="h-5 w-5" />
-            <span className="font-medium">Sign Out</span>
+            <span className="font-medium text-sm">Sign Out</span>
           </button>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
+      <main id="main-content" className="flex-1 overflow-auto bg-slate-950" role="main">
         <TrialBanner />
-        {children}
+        <div className="bg-glow-emerald">
+          {children}
+        </div>
       </main>
     </div>
   );
