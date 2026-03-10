@@ -130,18 +130,31 @@ export default function DashboardPage() {
     inProgressCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [readiness, setReadiness] = useState<{
+    score: number;
+    actions: { priority: string; action: string }[];
+  } | null>(null);
   const { isPro, canStartTrial } = useSubscription();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [grantsRes, appsRes] = await Promise.all([
+        const [grantsRes, appsRes, readinessRes] = await Promise.all([
           fetch("/api/grants"),
           fetch("/api/applications"),
+          fetch("/api/organizations/readiness"),
         ]);
 
         const grantsData = await grantsRes.json();
         const appsData = await appsRes.json();
+
+        if (readinessRes.ok) {
+          const readinessData = await readinessRes.json();
+          setReadiness({
+            score: readinessData.score ?? 0,
+            actions: readinessData.actions ?? [],
+          });
+        }
 
         const grantsList = grantsData.grants || [];
         const appsList = Array.isArray(appsData) ? appsData : [];
@@ -242,6 +255,98 @@ export default function DashboardPage() {
             icon={<Target className="h-6 w-6" />}
           />
         </div>
+      )}
+
+      {/* Readiness Score */}
+      {!loading && readiness && (
+        <Card className="mb-6 sm:mb-8 animate-reveal">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-4 sm:gap-6">
+              {/* Radial Gauge */}
+              <div className="flex-shrink-0">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <circle
+                      cx="18" cy="18" r="15.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      className="text-slate-700"
+                    />
+                    <circle
+                      cx="18" cy="18" r="15.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeDasharray={`${readiness.score * 0.974} 97.4`}
+                      strokeLinecap="round"
+                      className={
+                        readiness.score >= 70
+                          ? "text-emerald-400"
+                          : readiness.score >= 40
+                          ? "text-amber-400"
+                          : "text-red-400"
+                      }
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className={`text-sm sm:text-base font-bold ${
+                      readiness.score >= 70
+                        ? "text-emerald-400"
+                        : readiness.score >= 40
+                        ? "text-amber-400"
+                        : "text-red-400"
+                    }`}>
+                      {readiness.score}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <Target className="h-4 w-4 text-slate-400" />
+                  <h3 className="text-white font-semibold text-sm sm:text-base">Grant Readiness</h3>
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    readiness.score >= 70
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : readiness.score >= 40
+                      ? "bg-amber-500/20 text-amber-400"
+                      : "bg-red-500/20 text-red-400"
+                  }`}>
+                    {readiness.score >= 70 ? "Ready" : readiness.score >= 40 ? "Getting There" : "Needs Work"}
+                  </span>
+                </div>
+
+                {/* Top 2 Actions */}
+                {readiness.actions.length > 0 && (
+                  <div className="space-y-1 mt-2">
+                    {readiness.actions.slice(0, 2).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-xs text-slate-400">
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                          item.priority === "high"
+                            ? "bg-red-400"
+                            : item.priority === "medium"
+                            ? "bg-amber-400"
+                            : "bg-slate-500"
+                        }`} />
+                        <span className="truncate">{item.action}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* CTA */}
+              <Link href="/dashboard/organization" className="flex-shrink-0 hidden sm:block">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Improve
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Upgrade Prompt for Free Users */}

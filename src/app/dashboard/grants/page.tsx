@@ -65,6 +65,35 @@ interface Grant {
   tags: string | null;
 }
 
+function getGrantReadiness(
+  grant: { type?: string; eligibility?: string; state?: string },
+  org: { type?: string; state?: string } | null,
+  readinessScore: number
+): { label: string; color: string } {
+  if (!org) return { label: "Complete Profile", color: "text-slate-500" };
+
+  const elig = (grant.eligibility || "").toLowerCase();
+  const grantType = (grant.type || "").toLowerCase();
+  const orgType = (org.type || "").toLowerCase();
+
+  // Nonprofit applying to for-profit-only grant
+  if (orgType.includes("nonprofit") && (elig.includes("for-profit only") || grantType.includes("for-profit"))) {
+    return { label: "Not Eligible", color: "text-red-400" };
+  }
+  // For-profit applying to nonprofit-only grant
+  if (!orgType.includes("nonprofit") && (elig.includes("nonprofit only") || elig.includes("non-profit only"))) {
+    return { label: "Not Eligible", color: "text-red-400" };
+  }
+  // State mismatch
+  if (grant.state && grant.state !== "ALL" && org.state && grant.state !== org.state) {
+    return { label: "State Mismatch", color: "text-amber-400" };
+  }
+
+  if (readinessScore >= 70) return { label: "Ready", color: "text-emerald-400" };
+  if (readinessScore >= 40) return { label: "Partially Ready", color: "text-amber-400" };
+  return { label: "Not Ready", color: "text-red-400" };
+}
+
 const US_STATES = [
   { value: "", label: "All States" },
   { value: "ALL", label: "National (All States)" },
@@ -176,9 +205,19 @@ export default function GrantsPage() {
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [hasProfile, setHasProfile] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const [orgData, setOrgData] = useState<{ type?: string; state?: string } | null>(null);
+  const [readinessScore, setReadinessScore] = useState(0);
 
   useEffect(() => {
     fetchGrants();
+    // Fetch org data and readiness score for per-grant badges
+    Promise.all([
+      fetch("/api/organizations").then((r) => r.ok ? r.json() : null),
+      fetch("/api/organizations/readiness").then((r) => r.ok ? r.json() : null),
+    ]).then(([orgRes, readinessRes]) => {
+      if (orgRes) setOrgData({ type: orgRes.type, state: orgRes.state });
+      if (readinessRes) setReadinessScore(readinessRes.score ?? 0);
+    }).catch(() => {});
   }, []);
 
   const fetchGrants = async () => {
@@ -633,6 +672,14 @@ export default function GrantsPage() {
                         {grant.matchScore || 0}%
                       </div>
                       <p className="text-slate-500 text-xs mt-1">Match</p>
+                      {(() => {
+                        const ri = getGrantReadiness(
+                          { type: grant.type ?? undefined, eligibility: grant.eligibility ?? undefined, state: grant.state ?? undefined },
+                          orgData,
+                          readinessScore
+                        );
+                        return <span className={`text-xs mt-0.5 ${ri.color}`}>{ri.label}</span>;
+                      })()}
                     </div>
 
                     {/* Grant Info */}
@@ -652,6 +699,14 @@ export default function GrantsPage() {
                             >
                               {grant.matchScore || 0}% Match
                             </div>
+                            {(() => {
+                              const ri = getGrantReadiness(
+                                { type: grant.type ?? undefined, eligibility: grant.eligibility ?? undefined, state: grant.state ?? undefined },
+                                orgData,
+                                readinessScore
+                              );
+                              return <span className={`text-xs ${ri.color}`}>{ri.label}</span>;
+                            })()}
                           </div>
                           <h3
                             className="text-base sm:text-xl font-semibold text-white hover:text-emerald-400 transition cursor-pointer line-clamp-2"
