@@ -26,6 +26,16 @@ export async function GET(request: NextRequest) {
     console.log("Starting grant scraping job...");
     const startTime = Date.now();
 
+    // Step 1: Clean out expired grants (deadline passed and no active applications)
+    const now = new Date();
+    const expiredResult = await prisma.grant.deleteMany({
+      where: {
+        deadline: { lt: now },
+        applications: { none: {} },
+      },
+    });
+    console.log(`Cleaned ${expiredResult.count} expired grants`);
+
     // Scrape grants from all sources
     const grants = await scrapeAllGrants();
 

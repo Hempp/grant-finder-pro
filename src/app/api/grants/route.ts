@@ -117,12 +117,20 @@ export async function GET() {
       console.log("Auth check failed, continuing without session:", authError);
     }
 
-    // Build where clause - always include public grants
-    const whereClause = session?.user?.id
-      ? { OR: [{ userId: session.user.id }, { userId: null }] }
-      : { userId: null };
+    // Build where clause - always include public grants, exclude expired
+    const now = new Date();
+    const baseFilter = {
+      OR: [
+        { deadline: { gte: now } },  // Future deadline
+        { deadline: null },           // Rolling/no deadline (always open)
+      ],
+    };
 
-    // Fetch all grants (both user-specific and public ones)
+    const whereClause = session?.user?.id
+      ? { AND: [baseFilter, { OR: [{ userId: session.user.id }, { userId: null }] }] }
+      : { AND: [baseFilter, { userId: null }] };
+
+    // Fetch only open grants (not expired)
     const grants = await prisma.grant.findMany({
       where: whereClause,
       orderBy: [

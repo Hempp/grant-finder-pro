@@ -92,11 +92,10 @@ export async function searchGrantsGov(
   pageSize: number = 100
 ): Promise<ScrapedGrant[]> {
   try {
+    // Note: Grants.gov search2 API returns 0 results if sortBy/oppStatuses
+    // are explicitly set. We fetch all and filter for "posted" status client-side.
     const searchBody: Record<string, unknown> = {
       rows: pageSize,
-      oppStatuses: "posted", // Only open opportunities
-      sortBy: "openDate",
-      sortOrder: "desc",
     };
 
     if (keyword) searchBody.keyword = keyword;
@@ -130,9 +129,14 @@ export async function searchGrantsGov(
     const responseData: GrantsGovSearchResponse = await response.json();
 
     // Handle nested API response structure: response.data.oppHits
-    const opportunities = responseData.data?.oppHits || responseData.oppHits || [];
+    const allOpportunities = responseData.data?.oppHits || responseData.oppHits || [];
 
-    console.log(`Found ${opportunities.length} opportunities from Grants.gov`);
+    // Filter for only "posted" (open) opportunities - exclude forecasted, closed, archived
+    const opportunities = allOpportunities.filter(
+      (opp) => (opp.oppStatus || "").toLowerCase() === "posted"
+    );
+
+    console.log(`Found ${opportunities.length} open opportunities from Grants.gov (${allOpportunities.length} total)`);
 
     return opportunities.map((opp): ScrapedGrant => {
       // Get title (handles both formats)
@@ -1503,27 +1507,48 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
     "research",
     "technology",
     "startup",
+    "grant",
+    "cooperative agreement",
     // AI & Tech
     "artificial intelligence",
     "machine learning",
     "deep learning",
     "robotics",
     "computer vision",
+    "cybersecurity",
+    "data science",
     // Healthcare
     "healthcare",
     "biomedical",
     "medical device",
     "clinical research",
     "public health",
+    "mental health",
     // Climate & Energy
     "climate change",
     "clean energy",
     "renewable energy",
     "sustainability",
     "environmental",
-    // Education
+    "electric vehicle",
+    // Education & Workforce
     "STEM education",
     "workforce development",
+    "education technology",
+    "apprenticeship",
+    // Community & Social
+    "community development",
+    "affordable housing",
+    "food security",
+    "rural development",
+    "minority business",
+    // Agriculture
+    "agriculture",
+    "farming",
+    // Infrastructure
+    "infrastructure",
+    "broadband",
+    "transportation",
   ];
 
   for (const keyword of keywords) {
@@ -1547,9 +1572,18 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
   console.log("Adding state grants...");
   allGrants.push(...getStateGrants());
 
+  // Filter out expired grants (keep open deadlines + rolling/null deadlines)
+  const now = new Date();
+  const openGrants = allGrants.filter(grant => {
+    if (!grant.deadline) return true; // Rolling/no deadline = always open
+    return grant.deadline.getTime() > now.getTime();
+  });
+
+  console.log(`Filtered to ${openGrants.length} open grants (removed ${allGrants.length - openGrants.length} expired)`);
+
   // Deduplicate by title
   const seen = new Set<string>();
-  const uniqueGrants = allGrants.filter(grant => {
+  const uniqueGrants = openGrants.filter(grant => {
     const key = grant.title.toLowerCase().trim();
     if (seen.has(key)) return false;
     seen.add(key);
