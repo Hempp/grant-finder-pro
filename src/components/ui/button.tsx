@@ -100,11 +100,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizes = {
-      xs: "px-2 py-1 text-xs rounded-md",
-      sm: "px-3 py-1.5 text-sm rounded-lg",
-      md: "px-4 py-2 text-sm rounded-lg",
-      lg: "px-6 py-3 text-base rounded-xl",
-      xl: "px-8 py-4 text-lg rounded-xl",
+      xs: "px-2.5 py-1.5 text-xs rounded-md min-h-[32px]",
+      sm: "px-3 py-2 text-sm rounded-lg min-h-[36px] sm:min-h-[40px]",
+      md: "px-4 py-2.5 text-sm rounded-lg min-h-[40px] sm:min-h-[44px]",
+      lg: "px-6 py-3 text-base rounded-xl min-h-[44px] sm:min-h-[48px]",
+      xl: "px-8 py-4 text-lg rounded-xl min-h-[48px] sm:min-h-[52px]",
     };
 
     const spinnerSizes = {

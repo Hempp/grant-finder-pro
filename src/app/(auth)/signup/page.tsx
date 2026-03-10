@@ -79,10 +79,10 @@ function SignupForm() {
   ];
 
   return (
-    <Card className="w-full max-w-md p-8 glass-card animate-reveal">
+    <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
       {/* Referral Banner */}
       {referralCode && (
-        <div className="mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 animate-fade-in-down">
+        <div className="mb-4 sm:mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 animate-fade-in-down">
           <Gift className="h-5 w-5 text-emerald-400 flex-shrink-0" />
           <p className="text-sm text-emerald-300">
             You were referred! Sign up to get <span className="font-semibold">5 bonus grant matches</span>
@@ -90,8 +90,8 @@ function SignupForm() {
         </div>
       )}
 
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Create Account</h1>
         <p className="text-slate-400">Start finding grants for your organization</p>
       </div>
 
@@ -227,7 +227,7 @@ function SignupForm() {
 export default function SignupPage() {
   return (
     <Suspense fallback={
-      <Card className="w-full max-w-md p-8 glass-card flex items-center justify-center">
+      <Card className="w-full max-w-md p-5 sm:p-8 glass-card flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </Card>
     }>

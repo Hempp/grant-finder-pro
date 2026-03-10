@@ -253,7 +253,7 @@ export default function ApplicationDraftPage() {
     return (
       <div className="p-4 sm:p-8 max-w-4xl mx-auto">
         <Card>
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">Error Loading Draft</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load draft."}</p>
@@ -282,7 +282,7 @@ export default function ApplicationDraftPage() {
         </Link>
 
         <Card className="bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border-emerald-500/30">
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 sm:p-8 text-center">
             <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Sparkles className="h-10 w-10 text-emerald-400" />
             </div>
@@ -320,7 +320,7 @@ export default function ApplicationDraftPage() {
       return (
         <div className="p-4 sm:p-8 max-w-4xl mx-auto">
           <Card>
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-4 sm:p-8 text-center">
               <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-white mb-2">Section Not Found</h2>
               <Button onClick={handleBackFromEdit}>

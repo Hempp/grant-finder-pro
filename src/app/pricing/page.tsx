@@ -266,7 +266,7 @@ function PricingContent() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {plans.map((plan) => (
             <Card
               key={plan.id}
@@ -386,7 +386,7 @@ function PricingContent() {
 
         {/* Trust Signals */}
         <div className="mt-16 text-center">
-          <div className="flex items-center justify-center gap-8 flex-wrap text-slate-400 text-sm">
+          <div className="flex items-center justify-center gap-4 sm:gap-8 flex-wrap text-slate-400 text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-emerald-400" />
               Cancel anytime
@@ -407,13 +407,13 @@ function PricingContent() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">
+        <div className="mt-12 sm:mt-20 max-w-3xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-6 sm:mb-8">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <Card>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <h3 className="text-white font-medium mb-2">
                   What is the Grant Guarantee?
                 </h3>
@@ -426,8 +426,8 @@ function PricingContent() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <h3 className="text-white font-medium mb-2">
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">
                   What is AI Application Intelligence?
                 </h3>
                 <p className="text-slate-400">
@@ -439,8 +439,8 @@ function PricingContent() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <h3 className="text-white font-medium mb-2">
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">
                   What happens when I hit my monthly limit?
                 </h3>
                 <p className="text-slate-400">
@@ -450,8 +450,8 @@ function PricingContent() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-6">
-                <h3 className="text-white font-medium mb-2">
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">
                   Can I change plans later?
                 </h3>
                 <p className="text-slate-400">

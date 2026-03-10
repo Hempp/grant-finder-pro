@@ -220,7 +220,7 @@ export default function OrganizationPage() {
               }`}
             >
               <span className="hidden xs:inline">{step.name}</span>
-              <span className="xs:hidden">{step.id}</span>
+              <span className="inline xs:hidden">{step.id}</span>
             </span>
             {index < steps.length - 1 && (
               <div

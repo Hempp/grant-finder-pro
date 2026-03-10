@@ -108,22 +108,22 @@ function SettingsContent() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          <Settings className="h-8 w-8 text-emerald-400" />
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2 sm:gap-3">
+          <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-400" />
           Settings
         </h1>
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">
           Manage your notification preferences and account settings
         </p>
       </div>
 
-      <div className="max-w-2xl space-y-6">
+      <div className="max-w-2xl space-y-4 sm:space-y-6">
         {/* Profile Section */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <User className="h-5 w-5 text-emerald-400" />
             Profile Information
           </h2>
@@ -157,8 +157,8 @@ function SettingsContent() {
         </div>
 
         {/* Notification Settings */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <Bell className="h-5 w-5 text-yellow-400" />
             Notification Preferences
           </h2>
@@ -176,7 +176,7 @@ function SettingsContent() {
                 onChange={(e) =>
                   setSettings({ ...settings, emailNotifications: e.target.checked })
                 }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800"
+                className="w-6 h-6 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 flex-shrink-0"
               />
             </label>
 
@@ -193,7 +193,7 @@ function SettingsContent() {
                 onChange={(e) =>
                   setSettings({ ...settings, deadlineReminders: e.target.checked })
                 }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800"
+                className="w-6 h-6 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 flex-shrink-0"
               />
             </label>
 
@@ -230,7 +230,7 @@ function SettingsContent() {
                 onChange={(e) =>
                   setSettings({ ...settings, newGrantAlerts: e.target.checked })
                 }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800"
+                className="w-6 h-6 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 flex-shrink-0"
               />
             </label>
 
@@ -247,7 +247,7 @@ function SettingsContent() {
                 onChange={(e) =>
                   setSettings({ ...settings, weeklyDigest: e.target.checked })
                 }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800"
+                className="w-6 h-6 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 flex-shrink-0"
               />
             </label>
 
@@ -264,15 +264,15 @@ function SettingsContent() {
                 onChange={(e) =>
                   setSettings({ ...settings, trialReminders: e.target.checked })
                 }
-                className="w-5 h-5 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800"
+                className="w-6 h-6 rounded bg-slate-700 border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-800 flex-shrink-0"
               />
             </label>
           </div>
         </div>
 
         {/* Security Section */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <Shield className="h-5 w-5 text-blue-400" />
             Security
           </h2>
@@ -287,8 +287,8 @@ function SettingsContent() {
         </div>
 
         {/* Subscription & Billing Section */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <CreditCard className="h-5 w-5 text-emerald-400" />
             Subscription & Billing
           </h2>
@@ -309,7 +309,7 @@ function SettingsContent() {
           ) : subscription ? (
             <div className="space-y-6">
               {/* Current Plan */}
-              <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-slate-700/50 rounded-lg">
                 <div className="flex items-center gap-3">
                   {subscription.plan === "free" ? (
                     <div className="w-10 h-10 bg-slate-600 rounded-lg flex items-center justify-center">
@@ -339,7 +339,7 @@ function SettingsContent() {
               </div>
 
               {/* Usage Stats */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="p-4 bg-slate-700/30 rounded-lg">
                   <p className="text-sm text-slate-400 mb-1">Grant Matches</p>
                   <p className="text-xl font-semibold text-white">
@@ -446,7 +446,7 @@ function SettingsContent() {
 export default function SettingsPage() {
   return (
     <Suspense fallback={
-      <div className="p-8 flex items-center justify-center">
+      <div className="p-4 sm:p-8 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     }>

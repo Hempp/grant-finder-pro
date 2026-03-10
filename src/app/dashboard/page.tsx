@@ -312,14 +312,14 @@ export default function DashboardPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="text-center ml-4">
+                    <div className="text-center ml-3 sm:ml-4 flex-shrink-0">
                       <div className="relative">
-                        <svg className="w-16 h-16 transform -rotate-90">
-                          <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" />
+                        <svg className="w-12 h-12 sm:w-16 sm:h-16 transform -rotate-90">
+                          <circle cx="50%" cy="50%" r="40%" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" />
                           <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
+                            cx="50%"
+                            cy="50%"
+                            r="40%"
                             stroke="currentColor"
                             strokeWidth="4"
                             fill="none"
@@ -328,10 +328,10 @@ export default function DashboardPage() {
                           />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-lg font-bold text-emerald-400">{grant.matchScore || 0}%</span>
+                          <span className="text-sm sm:text-lg font-bold text-emerald-400">{grant.matchScore || 0}%</span>
                         </div>
                       </div>
-                      <div className="text-slate-500 text-xs mt-1">Match</div>
+                      <div className="text-slate-500 text-[10px] sm:text-xs mt-1">Match</div>
                     </div>
                   </Link>
                 );
@@ -438,13 +438,13 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="mt-8" variant="gradient">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+      <Card className="mt-4 sm:mt-8" variant="gradient">
+        <CardContent className="p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-emerald-400" />
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               href="/dashboard/organization"
               className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-emerald-500/20 group card-interactive"

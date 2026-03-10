@@ -156,9 +156,9 @@ export default function GrantDetailPage() {
 
   if (error || !grant) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <Card>
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">Grant Not Found</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load grant details."}</p>
@@ -201,7 +201,7 @@ export default function GrantDetailPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Back Button */}
       <Link
         href="/dashboard/grants"
@@ -212,7 +212,7 @@ export default function GrantDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2 flex-wrap">
             {grant.type && (
@@ -230,7 +230,7 @@ export default function GrantDetailPage() {
               </Badge>
             )}
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">{grant.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{grant.title}</h1>
           <div className="flex items-center gap-2 text-slate-400">
             <Building2 className="h-5 w-5" />
             <span className="text-lg">{grant.funder}</span>
@@ -243,7 +243,7 @@ export default function GrantDetailPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 self-start">
           <button
             onClick={() => setSaved(!saved)}
             className={`p-3 rounded-lg transition ${
@@ -271,11 +271,11 @@ export default function GrantDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Main Content */}
-        <div className="col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {/* Key Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <Card>
               <CardContent className="p-4 text-center">
                 <DollarSign className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
@@ -403,7 +403,7 @@ export default function GrantDetailPage() {
         <div className="space-y-6">
           {/* Apply CTA */}
           <Card className="bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border-emerald-500/30">
-            <CardContent className="p-6 text-center">
+            <CardContent className="p-4 sm:p-6 text-center">
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="h-8 w-8 text-emerald-400" />
               </div>

@@ -67,7 +67,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={`p-6 border-b border-slate-800/50 flex items-start justify-between gap-4 ${className}`}
+        className={`p-4 sm:p-6 border-b border-slate-800/50 flex items-start justify-between gap-4 ${className}`}
         {...props}
       >
         <div className="flex-1 min-w-0">{children}</div>
@@ -126,7 +126,7 @@ export const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
     return (
       <div
         ref={ref}
-        className={`${noPadding ? "" : "p-6"} ${className}`}
+        className={`${noPadding ? "" : "p-4 sm:p-6"} ${className}`}
         {...props}
       >
         {children}
@@ -153,7 +153,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={`p-6 border-t border-slate-800/50 flex items-center gap-3 ${justifyStyles[justify]} ${className}`}
+        className={`p-4 sm:p-6 border-t border-slate-800/50 flex items-center gap-3 ${justifyStyles[justify]} ${className}`}
         {...props}
       >
         {children}
@@ -180,24 +180,24 @@ interface StatsCardProps extends HTMLAttributes<HTMLDivElement> {
 export const StatsCard = forwardRef<HTMLDivElement, StatsCardProps>(
   ({ className = "", title, value, description, trend, icon, ...props }, ref) => {
     return (
-      <Card ref={ref} className={`p-6 ${className}`} hover glow {...props}>
+      <Card ref={ref} className={`p-3 sm:p-6 ${className}`} hover glow {...props}>
         <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-slate-400">{title}</p>
-            <p className="text-3xl font-bold text-white">{value}</p>
+          <div className="space-y-1 sm:space-y-2">
+            <p className="text-xs sm:text-sm font-medium text-slate-400">{title}</p>
+            <p className="text-xl sm:text-3xl font-bold text-white">{value}</p>
             {description && (
-              <p className="text-sm text-slate-500">{description}</p>
+              <p className="text-xs sm:text-sm text-slate-500">{description}</p>
             )}
             {trend && (
-              <div className={`flex items-center gap-1 text-sm ${trend.isPositive ? "text-emerald-400" : "text-red-400"}`}>
+              <div className={`flex items-center gap-1 text-xs sm:text-sm ${trend.isPositive ? "text-emerald-400" : "text-red-400"}`}>
                 <span>{trend.isPositive ? "↑" : "↓"}</span>
                 <span>{Math.abs(trend.value)}%</span>
-                {trend.label && <span className="text-slate-500">{trend.label}</span>}
+                {trend.label && <span className="text-slate-500 hidden sm:inline">{trend.label}</span>}
               </div>
             )}
           </div>
           {icon && (
-            <div className="p-3 bg-emerald-500/10 rounded-lg text-emerald-400">
+            <div className="p-2 sm:p-3 bg-emerald-500/10 rounded-lg text-emerald-400">
               {icon}
             </div>
           )}

@@ -41,9 +41,9 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-md p-8 glass-card animate-reveal">
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
+    <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Welcome Back</h1>
         <p className="text-slate-400">Sign in to continue to your dashboard</p>
       </div>
 

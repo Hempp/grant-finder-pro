@@ -549,8 +549,8 @@ export default function GrantsPage() {
 
           {/* Active Filters */}
           {(stateFilter || typeFilter || categoryFilter || amountFilter) && (
-            <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-700">
-              <span className="text-slate-400 text-sm">Active filters:</span>
+            <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-700">
+              <span className="text-slate-400 text-xs sm:text-sm">Active filters:</span>
               {stateFilter && (
                 <Badge variant="info" className="flex items-center gap-1">
                   {getStateName(stateFilter)}
@@ -661,7 +661,7 @@ export default function GrantsPage() {
                           </h3>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <Building2 className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
-                            <span className="text-slate-400 text-sm truncate max-w-[150px] sm:max-w-none">{grant.funder}</span>
+                            <span className="text-slate-400 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">{grant.funder}</span>
                             <Badge
                               variant={
                                 grant.type === "federal"
@@ -778,10 +778,10 @@ export default function GrantsPage() {
 
       {!loading && filteredGrants.length === 0 && (
         <Card>
-          <CardContent className="p-12 text-center">
-            <Search className="h-12 w-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-white font-medium mb-2">No grants found</p>
-            <p className="text-slate-400">Try adjusting your filters or search query</p>
+          <CardContent className="p-8 sm:p-12 text-center">
+            <Search className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
+            <p className="text-white font-medium mb-2 text-sm sm:text-base">No grants found</p>
+            <p className="text-slate-400 text-sm">Try adjusting your filters or search query</p>
           </CardContent>
         </Card>
       )}
@@ -870,66 +870,66 @@ export default function GrantsPage() {
                   <div className="space-y-3">
                     {/* Location Match */}
                     <div className="flex items-center gap-3">
-                      <div className="w-24 text-slate-400 text-sm">Location</div>
+                      <div className="w-16 sm:w-24 text-slate-400 text-xs sm:text-sm">Location</div>
                       <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.location}%` }}
                         />
                       </div>
-                      <div className="w-12 text-right text-sm font-medium text-slate-300">
+                      <div className="w-10 sm:w-12 text-right text-xs sm:text-sm font-medium text-slate-300">
                         {selectedGrant.matchBreakdown.location}%
                       </div>
                     </div>
                     {/* Organization Type Match */}
                     <div className="flex items-center gap-3">
-                      <div className="w-24 text-slate-400 text-sm">Org Type</div>
+                      <div className="w-16 sm:w-24 text-slate-400 text-xs sm:text-sm">Org Type</div>
                       <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.orgType}%` }}
                         />
                       </div>
-                      <div className="w-12 text-right text-sm font-medium text-slate-300">
+                      <div className="w-10 sm:w-12 text-right text-xs sm:text-sm font-medium text-slate-300">
                         {selectedGrant.matchBreakdown.orgType}%
                       </div>
                     </div>
                     {/* Category Match */}
                     <div className="flex items-center gap-3">
-                      <div className="w-24 text-slate-400 text-sm">Category</div>
+                      <div className="w-16 sm:w-24 text-slate-400 text-xs sm:text-sm">Category</div>
                       <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.category}%` }}
                         />
                       </div>
-                      <div className="w-12 text-right text-sm font-medium text-slate-300">
+                      <div className="w-10 sm:w-12 text-right text-xs sm:text-sm font-medium text-slate-300">
                         {selectedGrant.matchBreakdown.category}%
                       </div>
                     </div>
                     {/* Funding Amount Match */}
                     <div className="flex items-center gap-3">
-                      <div className="w-24 text-slate-400 text-sm">Amount</div>
+                      <div className="w-16 sm:w-24 text-slate-400 text-xs sm:text-sm">Amount</div>
                       <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.amount}%` }}
                         />
                       </div>
-                      <div className="w-12 text-right text-sm font-medium text-slate-300">
+                      <div className="w-10 sm:w-12 text-right text-xs sm:text-sm font-medium text-slate-300">
                         {selectedGrant.matchBreakdown.amount}%
                       </div>
                     </div>
                     {/* Keywords Match */}
                     <div className="flex items-center gap-3">
-                      <div className="w-24 text-slate-400 text-sm">Keywords</div>
+                      <div className="w-16 sm:w-24 text-slate-400 text-xs sm:text-sm">Keywords</div>
                       <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-rose-500 to-red-500 rounded-full transition-all"
                           style={{ width: `${selectedGrant.matchBreakdown.keywords}%` }}
                         />
                       </div>
-                      <div className="w-12 text-right text-sm font-medium text-slate-300">
+                      <div className="w-10 sm:w-12 text-right text-xs sm:text-sm font-medium text-slate-300">
                         {selectedGrant.matchBreakdown.keywords}%
                       </div>
                     </div>

@@ -389,9 +389,9 @@ ${formData.budgetJustification}
 
   if (error || !application) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <Card>
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">Application Not Found</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load application details."}</p>
@@ -414,7 +414,7 @@ ${formData.budgetJustification}
   // View mode - show application summary
   if (mode === "view") {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         {/* Back Button */}
         <Link
           href="/dashboard/applications"
@@ -425,16 +425,16 @@ ${formData.budgetJustification}
         </Link>
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white">{application.grant.title}</h1>
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">{application.grant.title}</h1>
               <Badge variant={status.color}>
                 <status.icon className="h-3 w-3 mr-1" />
                 {status.label}
               </Badge>
             </div>
-            <div className="flex items-center gap-4 text-slate-400">
+            <div className="flex items-center gap-2 sm:gap-4 text-slate-400 text-sm sm:text-base flex-wrap">
               <span className="flex items-center gap-1">
                 <Building2 className="h-4 w-4" />
                 {application.grant.funder}
@@ -454,7 +454,7 @@ ${formData.budgetJustification}
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-start">
             <Link href={`/dashboard/applications/${params.id}/draft`}>
               <Button variant="secondary">
                 <Wand2 className="h-4 w-4 mr-2" />
@@ -552,12 +552,12 @@ ${formData.budgetJustification}
             <CardContent>
               {formData.totalBudget ? (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-slate-700/50 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="bg-slate-700/50 p-3 sm:p-4 rounded-lg">
                       <p className="text-slate-400 text-sm">Total Budget</p>
-                      <p className="text-2xl font-bold text-white">${parseInt(formData.totalBudget).toLocaleString()}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white">${parseInt(formData.totalBudget).toLocaleString()}</p>
                     </div>
-                    <div className="bg-slate-700/50 p-4 rounded-lg">
+                    <div className="bg-slate-700/50 p-3 sm:p-4 rounded-lg">
                       <p className="text-slate-400 text-sm">Personnel</p>
                       <p className="text-xl font-semibold text-white">${parseInt(formData.personnelCosts || "0").toLocaleString()}</p>
                     </div>
@@ -576,7 +576,7 @@ ${formData.budgetJustification}
           </Card>
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4">
             <Button variant="secondary" onClick={handleDelete} disabled={deleting}>
               {deleting ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -612,7 +612,7 @@ ${formData.budgetJustification}
 
   // Edit mode - show step-by-step form
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Back Button */}
       <button
         onClick={() => setMode("view")}
@@ -623,13 +623,13 @@ ${formData.budgetJustification}
       </button>
 
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <Badge variant={status.color} className="mb-2">
           <status.icon className="h-3 w-3 mr-1" />
           {status.label}
         </Badge>
-        <h1 className="text-3xl font-bold text-white">{application.grant.title}</h1>
-        <div className="flex items-center gap-4 mt-2 text-slate-400">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">{application.grant.title}</h1>
+        <div className="flex items-center gap-2 sm:gap-4 mt-2 text-slate-400 text-sm sm:text-base flex-wrap">
           <span>{application.grant.funder}</span>
           <span>•</span>
           <span className="text-emerald-400 font-medium">
@@ -641,12 +641,12 @@ ${formData.budgetJustification}
       </div>
 
       {/* Progress Steps */}
-      <div className="flex items-center justify-between mb-8 overflow-x-auto pb-2">
+      <div className="flex items-center justify-between mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-2 px-2 sm:mx-0 sm:px-0">
         {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center">
+          <div key={step.id} className="flex items-center flex-shrink-0">
             <button
               onClick={() => setCurrentStep(step.id)}
-              className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition flex-shrink-0 ${
+              className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition flex-shrink-0 ${
                 currentStep > step.id
                   ? "bg-emerald-500 border-emerald-500"
                   : currentStep === step.id
@@ -655,21 +655,22 @@ ${formData.budgetJustification}
               }`}
             >
               {currentStep > step.id ? (
-                <CheckCircle className="h-5 w-5 text-white" />
+                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               ) : (
-                <step.icon className="h-5 w-5" />
+                <step.icon className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </button>
             <span
-              className={`ml-2 font-medium whitespace-nowrap ${
+              className={`ml-2 sm:ml-3 font-medium text-sm sm:text-base whitespace-nowrap ${
                 currentStep >= step.id ? "text-white" : "text-slate-500"
               }`}
             >
-              {step.name}
+              <span className="hidden sm:inline">{step.name}</span>
+              <span className="sm:hidden">{step.id}</span>
             </span>
             {index < steps.length - 1 && (
               <div
-                className={`w-12 h-0.5 mx-3 ${
+                className={`w-6 sm:w-12 h-0.5 mx-2 sm:mx-3 ${
                   currentStep > step.id ? "bg-emerald-500" : "bg-slate-700"
                 }`}
               />
@@ -846,7 +847,7 @@ ${formData.budgetJustification}
           {/* Step 4: Budget */}
           {currentStep === 4 && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Input
                   label="Total Budget Requested"
                   type="number"
@@ -862,7 +863,7 @@ ${formData.budgetJustification}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Input
                   label="Equipment Costs"
                   type="number"

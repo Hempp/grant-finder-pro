@@ -100,7 +100,7 @@ export default function ReferralsPage() {
 
   if (loading) {
     return (
-      <div className="p-8 flex items-center justify-center">
+      <div className="p-4 sm:p-8 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
@@ -108,68 +108,68 @@ export default function ReferralsPage() {
 
   if (!data) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         <p className="text-slate-400">Failed to load referral data.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-          <Gift className="h-8 w-8 text-emerald-400" />
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2 sm:gap-3">
+          <Gift className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-400" />
           Referral Program
         </h1>
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">
           Invite friends and earn bonus grant matches for both of you
         </p>
       </div>
 
       {/* Reward Banner with Hero Illustration */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
+      <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 hidden lg:block">
           <ReferralHeroIllustration className="w-80 h-60" />
         </div>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-4">
-            <RewardBadgeIllustration className="w-16 h-16 flex-shrink-0" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <RewardBadgeIllustration className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0" />
             <div>
-              <h2 className="text-xl font-bold text-white">Give {data.rewards.refereeReward}, Get {data.rewards.referrerReward}</h2>
-              <p className="text-slate-300">
+              <h2 className="text-lg sm:text-xl font-bold text-white">Give {data.rewards.refereeReward}, Get {data.rewards.referrerReward}</h2>
+              <p className="text-slate-300 text-sm sm:text-base">
                 Your friend gets {data.rewards.refereeReward} bonus matches, you get {data.rewards.referrerReward}!
               </p>
             </div>
           </div>
-          <div className="text-right bg-slate-900/50 rounded-lg px-4 py-3">
-            <p className="text-sm text-slate-400">Your available credits</p>
-            <p className="text-3xl font-bold text-emerald-400">{data.stats.creditsAvailable}</p>
+          <div className="text-left sm:text-right bg-slate-900/50 rounded-lg px-3 py-2 sm:px-4 sm:py-3">
+            <p className="text-xs sm:text-sm text-slate-400">Your available credits</p>
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{data.stats.creditsAvailable}</p>
           </div>
         </div>
       </div>
 
       {/* Share Section */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6 mb-8 relative overflow-hidden">
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden">
         <div className="absolute right-4 top-4 opacity-20 hidden md:block">
           <ShareIllustration className="w-32 h-28" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <Share2 className="h-5 w-5 text-emerald-400" />
           Share Your Referral Link
         </h3>
 
         {/* Referral Link */}
-        <div className="flex gap-3 mb-6 relative z-10">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6 relative z-10">
           <input
             type="text"
             value={data.referralLink}
             readOnly
-            className="flex-1 px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white font-mono text-sm"
+            className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white font-mono text-xs sm:text-sm truncate"
           />
           <button
             onClick={copyToClipboard}
-            className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition flex items-center gap-2 font-medium"
+            className="px-4 py-2.5 sm:py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
           >
             {copied ? (
               <>
@@ -213,35 +213,35 @@ export default function ReferralsPage() {
         {/* Referral Code */}
         <div className="mt-6 pt-6 border-t border-slate-700">
           <p className="text-sm text-slate-400 mb-2">Your referral code</p>
-          <p className="text-2xl font-bold font-mono text-emerald-400 tracking-wider">
+          <p className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 tracking-wider">
             {data.referralCode}
           </p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
-          <p className="text-sm text-slate-400 mb-1">Total Referrals</p>
-          <p className="text-2xl font-bold text-white">{data.stats.totalReferrals}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-slate-400 mb-1">Total Referrals</p>
+          <p className="text-xl sm:text-2xl font-bold text-white">{data.stats.totalReferrals}</p>
         </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
-          <p className="text-sm text-slate-400 mb-1">Completed</p>
-          <p className="text-2xl font-bold text-emerald-400">{data.stats.completedReferrals}</p>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-slate-400 mb-1">Completed</p>
+          <p className="text-xl sm:text-2xl font-bold text-emerald-400">{data.stats.completedReferrals}</p>
         </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
-          <p className="text-sm text-slate-400 mb-1">Pending</p>
-          <p className="text-2xl font-bold text-yellow-400">{data.stats.pendingReferrals}</p>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-slate-400 mb-1">Pending</p>
+          <p className="text-xl sm:text-2xl font-bold text-yellow-400">{data.stats.pendingReferrals}</p>
         </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
-          <p className="text-sm text-slate-400 mb-1">Matches Earned</p>
-          <p className="text-2xl font-bold text-cyan-400">{data.stats.totalEarned}</p>
+        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
+          <p className="text-xs sm:text-sm text-slate-400 mb-1">Matches Earned</p>
+          <p className="text-xl sm:text-2xl font-bold text-cyan-400">{data.stats.totalEarned}</p>
         </div>
       </div>
 
       {/* Referrals List */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <Users className="h-5 w-5 text-cyan-400" />
           Your Referrals
         </h3>
@@ -259,20 +259,20 @@ export default function ReferralsPage() {
             {data.referrals.map((referral) => (
               <div
                 key={referral.id}
-                className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-slate-700/30 rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-medium text-sm sm:text-base">
                       {referral.refereeName[0]?.toUpperCase() || "?"}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-white font-medium">{referral.refereeName}</p>
-                    <p className="text-sm text-slate-400">{referral.refereeEmail}</p>
+                  <div className="min-w-0">
+                    <p className="text-white font-medium text-sm sm:text-base truncate">{referral.refereeName}</p>
+                    <p className="text-xs sm:text-sm text-slate-400 truncate">{referral.refereeEmail}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 ml-11 sm:ml-0">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       referral.status === "rewarded"
@@ -297,9 +297,9 @@ export default function ReferralsPage() {
       </div>
 
       {/* How it Works */}
-      <div className="mt-8 bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">How It Works</h3>
-        <div className="grid md:grid-cols-3 gap-6">
+      <div className="mt-6 sm:mt-8 bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">How It Works</h3>
+        <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-emerald-400 font-bold">1</span>

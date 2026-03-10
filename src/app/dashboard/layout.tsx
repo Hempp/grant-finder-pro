@@ -48,8 +48,8 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col lg:flex-row">
-      {/* Mobile Header */}
-      <div className="lg:hidden glass-dark border-b border-slate-800 p-4 flex items-center justify-between">
+      {/* Mobile Header - sticky so it stays visible on scroll */}
+      <div className="lg:hidden glass-dark border-b border-slate-800 p-3 sm:p-4 flex items-center justify-between sticky top-0 z-30">
         <Link href="/" className="flex items-center gap-2">
           <Sparkles className="h-7 w-7 text-emerald-400" />
           <span className="text-lg font-bold text-white">GrantPilot</span>
@@ -75,7 +75,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-slate-950/95 lg:bg-slate-950/80 backdrop-blur-xl border-r border-slate-800/60 flex flex-col
+        w-[280px] sm:w-64 max-w-[85vw] bg-slate-950/95 lg:bg-slate-950/80 backdrop-blur-xl border-r border-slate-800/60 flex flex-col
         transform transition-transform duration-300 ease-in-out
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
@@ -137,7 +137,7 @@ export default function DashboardLayout({
                 href={item.href}
                 onClick={closeMobileMenu}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
+                className={`flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
                     ? "bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400 ml-0 pl-3.5"
                     : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:translate-x-1"
@@ -155,14 +155,14 @@ export default function DashboardLayout({
           <Link
             href="/dashboard/settings"
             onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200 hover:translate-x-1"
+            className="flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200 hover:translate-x-1"
           >
             <Settings className="h-5 w-5" />
             <span className="font-medium text-sm">Settings</span>
           </Link>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 w-full"
+            className="flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 w-full"
           >
             <LogOut className="h-5 w-5" />
             <span className="font-medium text-sm">Sign Out</span>
