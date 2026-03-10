@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { scrapeAllGrants, type ScrapedGrant } from "@/lib/grant-scraper";
+import { grantSourceRegistry } from "@/lib/grant-sources";
 import { sendGrantAlertEmail } from "@/lib/email";
 
 // Verify cron secret to prevent unauthorized access
@@ -36,8 +36,14 @@ export async function GET(request: NextRequest) {
     });
     console.log(`Cleaned ${expiredResult.count} expired grants`);
 
-    // Scrape grants from all sources
-    const grants = await scrapeAllGrants();
+    // Scrape grants from all pluggable sources
+    const sourceResults = await grantSourceRegistry.scrapeAll();
+    const grants = sourceResults.flatMap((r) => r.grants);
+
+    for (const r of sourceResults) {
+      if (r.error) console.error(`Source ${r.source} failed: ${r.error}`);
+      else console.log(`Source ${r.source}: ${r.grants.length} grants`);
+    }
 
     // Upsert grants into database
     let created = 0;
@@ -46,11 +52,13 @@ export async function GET(request: NextRequest) {
 
     for (const grant of grants) {
       try {
-        // Check if grant already exists (by title and funder)
+        // Check if grant already exists (by sourceId, or title+funder)
         const existing = await prisma.grant.findFirst({
           where: {
-            title: grant.title,
-            funder: grant.funder,
+            OR: [
+              ...(grant.sourceId ? [{ sourceId: grant.sourceId }] : []),
+              { title: grant.title, funder: grant.funder },
+            ],
           },
         });
 
@@ -63,17 +71,19 @@ export async function GET(request: NextRequest) {
               amount: grant.amount,
               amountMin: grant.amountMin,
               amountMax: grant.amountMax,
-              deadline: grant.deadline,
+              deadline: grant.deadline ? new Date(grant.deadline) : null,
               url: grant.url,
               type: grant.type,
               category: grant.category,
               eligibility: grant.eligibility,
-              requirements: grant.requirements,
               state: grant.state,
-              tags: grant.tags,
+              tags: JSON.stringify(grant.tags),
               source: grant.source,
-              scrapedAt: grant.scrapedAt,
+              sourceId: grant.sourceId,
+              sourceUrl: grant.sourceUrl,
+              nofoUrl: grant.nofoUrl,
               agencyName: grant.agencyName,
+              scrapedAt: new Date(),
               updatedAt: new Date(),
             },
           });
@@ -88,17 +98,19 @@ export async function GET(request: NextRequest) {
               amount: grant.amount,
               amountMin: grant.amountMin,
               amountMax: grant.amountMax,
-              deadline: grant.deadline,
+              deadline: grant.deadline ? new Date(grant.deadline) : null,
               url: grant.url,
               type: grant.type,
               category: grant.category,
               eligibility: grant.eligibility,
-              requirements: grant.requirements,
               state: grant.state,
-              tags: grant.tags,
+              tags: JSON.stringify(grant.tags),
               source: grant.source,
-              scrapedAt: grant.scrapedAt,
+              sourceId: grant.sourceId,
+              sourceUrl: grant.sourceUrl,
+              nofoUrl: grant.nofoUrl,
               agencyName: grant.agencyName,
+              scrapedAt: new Date(),
               status: "discovered",
             },
           });
