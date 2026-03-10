@@ -131,6 +131,12 @@ model Organization {
   previousFunding String?  // History of grants/investments
 
   profileComplete Boolean  @default(false)
+
+  // Readiness scoring
+  readinessScore    Int?
+  readinessDetails  String?    // JSON breakdown
+  lastAssessedAt    DateTime?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -202,10 +208,17 @@ model Grant {
   source          String?  // where we found it
   scrapedAt       DateTime?
 
+  // Pluggable sources
+  sourceUrl    String?    // Original source URL
+  sourceId     String?    // External ID (oppNumber, noticeId)
+  nofoUrl      String?    // Direct link to NOFO/RFP PDF
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   applications    Application[]
+  analysis     GrantAnalysis?
+  outcomes     GrantOutcome[]
 
   // Performance indexes for common queries
   @@index([userId])
@@ -217,7 +230,43 @@ model Grant {
   @@index([state])
   @@index([createdAt])
   @@index([title, funder])  // For upsert lookups
+  @@index([sourceId])
   @@index([userId, status, matchScore])  // Composite for dashboard queries
+}
+
+model GrantAnalysis {
+  id              String   @id @default(cuid())
+  grantId         String   @unique
+  grant           Grant    @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  scoringCriteria String   // JSON: [{name, maxPoints, description, weight}]
+  requiredSections String  // JSON: [{title, wordLimit, instructions, required}]
+  eligibilityReqs String   // JSON: [{requirement, type, met}]
+  evaluationNotes String?
+  pdfUrl          String?
+  pdfPageCount    Int?
+  analyzedAt      DateTime @default(now())
+  modelUsed       String   @default("claude-sonnet-4-20250514")
+  confidence      Int
+
+  @@index([grantId])
+}
+
+model GrantOutcome {
+  id            String   @id @default(cuid())
+  grantId       String
+  grant         Grant    @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  orgType       String?
+  orgState      String?
+  teamSize      String?
+  annualRevenue String?
+  result        String   // "awarded" | "rejected" | "no_response"
+  appliedAt     DateTime
+  resultAt      DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([grantId])
+  @@index([result])
+  @@index([orgType])
 }
 
 model Application {
@@ -241,6 +290,11 @@ model Application {
   awardAmount     Int?
 
   notes           String?
+
+  // Outcome tracking
+  outcomeReportedAt  DateTime?
+  outcomeNotes       String?
+  feedbackReceived   String?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
