@@ -1,6 +1,6 @@
 import { GrantSource, ScrapedGrant } from "./types";
 
-class GrantSourceRegistry {
+export class GrantSourceRegistry {
   private sources: Map<string, GrantSource> = new Map();
 
   register(source: GrantSource): void {
