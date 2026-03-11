@@ -100,6 +100,19 @@ const SEARCH_KEYWORDS = [
   "Small Business Innovation Research",
 ];
 
+const STATE_SEARCHES: { keyword: string; abbreviation: string }[] = [
+  { keyword: "California", abbreviation: "CA" },
+  { keyword: "Texas", abbreviation: "TX" },
+  { keyword: "New York", abbreviation: "NY" },
+  { keyword: "Florida", abbreviation: "FL" },
+  { keyword: "Pennsylvania", abbreviation: "PA" },
+  { keyword: "Illinois", abbreviation: "IL" },
+  { keyword: "Ohio", abbreviation: "OH" },
+  { keyword: "Georgia", abbreviation: "GA" },
+  { keyword: "North Carolina", abbreviation: "NC" },
+  { keyword: "Michigan", abbreviation: "MI" },
+];
+
 export class GrantsGovSource implements GrantSource {
   id = "grants_gov";
   name = "Grants.gov";
@@ -127,6 +140,25 @@ export class GrantsGovSource implements GrantSource {
         await new Promise((resolve) => setTimeout(resolve, 500));
       } catch (error) {
         console.error(`Grants.gov search failed for keyword "${keyword}":`, error);
+      }
+    }
+
+    // Second pass: state-specific searches
+    for (const { keyword, abbreviation } of STATE_SEARCHES) {
+      try {
+        const grants = await this.searchKeyword(keyword);
+        for (const grant of grants) {
+          const dedupKey = grant.sourceId || grant.title;
+          if (!seen.has(dedupKey)) {
+            seen.add(dedupKey);
+            // Tag with the specific state abbreviation
+            allGrants.push({ ...grant, state: abbreviation });
+          }
+        }
+        // Rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        console.error(`Grants.gov state search failed for "${keyword}":`, error);
       }
     }
 
