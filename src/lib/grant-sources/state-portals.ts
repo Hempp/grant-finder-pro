@@ -47,6 +47,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     state: "CA",
     tags: ["clean-energy", "vehicles", "california"],
   },
+  {
+    title: "California Life Sciences Innovation Fund",
+    funder: "California Governor's Office of Business and Economic Development",
+    description:
+      "Grants supporting life sciences and biotech innovation, including therapeutics, medical devices, and health technology startups.",
+    amount: "Up to $500,000",
+    amountMin: 50000,
+    amountMax: 500000,
+    deadline: null,
+    url: "https://business.ca.gov/industries/life-sciences/",
+    category: "Healthcare",
+    eligibility: "California life sciences startups and small businesses",
+    state: "CA",
+    tags: ["healthcare", "biotech", "life-sciences", "california"],
+  },
   // Texas
   {
     title: "Texas Enterprise Fund",
@@ -78,6 +93,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     state: "TX",
     tags: ["workforce", "training", "texas"],
   },
+  {
+    title: "Texas Emerging Technology Fund",
+    funder: "Office of the Governor of Texas",
+    description:
+      "Grants to accelerate technology commercialization and attract emerging technology companies to Texas.",
+    amount: "Up to $2,000,000",
+    amountMin: 100000,
+    amountMax: 2000000,
+    deadline: null,
+    url: "https://gov.texas.gov/business/page/emerging-technology-fund",
+    category: "Technology",
+    eligibility: "Texas-based technology startups and research institutions",
+    state: "TX",
+    tags: ["technology", "innovation", "startups", "texas"],
+  },
   // Florida
   {
     title: "Florida Job Growth Grant Fund",
@@ -93,6 +123,36 @@ const STATE_GRANTS: StateGrantEntry[] = [
     eligibility: "Local governments and state colleges in Florida",
     state: "FL",
     tags: ["infrastructure", "workforce", "florida"],
+  },
+  {
+    title: "Florida Small Business Emergency Bridge Loan",
+    funder: "Florida Department of Economic Opportunity",
+    description:
+      "Short-term interest-free loans and grants for small businesses impacted by disasters or economic disruption.",
+    amount: "Up to $50,000",
+    amountMin: 1000,
+    amountMax: 50000,
+    deadline: null,
+    url: "https://floridajobs.org/rebuildflorida/small-business",
+    category: "Small Business",
+    eligibility: "Florida small businesses with 2-100 employees",
+    state: "FL",
+    tags: ["small-business", "emergency", "florida"],
+  },
+  {
+    title: "Florida Renewable Energy Technologies Grant",
+    funder: "Florida Department of Agriculture and Consumer Services",
+    description:
+      "Grants for renewable energy and energy-efficient technology projects in agriculture and rural communities.",
+    amount: "Up to $100,000",
+    amountMin: 5000,
+    amountMax: 100000,
+    deadline: null,
+    url: "https://www.fdacs.gov/Energy",
+    category: "Clean Energy",
+    eligibility: "Florida agricultural businesses and rural communities",
+    state: "FL",
+    tags: ["clean-energy", "agriculture", "renewable", "florida"],
   },
   // New York
   {
@@ -125,6 +185,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     state: "NY",
     tags: ["community", "downtown", "new-york"],
   },
+  {
+    title: "New York State Energy Research and Development Authority Clean Energy Fund",
+    funder: "NYSERDA",
+    description:
+      "Grants and incentives for clean energy projects including energy efficiency, renewable energy, and sustainable transportation.",
+    amount: "Up to $1,000,000",
+    amountMin: 10000,
+    amountMax: 1000000,
+    deadline: null,
+    url: "https://www.nyserda.ny.gov/Funding-Opportunities",
+    category: "Clean Energy",
+    eligibility: "New York businesses, nonprofits, and municipalities",
+    state: "NY",
+    tags: ["clean-energy", "sustainability", "renewable", "new-york"],
+  },
   // Pennsylvania
   {
     title: "Pennsylvania First Program",
@@ -140,6 +215,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     eligibility: "Businesses creating jobs in Pennsylvania",
     state: "PA",
     tags: ["economic-development", "jobs", "pennsylvania"],
+  },
+  {
+    title: "Pennsylvania Ben Franklin Technology Partners",
+    funder: "Ben Franklin Technology Development Authority",
+    description:
+      "Funding for early-stage technology companies and innovation-driven enterprises across Pennsylvania.",
+    amount: "Up to $500,000",
+    amountMin: 25000,
+    amountMax: 500000,
+    deadline: null,
+    url: "https://benfranklin.org/",
+    category: "Technology",
+    eligibility: "Pennsylvania technology startups and small manufacturers",
+    state: "PA",
+    tags: ["technology", "innovation", "startups", "pennsylvania"],
   },
   // Illinois
   {
@@ -157,6 +247,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     state: "IL",
     tags: ["small-business", "emergency", "illinois"],
   },
+  {
+    title: "Illinois Clean Energy Jobs Act Workforce Grants",
+    funder: "Illinois Department of Commerce and Economic Opportunity",
+    description:
+      "Grants supporting workforce development and training programs in the clean energy sector under the Climate and Equitable Jobs Act.",
+    amount: "Up to $1,000,000",
+    amountMin: 50000,
+    amountMax: 1000000,
+    deadline: null,
+    url: "https://dceo.illinois.gov/cleanenergy.html",
+    category: "Clean Energy",
+    eligibility: "Illinois workforce organizations and community-based training providers",
+    state: "IL",
+    tags: ["clean-energy", "workforce", "sustainability", "illinois"],
+  },
   // Ohio
   {
     title: "Ohio Innovation Fund",
@@ -172,6 +277,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     eligibility: "Ohio technology companies and startups",
     state: "OH",
     tags: ["innovation", "technology", "ohio"],
+  },
+  {
+    title: "Ohio Third Frontier Technology Validation and Start-Up Fund",
+    funder: "Ohio Third Frontier Commission",
+    description:
+      "Early-stage capital for Ohio technology startups to validate and commercialize innovative products.",
+    amount: "Up to $350,000",
+    amountMin: 25000,
+    amountMax: 350000,
+    deadline: null,
+    url: "https://www.thirdfrontier.com/",
+    category: "Technology",
+    eligibility: "Ohio-based technology startups with commercially viable products",
+    state: "OH",
+    tags: ["technology", "startups", "commercialization", "ohio"],
   },
   // Georgia
   {
@@ -189,6 +309,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     state: "GA",
     tags: ["workforce", "training", "georgia"],
   },
+  {
+    title: "Georgia Centers of Innovation Grant",
+    funder: "Georgia Department of Economic Development",
+    description:
+      "Grants supporting innovation and commercialization in key Georgia industries including energy, logistics, and life sciences.",
+    amount: "Up to $250,000",
+    amountMin: 10000,
+    amountMax: 250000,
+    deadline: null,
+    url: "https://www.georgia.org/centers-of-innovation",
+    category: "Innovation",
+    eligibility: "Georgia businesses in targeted industry sectors",
+    state: "GA",
+    tags: ["innovation", "life-sciences", "energy", "georgia"],
+  },
   // North Carolina
   {
     title: "One North Carolina Fund",
@@ -204,6 +339,21 @@ const STATE_GRANTS: StateGrantEntry[] = [
     eligibility: "Businesses creating jobs in North Carolina",
     state: "NC",
     tags: ["economic-development", "jobs", "north-carolina"],
+  },
+  {
+    title: "North Carolina Biotechnology Center Grants",
+    funder: "North Carolina Biotechnology Center",
+    description:
+      "Grants supporting biotechnology research, education, and economic development across North Carolina.",
+    amount: "Up to $500,000",
+    amountMin: 10000,
+    amountMax: 500000,
+    deadline: null,
+    url: "https://www.ncbiotech.org/grants",
+    category: "Healthcare",
+    eligibility: "North Carolina biotech companies, researchers, and academic institutions",
+    state: "NC",
+    tags: ["biotech", "healthcare", "research", "north-carolina"],
   },
   // Michigan
   {

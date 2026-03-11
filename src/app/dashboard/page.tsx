@@ -258,7 +258,20 @@ export default function DashboardPage() {
       )}
 
       {/* Readiness Score */}
-      {!loading && readiness && (
+      {loading ? (
+        <Card className="mb-6 sm:mb-8 p-4 sm:p-6">
+          <div className="animate-pulse flex items-center gap-4 sm:gap-6">
+            <div className="flex-shrink-0">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 bg-slate-700 rounded-full"></div>
+            </div>
+            <div className="flex-1 space-y-3">
+              <div className="h-3 bg-slate-700 rounded w-32"></div>
+              <div className="h-2 bg-slate-700 rounded w-48"></div>
+              <div className="h-2 bg-slate-700 rounded w-40"></div>
+            </div>
+          </div>
+        </Card>
+      ) : readiness ? (
         <Card className="mb-6 sm:mb-8 animate-reveal">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-4 sm:gap-6">
@@ -347,7 +360,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
       {/* Upgrade Prompt for Free Users */}
       {!isPro && !loading && (
