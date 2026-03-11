@@ -19,6 +19,7 @@ import {
   Gift,
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -173,9 +174,11 @@ export default function DashboardLayout({
       {/* Main content */}
       <main id="main-content" className="flex-1 overflow-auto bg-slate-950" role="main">
         <TrialBanner />
-        <div className="bg-glow-emerald">
-          {children}
-        </div>
+        <ErrorBoundary>
+          <div className="bg-glow-emerald">
+            {children}
+          </div>
+        </ErrorBoundary>
       </main>
     </div>
   );
