@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { sendOutcomePromptEmail } from "@/lib/email";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -40,25 +41,41 @@ export async function GET(request: NextRequest) {
           select: { id: true, email: true, name: true },
         },
         grant: {
-          select: { title: true, deadline: true },
+          select: { title: true, funder: true, deadline: true },
         },
       },
     });
 
+    // Group applications by user for batch emails
+    const byUser = new Map<string, typeof applications>();
+    for (const app of applications) {
+      const existing = byUser.get(app.user.id) || [];
+      existing.push(app);
+      byUser.set(app.user.id, existing);
+    }
+
     let prompted = 0;
     const errors: string[] = [];
 
-    for (const app of applications) {
+    for (const [, userApps] of byUser) {
+      const user = userApps[0].user;
       try {
-        console.log(
-          `[outcome-prompt] User ${app.user.email} needs prompting for "${app.grant.title}" (deadline: ${app.grant.deadline?.toISOString()})`
+        await sendOutcomePromptEmail(
+          user.email,
+          user.name || undefined,
+          userApps.map((app) => ({
+            id: app.grant.title,
+            title: app.grant.title,
+            funder: app.grant.funder,
+            deadline: app.grant.deadline?.toISOString() || "",
+            applicationId: app.id,
+          }))
         );
         prompted++;
-        // Email integration comes later - for now just log
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
-        errors.push(`Failed to process app ${app.id}: ${message}`);
-        console.error(`[outcome-prompt] Error for app ${app.id}:`, err);
+        errors.push(`Failed to email ${user.email}: ${message}`);
+        console.error(`[outcome-prompt] Error for user ${user.email}:`, err);
       }
     }
 

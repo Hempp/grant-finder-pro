@@ -591,6 +591,82 @@ export async function sendWeeklyDigestEmail(
   }
 }
 
+// Outcome prompt email - asks user to report grant application results
+export async function sendOutcomePromptEmail(
+  to: string,
+  userName: string | undefined,
+  grants: { id: string; title: string; funder: string; deadline: string; applicationId: string }[]
+) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log("RESEND_API_KEY not configured, skipping email");
+    return null;
+  }
+
+  if (grants.length === 0) return null;
+
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grant-finder-pro.vercel.app";
+
+  const grantListHtml = grants.map(grant => `
+    <div style="background-color: #0f172a; border-radius: 8px; padding: 20px; margin-bottom: 12px;">
+      <h3 style="color: #e2e8f0; margin: 0 0 4px; font-size: 15px;">${grant.title}</h3>
+      <p style="color: #64748b; margin: 0 0 8px; font-size: 13px;">${grant.funder}</p>
+      <p style="color: #94a3b8; margin: 0 0 12px; font-size: 13px;">Deadline was ${new Date(grant.deadline).toLocaleDateString()}</p>
+      <a href="${APP_URL}/dashboard/applications/${grant.applicationId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 13px;">
+        Report Outcome
+      </a>
+    </div>
+  `).join('');
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a; margin: 0; padding: 40px 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #f59e0b 0%, #10b981 100%); padding: 40px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Have You Heard Back?</h1>
+        </div>
+        <div style="padding: 40px;">
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            Hi ${userName || "there"},
+          </p>
+          <p style="color: #94a3b8; font-size: 16px; line-height: 1.6; margin: 0 0 24px;">
+            The deadline has passed for ${grants.length === 1 ? 'this grant application' : 'these grant applications'}. Have you received a response? Your feedback helps us improve recommendations for everyone.
+          </p>
+          ${grantListHtml}
+        </div>
+        <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
+          <p style="color: #64748b; font-size: 14px; margin: 0;">
+            <a href="${APP_URL}/dashboard/settings" style="color: #64748b;">Manage notification preferences</a>
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) return null;
+
+    const result = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "Grant Finder <grants@resend.dev>",
+      to,
+      subject: grants.length === 1
+        ? `Did you hear back about "${grants[0].title}"?`
+        : `Update on ${grants.length} grant applications?`,
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to send outcome prompt email:", error);
+    throw error;
+  }
+}
+
 // Payment failure notification email
 export async function sendPaymentFailedEmail(to: string, userName?: string) {
   if (!process.env.RESEND_API_KEY) {
