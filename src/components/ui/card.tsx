@@ -20,7 +20,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const baseStyles = "rounded-xl transition-all duration-300";
+    const baseStyles = "rounded-2xl transition-all duration-200";
 
     const variants = {
       default: "bg-slate-900/60 border border-slate-800",
@@ -88,7 +88,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
     return (
       <Component
         ref={ref}
-        className={`text-lg font-semibold text-white ${className}`}
+        className={`text-lg font-bold text-white ${className}`}
         {...props}
       >
         {children}
