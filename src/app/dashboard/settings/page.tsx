@@ -123,7 +123,7 @@ function SettingsContent() {
       <div className="max-w-2xl space-y-4 sm:space-y-6">
         {/* Profile Section */}
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <User className="h-5 w-5 text-emerald-400" />
             Profile Information
           </h2>
@@ -158,7 +158,7 @@ function SettingsContent() {
 
         {/* Notification Settings */}
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <Bell className="h-5 w-5 text-yellow-400" />
             Notification Preferences
           </h2>
@@ -272,7 +272,7 @@ function SettingsContent() {
 
         {/* Security Section */}
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <Shield className="h-5 w-5 text-blue-400" />
             Security
           </h2>
@@ -288,7 +288,7 @@ function SettingsContent() {
 
         {/* Subscription & Billing Section */}
         <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mb-3 sm:mb-4">
             <CreditCard className="h-5 w-5 text-emerald-400" />
             Subscription & Billing
           </h2>
@@ -321,7 +321,7 @@ function SettingsContent() {
                     </div>
                   )}
                   <div>
-                    <p className="text-white font-semibold">{subscription.planName} Plan</p>
+                    <p className="text-white font-bold">{subscription.planName} Plan</p>
                     <p className="text-sm text-slate-400">
                       {subscription.plan === "free"
                         ? "Limited features"
@@ -342,7 +342,7 @@ function SettingsContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="p-4 bg-slate-700/30 rounded-lg">
                   <p className="text-sm text-slate-400 mb-1">Grant Matches</p>
-                  <p className="text-xl font-semibold text-white">
+                  <p className="text-xl font-bold text-white">
                     {subscription.usage.matchesUsed}
                     <span className="text-slate-400 text-sm font-normal">
                       {" "}
@@ -358,7 +358,7 @@ function SettingsContent() {
                 </div>
                 <div className="p-4 bg-slate-700/30 rounded-lg">
                   <p className="text-sm text-slate-400 mb-1">Auto-Apply Drafts</p>
-                  <p className="text-xl font-semibold text-white">
+                  <p className="text-xl font-bold text-white">
                     {subscription.usage.autoApplyUsed}
                     <span className="text-slate-400 text-sm font-normal">
                       {" "}
@@ -418,7 +418,7 @@ function SettingsContent() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/50 text-white font-semibold rounded-lg transition flex items-center gap-2"
+            className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/50 text-white font-bold rounded-lg transition flex items-center gap-2"
           >
             {saving ? (
               <>

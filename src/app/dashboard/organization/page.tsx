@@ -236,7 +236,7 @@ export default function OrganizationPage() {
       {/* Form Card */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-bold text-white">
             {steps[currentStep - 1].name}
           </h2>
         </CardHeader>

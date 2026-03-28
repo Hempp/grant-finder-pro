@@ -255,7 +255,7 @@ export default function ApplicationDraftPage() {
         <Card>
           <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Error Loading Draft</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Error Loading Draft</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load draft."}</p>
             <Link href="/dashboard/applications">
               <Button>
@@ -322,7 +322,7 @@ export default function ApplicationDraftPage() {
           <Card>
             <CardContent className="p-4 sm:p-8 text-center">
               <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Section Not Found</h2>
+              <h2 className="text-xl font-bold text-white mb-2">Section Not Found</h2>
               <Button onClick={handleBackFromEdit}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Overview

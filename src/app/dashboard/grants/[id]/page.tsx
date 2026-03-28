@@ -226,7 +226,7 @@ export default function GrantDetailPage() {
         <Card>
           <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Grant Not Found</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Grant Not Found</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load grant details."}</p>
             <Link href="/dashboard/grants">
               <Button>
@@ -372,7 +372,7 @@ export default function GrantDetailPage() {
           {/* Description */}
           <Card>
             <CardHeader>
-              <h2 className="text-xl font-semibold text-white">About This Grant</h2>
+              <h2 className="text-xl font-bold text-white">About This Grant</h2>
             </CardHeader>
             <CardContent>
               {grant.description ? (
@@ -399,7 +399,7 @@ export default function GrantDetailPage() {
           {eligibility.length > 0 && (
             <Card>
               <CardHeader>
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <Users className="h-5 w-5 text-emerald-400" />
                   Eligibility Requirements
                 </h2>
@@ -421,7 +421,7 @@ export default function GrantDetailPage() {
           {requirements.length > 0 && (
             <Card>
               <CardHeader>
-                <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <FileText className="h-5 w-5 text-blue-400" />
                   Application Requirements
                 </h2>
@@ -444,7 +444,7 @@ export default function GrantDetailPage() {
           {/* Deadline Info */}
           <Card>
             <CardHeader>
-              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-emerald-400" />
                 Deadline
               </h2>
@@ -469,7 +469,7 @@ export default function GrantDetailPage() {
             <Card className="border-dashed border-emerald-500/30">
               <CardContent className="p-4 sm:p-6 text-center">
                 <Brain className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-white mb-2">AI Application Intelligence</h3>
+                <h3 className="text-lg font-bold text-white mb-2">AI Application Intelligence</h3>
                 <p className="text-slate-400 text-xs sm:text-sm mb-4">
                   Analyze this grant to uncover scoring criteria, required sections, and eligibility requirements.
                 </p>
@@ -498,7 +498,7 @@ export default function GrantDetailPage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
                     <Brain className="h-5 w-5 text-emerald-400" />
                     AI Application Intelligence
                   </h2>
@@ -511,7 +511,7 @@ export default function GrantDetailPage() {
                 {/* Scoring Criteria */}
                 {analysis.scoringCriteria?.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
                       <BarChart3 className="h-4 w-4 text-emerald-400" />
                       Scoring Criteria
                     </h3>
@@ -541,7 +541,7 @@ export default function GrantDetailPage() {
                 {/* Required Sections */}
                 {analysis.requiredSections?.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
                       <FileText className="h-4 w-4 text-blue-400" />
                       Required Sections
                     </h3>
@@ -573,7 +573,7 @@ export default function GrantDetailPage() {
                 {/* Eligibility Requirements */}
                 {analysis.eligibilityReqs?.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
                       <Shield className="h-4 w-4 text-amber-400" />
                       Eligibility Requirements
                     </h3>
@@ -598,7 +598,7 @@ export default function GrantDetailPage() {
                 {/* Evaluation Notes */}
                 {analysis.evaluationNotes && (
                   <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                    <h3 className="text-sm font-semibold text-emerald-400 mb-1 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-emerald-400 mb-1 flex items-center gap-2">
                       <TrendingUp className="h-4 w-4" />
                       Tips for a Strong Application
                     </h3>
@@ -619,7 +619,7 @@ export default function GrantDetailPage() {
           {insights?.hasData && (
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-cyan-400" />
                   Community Insights
                 </h2>
@@ -627,13 +627,13 @@ export default function GrantDetailPage() {
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
                   <span className="text-slate-400 text-xs sm:text-sm">Award Rate</span>
-                  <span className={`font-semibold text-sm ${insights.awardRate >= 50 ? "text-emerald-400" : insights.awardRate >= 25 ? "text-amber-400" : "text-red-400"}`}>
+                  <span className={`font-bold text-sm ${insights.awardRate >= 50 ? "text-emerald-400" : insights.awardRate >= 25 ? "text-amber-400" : "text-red-400"}`}>
                     {insights.awardRate}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg">
                   <span className="text-slate-400 text-xs sm:text-sm">Total Reports</span>
-                  <span className="text-slate-300 font-semibold text-sm">{insights.total}</span>
+                  <span className="text-slate-300 font-bold text-sm">{insights.total}</span>
                 </div>
                 {insights.personalInsight && (
                   <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-lg">
@@ -653,7 +653,7 @@ export default function GrantDetailPage() {
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="h-8 w-8 text-emerald-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Ready to Apply?</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Ready to Apply?</h3>
               <p className="text-slate-400 text-sm mb-4">
                 Let AI generate a complete application draft based on your profile and documents.
               </p>
@@ -688,7 +688,7 @@ export default function GrantDetailPage() {
           {grant.matchReasons && grant.matchReasons.length > 0 && (
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-white">Why You Match</h2>
+                <h2 className="text-lg font-bold text-white">Why You Match</h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 {grant.matchReasons.map((item, idx) => (
@@ -713,7 +713,7 @@ export default function GrantDetailPage() {
           {!grant.matchReasons && grant.matchBreakdown && (
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-white">Match Analysis</h2>
+                <h2 className="text-lg font-bold text-white">Match Analysis</h2>
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.entries(grant.matchBreakdown).map(([key, value]) => (

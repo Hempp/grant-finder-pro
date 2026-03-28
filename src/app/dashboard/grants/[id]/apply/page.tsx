@@ -328,7 +328,7 @@ ${formData.budgetJustification}
         <Card>
           <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Grant Not Found</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Grant Not Found</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load grant details."}</p>
             <Link href="/dashboard/grants">
               <Button>
@@ -431,7 +431,7 @@ ${formData.budgetJustification}
       {/* Form Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-bold text-white">
             {steps[currentStep - 1].name}
           </h2>
           {currentStep < 5 && (

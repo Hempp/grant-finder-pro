@@ -154,7 +154,7 @@ export default function ReferralsPage() {
         <div className="absolute right-4 top-4 opacity-20 hidden md:block">
           <ShareIllustration className="w-32 h-28" />
         </div>
-        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
+        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <Share2 className="h-5 w-5 text-emerald-400" />
           Share Your Referral Link
         </h3>
@@ -241,7 +241,7 @@ export default function ReferralsPage() {
 
       {/* Referrals List */}
       <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
+        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
           <Users className="h-5 w-5 text-cyan-400" />
           Your Referrals
         </h3>
@@ -298,7 +298,7 @@ export default function ReferralsPage() {
 
       {/* How it Works */}
       <div className="mt-6 sm:mt-8 bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">How It Works</h3>
+        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">How It Works</h3>
         <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">

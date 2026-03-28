@@ -247,7 +247,7 @@ export default function ApplicationsPage() {
       {/* Applications List */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-white">
+          <h2 className="text-lg sm:text-xl font-bold text-white">
             {filter === "all" ? "All Applications" : filterOptions.find((f) => f.value === filter)?.label}
           </h2>
           <span className="text-slate-400 text-xs sm:text-sm">{filteredApplications.length} applications</span>
@@ -280,7 +280,7 @@ export default function ApplicationsPage() {
                         <div className="flex flex-wrap items-start gap-2 mb-2">
                           <Link
                             href={`/dashboard/applications/${app.id}`}
-                            className="text-base sm:text-lg font-semibold text-white hover:text-emerald-400 transition line-clamp-2"
+                            className="text-base sm:text-lg font-bold text-white hover:text-emerald-400 transition line-clamp-2"
                           >
                             {app.grantTitle}
                           </Link>

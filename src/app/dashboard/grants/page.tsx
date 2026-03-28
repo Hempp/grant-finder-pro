@@ -426,7 +426,7 @@ export default function GrantsPage() {
                   <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-sm sm:text-base">Unlock AI-Powered Grant Matching</h3>
+                  <h3 className="text-white font-bold text-sm sm:text-base">Unlock AI-Powered Grant Matching</h3>
                   <p className="text-slate-400 text-xs sm:text-sm">
                     Complete your profile to get personalized match scores.
                   </p>
@@ -449,7 +449,7 @@ export default function GrantsPage() {
                   <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-sm sm:text-base">AI Matching Active</h3>
+                  <h3 className="text-white font-bold text-sm sm:text-base">AI Matching Active</h3>
                   <p className="text-slate-400 text-xs sm:text-sm">
                     {highMatchCount} high-match opportunities found.
                   </p>
@@ -709,7 +709,7 @@ export default function GrantsPage() {
                             })()}
                           </div>
                           <h3
-                            className="text-base sm:text-xl font-semibold text-white hover:text-emerald-400 transition cursor-pointer line-clamp-2"
+                            className="text-base sm:text-xl font-bold text-white hover:text-emerald-400 transition cursor-pointer line-clamp-2"
                             onClick={() => setSelectedGrant(grant)}
                           >
                             {grant.title}
@@ -759,7 +759,7 @@ export default function GrantsPage() {
                       <div className="flex items-center gap-3 sm:gap-6 mt-3 sm:mt-4 flex-wrap">
                         <div className="flex items-center gap-1 sm:gap-2">
                           <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-400" />
-                          <span className="text-white font-semibold text-sm sm:text-base">{grant.amount || "Varies"}</span>
+                          <span className="text-white font-bold text-sm sm:text-base">{grant.amount || "Varies"}</span>
                         </div>
                         {grant.deadline && (
                           <div className="flex items-center gap-1 sm:gap-2">

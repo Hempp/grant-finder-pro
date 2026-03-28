@@ -279,7 +279,7 @@ export default function DocumentsPage() {
       {/* Documents List */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-white">Uploaded Documents</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-white">Uploaded Documents</h2>
           <span className="text-slate-400 text-xs sm:text-sm">{documents.length} documents</span>
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">

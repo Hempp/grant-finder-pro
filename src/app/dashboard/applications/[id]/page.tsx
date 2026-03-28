@@ -436,7 +436,7 @@ ${formData.budgetJustification}
         <Card>
           <CardContent className="p-4 sm:p-8 text-center">
             <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Application Not Found</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Application Not Found</h2>
             <p className="text-slate-400 mb-4">{error || "Unable to load application details."}</p>
             <Link href="/dashboard/applications">
               <Button>
@@ -520,7 +520,7 @@ ${formData.budgetJustification}
             <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <h3 className="text-amber-400 font-semibold text-sm sm:text-base">
+                  <h3 className="text-amber-400 font-bold text-sm sm:text-base">
                     Have you heard back?
                   </h3>
                   <p className="text-slate-400 text-xs sm:text-sm mt-1">
@@ -541,7 +541,7 @@ ${formData.budgetJustification}
         {showOutcomeModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
             <div className="w-full max-w-lg rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6 shadow-xl">
-              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                 Report Outcome
               </h2>
 
@@ -643,7 +643,7 @@ ${formData.budgetJustification}
           {/* Project Summary */}
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <FileText className="h-5 w-5 text-emerald-400" />
                 Project Summary
               </h2>
@@ -678,7 +678,7 @@ ${formData.budgetJustification}
           {/* Technical Approach */}
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <Target className="h-5 w-5 text-emerald-400" />
                 Technical Approach
               </h2>
@@ -695,7 +695,7 @@ ${formData.budgetJustification}
           {/* Team */}
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <Users className="h-5 w-5 text-blue-400" />
                 Team & Capabilities
               </h2>
@@ -712,7 +712,7 @@ ${formData.budgetJustification}
           {/* Budget */}
           <Card>
             <CardHeader>
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-amber-400" />
                 Budget
               </h2>
@@ -727,7 +727,7 @@ ${formData.budgetJustification}
                     </div>
                     <div className="bg-slate-700/50 p-3 sm:p-4 rounded-lg">
                       <p className="text-slate-400 text-sm">Personnel</p>
-                      <p className="text-xl font-semibold text-white">${parseInt(formData.personnelCosts || "0").toLocaleString()}</p>
+                      <p className="text-xl font-bold text-white">${parseInt(formData.personnelCosts || "0").toLocaleString()}</p>
                     </div>
                   </div>
                   {formData.budgetJustification && (
@@ -850,7 +850,7 @@ ${formData.budgetJustification}
       {/* Form Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="text-xl font-bold text-white">
             {steps[currentStep - 1].name}
           </h2>
           {currentStep < 5 && (
