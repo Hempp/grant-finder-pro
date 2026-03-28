@@ -30,6 +30,9 @@ model User {
   trialEndsAt           DateTime?
   hasUsedTrial          Boolean   @default(false)
 
+  // Onboarding
+  hasCompletedOnboarding Boolean @default(false)
+
   // Usage tracking
   matchesUsedThisMonth  Int       @default(0)
   autoApplyUsedThisMonth Int      @default(0)
@@ -59,6 +62,7 @@ model User {
   documents     Document[]
   referralsSent Referral[]    @relation("ReferralsSent")
   referralsReceived Referral[] @relation("ReferralsReceived")
+  notifications Notification[]
 
   // Performance indexes
   @@index([plan])
@@ -219,6 +223,7 @@ model Grant {
   applications    Application[]
   analysis     GrantAnalysis?
   outcomes     GrantOutcome[]
+  notifications Notification[]
 
   // Performance indexes for common queries
   @@index([userId])
@@ -391,4 +396,21 @@ model Referral {
   @@index([createdAt])
 
   @@unique([referrerId, refereeId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // deadline_approaching, new_match, status_change, trial_expiring
+  title     String
+  message   String
+  grantId   String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grant Grant? @relation(fields: [grantId], references: [id], onDelete: SetNull)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }
