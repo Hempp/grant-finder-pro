@@ -54,8 +54,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const baseStyles = `
       inline-flex items-center justify-center gap-2 font-medium
-      transition-all duration-200 ease-out
-      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+      transition-colors duration-200 ease-out
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950
       disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
       active:scale-[0.98]
     `;
@@ -63,37 +63,37 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       primary: `
         bg-emerald-500 hover:bg-emerald-400 text-white
-        focus:ring-emerald-500
+        focus-visible:ring-emerald-500
         shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40
       `,
       secondary: `
         bg-slate-700 hover:bg-slate-600 text-white
         border border-slate-600 hover:border-slate-500
-        focus:ring-slate-500
+        focus-visible:ring-slate-500
       `,
       ghost: `
         hover:bg-slate-800 text-slate-300 hover:text-white
-        focus:ring-slate-500
+        focus-visible:ring-slate-500
       `,
       danger: `
         bg-red-500 hover:bg-red-400 text-white
-        focus:ring-red-500
+        focus-visible:ring-red-500
         shadow-lg shadow-red-500/25 hover:shadow-red-500/40
       `,
       success: `
         bg-green-500 hover:bg-green-400 text-white
-        focus:ring-green-500
+        focus-visible:ring-green-500
         shadow-lg shadow-green-500/25 hover:shadow-green-500/40
       `,
       outline: `
         bg-transparent border-2 border-emerald-500 text-emerald-400
         hover:bg-emerald-500/10 hover:text-emerald-300
-        focus:ring-emerald-500
+        focus-visible:ring-emerald-500
       `,
       gradient: `
         bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500
         hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400
-        text-white focus:ring-emerald-500
+        text-white focus-visible:ring-emerald-500
         shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40
         animate-gradient bg-[length:200%_100%]
       `,
