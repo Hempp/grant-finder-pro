@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
+import { NotificationBell } from "@/components/dashboard/NotificationBell";
 
 const navGroups = [
   {
@@ -71,14 +73,17 @@ export default function DashboardLayout({
           <Sparkles className="h-7 w-7 text-emerald-400" />
           <span className="text-lg font-bold text-white">GrantPilot</span>
         </Link>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 min-w-11 min-h-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors duration-200"
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationBell />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 min-w-11 min-h-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors duration-200"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -97,13 +102,14 @@ export default function DashboardLayout({
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}>
         {/* Logo - Desktop only */}
-        <div className="hidden lg:block p-6 border-b border-slate-800/60">
+        <div className="hidden lg:flex items-center justify-between p-6 border-b border-slate-800/60">
           <Link href="/" className="flex items-center gap-2 group">
-            <Sparkles className="h-8 w-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <Sparkles className="h-8 w-8 text-emerald-400 group-hover:scale-110 transition-transform duration-200" />
             <span className="text-xl font-bold text-white">
               Grant<span className="text-emerald-400">Pilot</span>
             </span>
           </Link>
+          <NotificationBell />
         </div>
 
         {/* Mobile close button area */}
@@ -191,6 +197,7 @@ export default function DashboardLayout({
       {/* Main content */}
       <main id="main-content" className="flex-1 overflow-auto bg-slate-950" role="main">
         <TrialBanner />
+        <Breadcrumbs />
         <ErrorBoundary>
           <div className="bg-glow-emerald">
             {children}
