@@ -100,7 +100,7 @@ function getDeadlineStatus(deadline: string): { label: string; color: string } {
 // Loading skeleton for stats
 function StatsSkeleton() {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       {[1, 2, 3, 4].map((i) => (
         <Card key={i}>
           <CardContent className="p-3 sm:p-6">
@@ -198,9 +198,9 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 animate-fade-in">
+    <div className="p-6 lg:p-8 flex flex-col gap-8 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
             Dashboard
@@ -208,15 +208,15 @@ export default function DashboardPage() {
           </h1>
           <p className="text-slate-500 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
         </div>
-        <div className="flex gap-2 sm:gap-3">
-          <Link href="/dashboard/grants" className="flex-1 sm:flex-none">
-            <Button variant="secondary" className="w-full sm:w-auto text-sm sm:text-base">
+        <div className="flex gap-3">
+          <Link href="/dashboard/grants">
+            <Button variant="outline" className="w-full sm:w-auto text-sm">
               <Search className="h-4 w-4 mr-1 sm:mr-2" />
               <span className="hidden xs:inline">Find</span> Grants
             </Button>
           </Link>
-          <Link href="/dashboard/documents" className="flex-1 sm:flex-none">
-            <Button variant="gradient" className="w-full sm:w-auto text-sm sm:text-base">
+          <Link href="/dashboard/documents">
+            <Button variant="primary" className="w-full sm:w-auto text-sm">
               <Plus className="h-4 w-4 mr-1 sm:mr-2" />
               Upload
             </Button>
@@ -228,7 +228,7 @@ export default function DashboardPage() {
       {loading ? (
         <StatsSkeleton />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <StatsCard
             title="Grants Found"
             value={stats.grantsFound}
@@ -259,7 +259,7 @@ export default function DashboardPage() {
 
       {/* Readiness Score */}
       {loading ? (
-        <Card className="mb-6 sm:mb-8 p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <div className="animate-pulse flex items-center gap-4 sm:gap-6">
             <div className="flex-shrink-0">
               <div className="h-14 w-14 sm:h-16 sm:w-16 bg-slate-700 rounded-full"></div>
@@ -272,13 +272,13 @@ export default function DashboardPage() {
           </div>
         </Card>
       ) : readiness ? (
-        <Card className="mb-6 sm:mb-8 animate-reveal">
+        <Card className="animate-reveal">
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center gap-4 sm:gap-6">
               {/* Radial Gauge */}
               <div className="flex-shrink-0">
                 <div className="relative w-14 h-14 sm:w-16 sm:h-16">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36" role="img" aria-label={`Grant readiness score: ${readiness.score}`}>
                     <circle
                       cx="18" cy="18" r="15.5"
                       fill="none"
@@ -320,7 +320,7 @@ export default function DashboardPage() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <Target className="h-4 w-4 text-slate-400" />
-                  <h3 className="text-white font-semibold text-sm sm:text-base">Grant Readiness</h3>
+                  <h3 className="text-white font-bold text-sm sm:text-base">Grant Readiness</h3>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                     readiness.score >= 70
                       ? "bg-emerald-500/20 text-emerald-400"
@@ -364,7 +364,7 @@ export default function DashboardPage() {
 
       {/* Upgrade Prompt for Free Users */}
       {!isPro && !loading && (
-        <div className="mb-6 sm:mb-8 animate-reveal">
+        <div className="animate-reveal">
           <UpgradePrompt
             feature="Unlimited Grant Matches"
             description={canStartTrial
@@ -384,7 +384,7 @@ export default function DashboardPage() {
               <div className="bg-emerald-500/20 p-2 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-emerald-400" />
               </div>
-              <h2 className="text-xl font-semibold text-white">Top Matching Grants</h2>
+              <h2 className="text-xl font-bold text-white">Top Matching Grants</h2>
             </div>
             <Link href="/dashboard/grants" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1 group">
               View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -416,14 +416,14 @@ export default function DashboardPage() {
                   <Link
                     key={grant.id}
                     href={`/dashboard/grants/${grant.id}/apply`}
-                    className="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 block border border-transparent hover:border-slate-700 group"
+                    className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 block border border-transparent hover:border-slate-700 group"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-medium truncate group-hover:text-emerald-400 transition-colors">{grant.title}</h3>
                       <p className="text-slate-400 text-sm truncate">{grant.funder}</p>
                       <div className="flex items-center gap-4 mt-2">
-                        <span className="text-emerald-400 font-semibold">{formatCurrency(grant.amount)}</span>
+                        <span className="text-emerald-400 font-bold">{formatCurrency(grant.amount)}</span>
                         <span className={`text-sm flex items-center gap-1 ${deadline.color}`}>
                           <Clock className="h-3 w-3" />
                           {deadline.label}
@@ -432,7 +432,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-center ml-3 sm:ml-4 flex-shrink-0">
                       <div className="relative">
-                        <svg className="w-12 h-12 sm:w-16 sm:h-16 transform -rotate-90">
+                        <svg className="w-12 h-12 sm:w-16 sm:h-16 transform -rotate-90" role="img" aria-label={`Match score: ${grant.matchScore || 0}%`}>
                           <circle cx="50%" cy="50%" r="40%" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" />
                           <circle
                             cx="50%"
@@ -449,7 +449,7 @@ export default function DashboardPage() {
                           <span className="text-sm sm:text-lg font-bold text-emerald-400">{grant.matchScore || 0}%</span>
                         </div>
                       </div>
-                      <div className="text-slate-500 text-[10px] sm:text-xs mt-1">Match</div>
+                      <div className="text-slate-500 text-xs leading-4 mt-1">Match</div>
                     </div>
                   </Link>
                 );
@@ -465,7 +465,7 @@ export default function DashboardPage() {
               <div className="bg-teal-500/15 p-2 rounded-lg">
                 <FileText className="h-5 w-5 text-teal-400" />
               </div>
-              <h2 className="text-xl font-semibold text-white">Recent Applications</h2>
+              <h2 className="text-xl font-bold text-white">Recent Applications</h2>
             </div>
             <Link href="/dashboard/applications" className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1 group">
               View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -497,7 +497,7 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={app.id}
-                    className="p-4 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-200 border border-transparent hover:border-slate-700"
+                    className="p-4 bg-slate-900/50 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 border border-transparent hover:border-slate-700"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div className="flex items-center justify-between mb-3">
@@ -556,16 +556,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="mt-4 sm:mt-8" variant="gradient">
+      <Card variant="gradient">
         <CardContent className="p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-emerald-400" />
             Quick Actions
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               href="/dashboard/organization"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-emerald-500/20 group card-interactive"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-emerald-500/20 group"
             >
               <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
                 <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
@@ -575,7 +575,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/dashboard/documents"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-cyan-500/20 group card-interactive"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-cyan-500/20 group"
             >
               <div className="bg-cyan-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
                 <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
@@ -585,7 +585,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/dashboard/grants"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-teal-500/20 group card-interactive"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-teal-500/20 group"
             >
               <div className="bg-teal-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-teal-400" />
@@ -595,7 +595,7 @@ export default function DashboardPage() {
             </Link>
             <Link
               href="/dashboard/applications"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-all duration-300 text-center border border-transparent hover:border-amber-500/20 group card-interactive"
+              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-amber-500/20 group"
             >
               <div className="bg-amber-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
                 <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
