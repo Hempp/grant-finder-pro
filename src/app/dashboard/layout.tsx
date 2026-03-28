@@ -21,13 +21,29 @@ import {
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Find Grants", href: "/dashboard/grants", icon: Search },
-  { name: "Applications", href: "/dashboard/applications", icon: FileText },
-  { name: "Documents", href: "/dashboard/documents", icon: Upload },
-  { name: "Organization", href: "/dashboard/organization", icon: Building2 },
-  { name: "Referrals", href: "/dashboard/referrals", icon: Gift },
+const navGroups = [
+  {
+    label: null as string | null,
+    items: [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Find Grants", href: "/dashboard/grants", icon: Search },
+      { name: "Applications", href: "/dashboard/applications", icon: FileText },
+      { name: "Documents", href: "/dashboard/documents", icon: Upload },
+    ],
+  },
+  {
+    label: "Organization",
+    items: [
+      { name: "Profile", href: "/dashboard/organization", icon: Building2 },
+      { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    ],
+  },
+  {
+    label: "More",
+    items: [
+      { name: "Referrals", href: "/dashboard/referrals", icon: Gift },
+    ],
+  },
 ];
 
 export default function DashboardLayout({
@@ -57,7 +73,7 @@ export default function DashboardLayout({
         </Link>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 text-slate-400 hover:text-white transition"
+          className="p-2 min-w-11 min-h-11 flex items-center justify-center text-slate-400 hover:text-white transition-colors duration-200"
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileMenuOpen}
         >
@@ -129,44 +145,45 @@ export default function DashboardLayout({
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={closeMobileMenu}
-                aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? "bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400 ml-0 pl-3.5"
-                    : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:translate-x-1"
-                }`}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                <span className="font-medium text-sm">{item.name}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          {navGroups.map((group, groupIdx) => (
+            <div key={groupIdx}>
+              {group.label && (
+                <p className="text-xs text-slate-600 uppercase tracking-wider font-medium px-4 pt-6 pb-1">
+                  {group.label}
+                </p>
+              )}
+              {group.items.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={closeMobileMenu}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                      isActive
+                        ? "bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400 pl-3"
+                        : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                    <span className="font-medium text-sm leading-5">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Bottom section */}
-        <div className="p-3 border-t border-slate-800/60 space-y-0.5">
-          <Link
-            href="/dashboard/settings"
-            onClick={closeMobileMenu}
-            className="flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all duration-200 hover:translate-x-1"
-          >
-            <Settings className="h-5 w-5" />
-            <span className="font-medium text-sm">Settings</span>
-          </Link>
+        <div className="p-3 border-t border-slate-800/60">
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 w-full"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-200 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
           >
             <LogOut className="h-5 w-5" />
-            <span className="font-medium text-sm">Sign Out</span>
+            <span className="font-medium text-sm leading-5">Sign Out</span>
           </button>
         </div>
       </aside>
