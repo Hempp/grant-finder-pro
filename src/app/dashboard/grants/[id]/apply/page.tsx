@@ -24,6 +24,7 @@ import { Input, Textarea, Select } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
+import { SuccessModal } from "@/components/dashboard/SuccessModal";
 
 const steps = [
   { id: 1, name: "Project Summary", icon: FileText },
@@ -68,6 +69,7 @@ export default function ApplyPage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     // Project Summary
@@ -274,7 +276,7 @@ ${formData.budgetJustification}
   const handleSubmit = async () => {
     const saved = await saveApplication();
     if (saved) {
-      router.push("/dashboard/applications");
+      setShowSuccess(true);
     }
   };
 
@@ -738,6 +740,16 @@ ${formData.budgetJustification}
           )}
         </CardFooter>
       </Card>
+
+      <SuccessModal
+        show={showSuccess}
+        grantTitle={grant?.title || ""}
+        applicationId={applicationId || ""}
+        onClose={() => {
+          setShowSuccess(false);
+          router.push("/dashboard/applications");
+        }}
+      />
     </div>
   );
 }

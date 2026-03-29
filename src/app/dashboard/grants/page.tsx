@@ -29,6 +29,7 @@ import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { Select } from "@/components/ui";
 import { exportGrantsToPDF, exportSingleGrantToPDF } from "@/lib/pdf-export";
+import { DeadlineTimeline } from "@/components/dashboard/DeadlineTimeline";
 
 interface MatchBreakdown {
   location: number;
@@ -415,6 +416,16 @@ export default function GrantsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Deadline Timeline */}
+      {!loading && grants.length > 0 && (
+        <DeadlineTimeline
+          grants={grants}
+          onDotClick={(id) => {
+            document.getElementById(`grant-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }}
+        />
+      )}
 
       {/* AI Matching Banner */}
       {!hasProfile ? (

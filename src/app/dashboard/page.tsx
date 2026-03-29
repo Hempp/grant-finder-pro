@@ -22,6 +22,9 @@ import { Badge } from "@/components/ui";
 import { Skeleton, SkeletonGrantCard } from "@/components/ui/skeleton";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useToast } from "@/components/ui";
+import { ExpiringSoon } from "@/components/dashboard/ExpiringSoon";
+import { ProfileProgressBanner } from "@/components/dashboard/ProfileProgressBanner";
 
 interface Grant {
   id: string;
@@ -121,6 +124,7 @@ function StatsSkeleton() {
 
 export default function DashboardPage() {
   const [grants, setGrants] = useState<Grant[]>([]);
+  const [allGrants, setAllGrants] = useState<Grant[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     grantsFound: 0,
@@ -135,6 +139,7 @@ export default function DashboardPage() {
     actions: { priority: string; action: string }[];
   } | null>(null);
   const { isPro, canStartTrial } = useSubscription();
+  const { success: toastSuccess } = useToast();
 
   useEffect(() => {
     async function fetchData() {
@@ -159,8 +164,19 @@ export default function DashboardPage() {
         const grantsList = grantsData.grants || [];
         const appsList = Array.isArray(appsData) ? appsData : [];
 
+        setAllGrants(grantsList);
         setGrants(grantsList.slice(0, 3));
         setApplications(appsList.slice(0, 3));
+
+        // First match celebration
+        if (grantsList.length > 0 && !localStorage.getItem("hasSeenFirstMatch")) {
+          localStorage.setItem("hasSeenFirstMatch", "true");
+          const topGrant = grantsList[0];
+          toastSuccess(
+            "Your first match!",
+            `GrantPilot found "${topGrant.title}" — ${topGrant.matchScore || 0}% match.`
+          );
+        }
 
         // Calculate stats
         const inProgress = appsList.filter(
@@ -362,6 +378,9 @@ export default function DashboardPage() {
         </Card>
       ) : null}
 
+      {/* Profile Progress */}
+      {!loading && <ProfileProgressBanner />}
+
       {/* Upgrade Prompt for Free Users */}
       {!isPro && !loading && (
         <div className="animate-reveal">
@@ -375,6 +394,9 @@ export default function DashboardPage() {
           />
         </div>
       )}
+
+      {/* Expiring Soon */}
+      {!loading && <ExpiringSoon grants={allGrants} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Recent Grants */}
