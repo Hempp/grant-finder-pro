@@ -228,7 +228,11 @@ export default function GrantsPage() {
       const res = await fetch("/api/grants");
       const data = await res.json();
       if (data.grants) {
-        setGrants(data.grants);
+        const now = new Date();
+        const openGrants = data.grants.filter(
+          (g: Grant) => !g.deadline || new Date(g.deadline) >= now
+        );
+        setGrants(openGrants);
       }
       setHasProfile(data.hasProfile || false);
     } catch (error) {

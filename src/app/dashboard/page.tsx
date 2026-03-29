@@ -163,7 +163,10 @@ export default function DashboardPage() {
           });
         }
 
-        const grantsList = grantsData.grants || [];
+        const now = new Date();
+        const grantsList = (grantsData.grants || []).filter(
+          (g: Grant) => !g.deadline || new Date(g.deadline) >= now
+        );
         const appsList = Array.isArray(appsData) ? appsData : [];
 
         setAllGrants(grantsList);
