@@ -25,7 +25,8 @@ export function ProfileProgressBanner() {
       const res = await fetch("/api/organizations");
       if (!res.ok) return;
       const data = await res.json();
-      const org = data.organization;
+      // API returns org directly (or null), not wrapped in { organization }
+      const org = data?.id ? data : data?.organization || null;
 
       const docsRes = await fetch("/api/documents");
       const docsData = docsRes.ok ? await docsRes.json() : { documents: [] };
