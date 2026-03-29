@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui";
 import { Select } from "@/components/ui";
 import { exportGrantsToPDF, exportSingleGrantToPDF } from "@/lib/pdf-export";
 import { DeadlineTimeline } from "@/components/dashboard/DeadlineTimeline";
+import { ApplyPanel } from "@/components/dashboard/ApplyPanel";
 
 interface MatchBreakdown {
   location: number;

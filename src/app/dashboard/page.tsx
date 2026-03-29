@@ -25,6 +25,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/components/ui";
 import { ExpiringSoon } from "@/components/dashboard/ExpiringSoon";
 import { ProfileProgressBanner } from "@/components/dashboard/ProfileProgressBanner";
+import { ApplyPanel } from "@/components/dashboard/ApplyPanel";
 
 interface Grant {
   id: string;
@@ -139,6 +140,7 @@ export default function DashboardPage() {
     actions: { priority: string; action: string }[];
   } | null>(null);
   const { isPro, canStartTrial } = useSubscription();
+  const [applyGrant, setApplyGrant] = useState<{ id: string; title: string; funder: string } | null>(null);
   const { success: toastSuccess } = useToast();
 
   useEffect(() => {
@@ -628,6 +630,14 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ApplyPanel
+        isOpen={!!applyGrant}
+        onClose={() => setApplyGrant(null)}
+        grantId={applyGrant?.id || ""}
+        grantTitle={applyGrant?.title || ""}
+        grantFunder={applyGrant?.funder || ""}
+      />
     </div>
   );
 }
