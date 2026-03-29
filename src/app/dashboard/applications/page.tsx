@@ -14,6 +14,9 @@ import {
   Plus,
   Search,
   Loader2,
+  Edit3,
+  Trash2,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -75,6 +78,8 @@ export default function ApplicationsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   // Fetch applications from API
   useEffect(() => {
@@ -118,6 +123,22 @@ export default function ApplicationsPage() {
     }
     fetchApplications();
   }, []);
+
+  async function handleDelete(appId: string, grantTitle: string) {
+    if (!confirm(`Delete application for "${grantTitle}"? This cannot be undone.`)) return;
+    setDeleting(appId);
+    try {
+      const res = await fetch(`/api/applications/${appId}`, { method: "DELETE" });
+      if (res.ok) {
+        setApplications((prev) => prev.filter((a) => a.id !== appId));
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setDeleting(null);
+      setOpenMenu(null);
+    }
+  }
 
   const filteredApplications = applications.filter((app) => {
     if (searchQuery && !app.grantTitle.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -357,9 +378,45 @@ export default function ApplicationsPage() {
                             </Button>
                           </Link>
                         )}
-                        <button className="p-2 text-slate-400 hover:text-white transition flex-shrink-0">
-                          <MoreVertical className="h-5 w-5" />
-                        </button>
+                        {/* Actions menu */}
+                        <div className="relative flex-shrink-0">
+                          <button
+                            onClick={() => setOpenMenu(openMenu === app.id ? null : app.id)}
+                            className="p-2 text-slate-400 hover:text-white transition-colors duration-200 rounded-lg hover:bg-slate-800/50"
+                            aria-label="Application actions"
+                          >
+                            <MoreVertical className="h-5 w-5" />
+                          </button>
+                          {openMenu === app.id && (
+                            <>
+                              <div className="fixed inset-0 z-30" onClick={() => setOpenMenu(null)} />
+                              <div className="absolute right-0 top-full mt-1 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl z-40 overflow-hidden">
+                                <Link
+                                  href={`/dashboard/applications/${app.id}`}
+                                  onClick={() => setOpenMenu(null)}
+                                  className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors duration-200"
+                                >
+                                  {["draft", "in_progress", "ready_for_review"].includes(app.status) ? (
+                                    <><Edit3 className="h-4 w-4" /> Edit Application</>
+                                  ) : (
+                                    <><ExternalLink className="h-4 w-4" /> View Application</>
+                                  )}
+                                </Link>
+                                <button
+                                  onClick={() => handleDelete(app.id, app.grantTitle)}
+                                  disabled={deleting === app.id}
+                                  className="flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors duration-200 w-full"
+                                >
+                                  {deleting === app.id ? (
+                                    <><Loader2 className="h-4 w-4 animate-spin" /> Deleting...</>
+                                  ) : (
+                                    <><Trash2 className="h-4 w-4" /> Delete Application</>
+                                  )}
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
