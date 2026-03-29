@@ -114,7 +114,7 @@ export async function GET() {
     try {
       session = await auth();
     } catch (authError) {
-      console.log("Auth check failed, continuing without session:", authError);
+      console.info("Auth check failed, continuing without session:", authError);
     }
 
     // Build where clause - always include public grants, exclude expired

@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          console.log(`User ${userId} subscribed to ${plan}`);
+          console.info(`User ${userId} subscribed to ${plan}`);
         }
         break;
       }
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        console.log(`Subscription updated for user ${user.id}: ${plan}`);
+        console.info(`Subscription updated for user ${user.id}: ${plan}`);
         break;
       }
 
@@ -120,13 +120,13 @@ export async function POST(request: NextRequest) {
         if (user.email) {
           try {
             await sendSubscriptionCanceledEmail(user.email, user.name || undefined);
-            console.log(`Cancellation email sent to ${user.email}`);
+            console.info(`Cancellation email sent to ${user.email}`);
           } catch (emailError) {
             console.error(`Failed to send cancellation email to ${user.email}:`, emailError);
           }
         }
 
-        console.log(`Subscription canceled for user ${user.id}`);
+        console.info(`Subscription canceled for user ${user.id}`);
         break;
       }
 
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            console.log(`Usage reset for user ${user.id}`);
+            console.info(`Usage reset for user ${user.id}`);
           }
         }
         break;
@@ -172,12 +172,12 @@ export async function POST(request: NextRequest) {
             if (user.email) {
               try {
                 await sendPaymentFailedEmail(user.email, user.name || undefined);
-                console.log(`Payment failed email sent to ${user.email}`);
+                console.info(`Payment failed email sent to ${user.email}`);
               } catch (emailError) {
                 console.error(`Failed to send payment failed email to ${user.email}:`, emailError);
               }
             }
-            console.log(`Payment failed for user ${user.id}`);
+            console.info(`Payment failed for user ${user.id}`);
           }
         }
         break;

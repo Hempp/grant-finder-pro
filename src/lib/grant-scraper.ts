@@ -102,7 +102,7 @@ export async function searchGrantsGov(
     if (agency) searchBody.agencies = [agency];
     if (category) searchBody.fundingCategories = [category];
 
-    console.log(`Searching Grants.gov with params:`, JSON.stringify(searchBody));
+    console.info(`Searching Grants.gov with params:`, JSON.stringify(searchBody));
 
     // Create an AbortController for timeout
     const controller = new AbortController();
@@ -136,7 +136,7 @@ export async function searchGrantsGov(
       (opp) => (opp.oppStatus || "").toLowerCase() === "posted"
     );
 
-    console.log(`Found ${opportunities.length} open opportunities from Grants.gov (${allOpportunities.length} total)`);
+    console.info(`Found ${opportunities.length} open opportunities from Grants.gov (${allOpportunities.length} total)`);
 
     return opportunities.map((opp): ScrapedGrant => {
       // Get title (handles both formats)
@@ -1552,7 +1552,7 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
   ];
 
   for (const keyword of keywords) {
-    console.log(`Searching Grants.gov for: ${keyword}`);
+    console.info(`Searching Grants.gov for: ${keyword}`);
     const results = await searchGrantsGov(keyword, undefined, undefined, 50);
     allGrants.push(...results);
     // Rate limiting
@@ -1560,16 +1560,16 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
   }
 
   // Add SBIR/STTR grants
-  console.log("Searching SBIR/STTR grants...");
+  console.info("Searching SBIR/STTR grants...");
   const sbirGrants = await searchSBIRGrants();
   allGrants.push(...sbirGrants);
 
   // Add corporate grants
-  console.log("Adding corporate grants...");
+  console.info("Adding corporate grants...");
   allGrants.push(...getCorporateGrants());
 
   // Add state grants
-  console.log("Adding state grants...");
+  console.info("Adding state grants...");
   allGrants.push(...getStateGrants());
 
   // Filter out expired grants (keep open deadlines + rolling/null deadlines)
@@ -1579,7 +1579,7 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
     return grant.deadline.getTime() > now.getTime();
   });
 
-  console.log(`Filtered to ${openGrants.length} open grants (removed ${allGrants.length - openGrants.length} expired)`);
+  console.info(`Filtered to ${openGrants.length} open grants (removed ${allGrants.length - openGrants.length} expired)`);
 
   // Deduplicate by title
   const seen = new Set<string>();
@@ -1590,7 +1590,7 @@ export async function scrapeAllGrants(): Promise<ScrapedGrant[]> {
     return true;
   });
 
-  console.log(`Total unique grants found: ${uniqueGrants.length}`);
+  console.info(`Total unique grants found: ${uniqueGrants.length}`);
   return uniqueGrants;
 }
 

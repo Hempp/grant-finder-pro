@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log("Starting grant scraping job...");
+    console.info("Starting grant scraping job...");
     const startTime = Date.now();
 
     // Step 1: Clean out expired grants (deadline passed and no active applications)
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         applications: { none: {} },
       },
     });
-    console.log(`Cleaned ${expiredResult.count} expired grants`);
+    console.info(`Cleaned ${expiredResult.count} expired grants`);
 
     // Scrape grants from all pluggable sources
     const sourceResults = await grantSourceRegistry.scrapeAll();
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     for (const r of sourceResults) {
       if (r.error) console.error(`Source ${r.source} failed: ${r.error}`);
-      else console.log(`Source ${r.source}: ${r.grants.length} grants`);
+      else console.info(`Source ${r.source}: ${r.grants.length} grants`);
     }
 
     // Upsert grants into database
@@ -124,8 +124,8 @@ export async function GET(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    console.log(`Grant scraping completed in ${duration}ms`);
-    console.log(`Created: ${created}, Updated: ${updated}, Errors: ${errors}`);
+    console.info(`Grant scraping completed in ${duration}ms`);
+    console.info(`Created: ${created}, Updated: ${updated}, Errors: ${errors}`);
 
     // Send email alerts to users who have alerts enabled
     let emailsSent = 0;
@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        console.log(`Sent ${emailsSent} email alerts`);
+        console.info(`Sent ${emailsSent} email alerts`);
       } catch (alertErr) {
         console.error("Failed to send alerts:", alertErr);
       }

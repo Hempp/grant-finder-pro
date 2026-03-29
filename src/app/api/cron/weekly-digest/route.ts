@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log("Starting weekly digest job...");
+    console.info("Starting weekly digest job...");
     const startTime = Date.now();
 
     // Get users with weekly digest enabled
@@ -109,8 +109,8 @@ export async function GET(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    console.log(`Weekly digest job completed in ${duration}ms`);
-    console.log(`Sent: ${emailsSent}, Errors: ${errors}`);
+    console.info(`Weekly digest job completed in ${duration}ms`);
+    console.info(`Sent: ${emailsSent}, Errors: ${errors}`);
 
     return NextResponse.json({
       success: true,

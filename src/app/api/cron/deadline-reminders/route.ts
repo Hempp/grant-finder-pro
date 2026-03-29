@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log("Starting deadline reminder job...");
+    console.info("Starting deadline reminder job...");
     const startTime = Date.now();
 
     // Get users with deadline reminders enabled
@@ -94,8 +94,8 @@ export async function GET(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    console.log(`Deadline reminder job completed in ${duration}ms`);
-    console.log(`Sent: ${emailsSent}, Errors: ${errors}`);
+    console.info(`Deadline reminder job completed in ${duration}ms`);
+    console.info(`Sent: ${emailsSent}, Errors: ${errors}`);
 
     return NextResponse.json({
       success: true,

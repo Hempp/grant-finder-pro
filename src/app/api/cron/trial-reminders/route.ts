@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    console.log("Starting trial reminder job...");
+    console.info("Starting trial reminder job...");
     const startTime = Date.now();
 
     const now = new Date();
@@ -93,9 +93,9 @@ export async function GET(request: NextRequest) {
 
     const duration = Date.now() - startTime;
 
-    console.log(`Trial reminder job completed in ${duration}ms`);
-    console.log(`Sent: ${emailsSent}, Errors: ${errors}`);
-    console.log(`Breakdown: 7-day: ${remindersBreakdown.sevenDay}, 3-day: ${remindersBreakdown.threeDay}, 1-day: ${remindersBreakdown.oneDay}`);
+    console.info(`Trial reminder job completed in ${duration}ms`);
+    console.info(`Sent: ${emailsSent}, Errors: ${errors}`);
+    console.info(`Breakdown: 7-day: ${remindersBreakdown.sevenDay}, 3-day: ${remindersBreakdown.threeDay}, 1-day: ${remindersBreakdown.oneDay}`);
 
     return NextResponse.json({
       success: true,

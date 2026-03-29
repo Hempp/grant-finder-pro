@@ -38,12 +38,12 @@ export async function sendGrantAlertEmail({
   frequency = "daily",
 }: SendAlertParams) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
   if (grants.length === 0) {
-    console.log("No new grants to alert about");
+    console.info("No new grants to alert about");
     return null;
   }
 
@@ -148,7 +148,7 @@ export async function sendGrantAlertEmail({
   try {
     const client = getResendClient();
     if (!client) {
-      console.log("Resend client not available, skipping email");
+      console.warn("Resend client not available, skipping email");
       return null;
     }
 
@@ -159,7 +159,7 @@ export async function sendGrantAlertEmail({
       html,
     });
 
-    console.log(`Email sent to ${to}:`, result);
+    console.info(`Email sent to ${to}:`, result);
     return result;
   } catch (error) {
     console.error("Failed to send email:", error);
@@ -172,7 +172,7 @@ const APP_URL = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "
 // Send a welcome email when user enables alerts
 export async function sendWelcomeEmail(to: string, userName?: string) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -217,7 +217,7 @@ export async function sendWelcomeEmail(to: string, userName?: string) {
   try {
     const client = getResendClient();
     if (!client) {
-      console.log("Resend client not available, skipping email");
+      console.warn("Resend client not available, skipping email");
       return null;
     }
 
@@ -237,7 +237,7 @@ export async function sendWelcomeEmail(to: string, userName?: string) {
 // Trial started email
 export async function sendTrialStartedEmail(to: string, userName?: string, trialDays: number = 14) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -304,7 +304,7 @@ export async function sendTrialStartedEmail(to: string, userName?: string, trial
 // Trial ending reminder email
 export async function sendTrialEndingEmail(to: string, userName?: string, daysRemaining: number = 3) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -389,7 +389,7 @@ export async function sendDeadlineReminderEmail(
   grants: DeadlineGrant[]
 ) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -483,7 +483,7 @@ export async function sendWeeklyDigestEmail(
   stats: DigestStats
 ) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -598,7 +598,7 @@ export async function sendOutcomePromptEmail(
   grants: { id: string; title: string; funder: string; deadline: string; applicationId: string }[]
 ) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -670,7 +670,7 @@ export async function sendOutcomePromptEmail(
 // Payment failure notification email
 export async function sendPaymentFailedEmail(to: string, userName?: string) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 
@@ -745,7 +745,7 @@ export async function sendPaymentFailedEmail(to: string, userName?: string) {
 // Subscription canceled notification email
 export async function sendSubscriptionCanceledEmail(to: string, userName?: string) {
   if (!process.env.RESEND_API_KEY) {
-    console.log("RESEND_API_KEY not configured, skipping email");
+    console.warn("RESEND_API_KEY not configured, skipping email");
     return null;
   }
 

@@ -55,7 +55,7 @@ export class SamGovSource implements GrantSource {
   async scrape(): Promise<ScrapedGrant[]> {
     const apiKey = process.env.SAM_GOV_API_KEY;
     if (!apiKey) {
-      console.log("SAM.gov API key not configured, using curated federal grants");
+      console.info("SAM.gov API key not configured, using curated federal grants");
       return this.getCuratedFederalGrants();
     }
 

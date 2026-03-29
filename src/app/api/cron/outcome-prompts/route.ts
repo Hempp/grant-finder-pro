@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(
+    console.info(
       `[outcome-prompt] Complete: checked=${applications.length}, prompted=${prompted}, errors=${errors.length}`
     );
 
