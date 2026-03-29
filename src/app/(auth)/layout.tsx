@@ -1,5 +1,11 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  robots: { index: false, follow: false },
+};
 
 export default function AuthLayout({
   children,

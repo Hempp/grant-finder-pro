@@ -1,12 +1,46 @@
 import Link from "next/link";
+import Script from "next/script";
 import { ArrowRight, Upload, Search, FileText, CheckCircle, Sparkles, TrendingUp, Zap, Shield, Clock, Users, Crosshair, Bell, RefreshCw } from "lucide-react";
 import { auth } from "@/lib/auth";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "GrantPilot",
+  applicationCategory: "BusinessApplication",
+  description:
+    "AI-powered grant intelligence platform that finds matching grants, fills applications to 100/100, and optimizes for each funder's scoring criteria.",
+  url: "https://grantpilot.ai",
+  operatingSystem: "Web",
+  offers: [
+    { "@type": "Offer", name: "Starter", price: "0", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Growth", price: "29", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Pro", price: "79", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Organization", price: "249", priceCurrency: "USD" },
+  ],
+  featureList: [
+    "AI grant matching",
+    "Smart Fill auto-apply to 100/100",
+    "Content Library with website import",
+    "Scoring criteria optimization",
+    "Success fee pricing — pay only when you win",
+  ],
+};
 
 export default async function LandingPage() {
   const session = await auth();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+      {/* Structured Data — static JSON, no user input, safe for inline script */}
+      <Script
+        id="json-ld"
+        type="application/ld+json"
+        strategy="afterInteractive"
+      >
+        {JSON.stringify(jsonLd)}
+      </Script>
+
       {/* Animated Background */}
       <div className="fixed inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
       <div className="fixed top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
@@ -258,8 +292,8 @@ export default async function LandingPage() {
           </div>
           <div className="flex items-center gap-6 text-slate-500 text-sm">
             <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
-            <Link href="#" className="hover:text-white transition">Privacy</Link>
-            <Link href="#" className="hover:text-white transition">Terms</Link>
+            <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
+            <Link href="/terms" className="hover:text-white transition">Terms</Link>
           </div>
           <p className="text-slate-500 text-sm">
             Fund your vision, change the world.

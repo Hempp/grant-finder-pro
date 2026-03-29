@@ -13,9 +13,68 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.ai";
+
 export const metadata: Metadata = {
-  title: "GrantPilot - AI-Powered Grant Intelligence Platform",
-  description: "Find grants you'll win. AI reads applications, drafts proposals from your data, and predicts your score before you submit.",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "GrantPilot — AI-Powered Grant Intelligence Platform",
+    template: "%s | GrantPilot",
+  },
+  description:
+    "Find grants you'll win. AI reads applications, drafts proposals from your data, and optimizes every section to score 100/100 on the rubric.",
+  keywords: [
+    "grant writing",
+    "grant application",
+    "AI grant writer",
+    "SBIR grants",
+    "federal grants",
+    "grant matching",
+    "nonprofit grants",
+    "grant management",
+    "small business grants",
+    "grant proposal software",
+  ],
+  authors: [{ name: "GrantPilot" }],
+  creator: "GrantPilot",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: BASE_URL,
+    siteName: "GrantPilot",
+    title: "GrantPilot — AI-Powered Grant Intelligence Platform",
+    description:
+      "Find grants you'll win. AI fills your application to 100/100, optimized for each funder's scoring criteria. 3% success fee — we only earn when you win.",
+    images: [
+      {
+        url: `${BASE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "GrantPilot — Find Grants You'll Win",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GrantPilot — AI-Powered Grant Intelligence",
+    description:
+      "AI fills grant applications to 100/100. Upload your docs, enter your URL, click Apply. We only charge when you win.",
+    images: [`${BASE_URL}/og-image.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: BASE_URL,
+  },
 };
 
 export default function RootLayout({
