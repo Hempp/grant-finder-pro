@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   Gift,
+  BookOpen,
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -31,6 +32,7 @@ const navGroups = [
       { name: "Find Grants", href: "/dashboard/grants", icon: Search },
       { name: "Applications", href: "/dashboard/applications", icon: FileText },
       { name: "Documents", href: "/dashboard/documents", icon: Upload },
+      { name: "Library", href: "/dashboard/library", icon: BookOpen },
     ],
   },
   {
