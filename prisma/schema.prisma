@@ -261,18 +261,32 @@ model GrantOutcome {
   id            String   @id @default(cuid())
   grantId       String
   grant         Grant    @relation(fields: [grantId], references: [id], onDelete: Cascade)
+  userId        String?
   orgType       String?
   orgState      String?
   teamSize      String?
   annualRevenue String?
-  result        String   // "awarded" | "rejected" | "no_response"
+  grantAmount   Int?          // actual award amount in dollars
+  result        String        // "awarded" | "rejected" | "no_response"
   appliedAt     DateTime
   resultAt      DateTime?
+  usedSmartFill Boolean  @default(false)
+
+  // Success fee tracking
+  successFeePercent  Float?   // fee % at time of award
+  successFeeAmount   Int?     // fee amount in dollars
+  successFeeStatus   String?  // "pending" | "invoiced" | "paid" | "waived"
+  stripeInvoiceId    String?  // Stripe invoice ID
+  feeInvoicedAt      DateTime?
+  feePaidAt          DateTime?
+
   createdAt     DateTime @default(now())
 
   @@index([grantId])
+  @@index([userId])
   @@index([result])
   @@index([orgType])
+  @@index([successFeeStatus])
 }
 
 model Application {

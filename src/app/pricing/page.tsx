@@ -28,14 +28,15 @@ const plans = [
     description: "Get started with grant discovery",
     price: 0,
     priceAnnual: 0,
+    successFee: null as string | null,
     features: [
       { text: "5 grant matches per month", included: true },
-      { text: "1 auto-apply draft per month", included: true },
+      { text: "Manual apply only", included: true },
       { text: "Save up to 10 grants", included: true },
       { text: "Weekly email digest", included: true },
       { text: "Basic Grant Readiness Score", included: true },
-      { text: "AI Application Intelligence", included: false },
-      { text: "Grant Guarantee", included: false },
+      { text: "Smart Fill (AI auto-apply)", included: false },
+      { text: "Content Library", included: false },
     ],
     cta: "Get Started Free",
     popular: false,
@@ -46,16 +47,17 @@ const plans = [
     id: "growth",
     name: "Growth",
     description: "For growing organizations",
-    price: 24,
+    price: 29,
     priceAnnual: 228,
+    successFee: "5% on grants $10K+",
     features: [
       { text: "25 grant matches per month", included: true },
-      { text: "5 auto-apply drafts per month", included: true },
-      { text: "Save up to 50 grants", included: true },
+      { text: "5 Smart Fills per month", included: true },
+      { text: "Content Library (50 blocks)", included: true },
+      { text: "Website import", included: true },
       { text: "Daily email alerts", included: true },
       { text: "Full Grant Readiness Score", included: true },
-      { text: "Content Reuse Library", included: true },
-      { text: "Grant Guarantee", included: false },
+      { text: "No fee on grants under $10K", included: true },
     ],
     cta: "Start Growing",
     popular: false,
@@ -66,17 +68,18 @@ const plans = [
     id: "pro",
     name: "Pro",
     description: "For serious grant seekers",
-    price: 59,
-    priceAnnual: 588,
+    price: 79,
+    priceAnnual: 708,
+    successFee: "3% on grants won",
     features: [
       { text: "Unlimited grant matches", included: true },
-      { text: "20 auto-apply drafts per month", included: true },
-      { text: "AI Application Intelligence", included: true },
-      { text: "Scoring Criteria Coverage Map", included: true },
-      { text: "Real-time alerts", included: true },
-      { text: "ROI Dashboard", included: true },
-      { text: "Grant Guarantee: win or refund", included: true },
+      { text: "25 Smart Fills per month", included: true },
+      { text: "Unlimited Content Library", included: true },
+      { text: "Auto-optimize to 100/100", included: true },
+      { text: "Scoring + diff transparency", included: true },
+      { text: "Grant Guarantee: win or 3 months free", included: true },
       { text: "Up to 3 team members", included: true },
+      { text: "Priority support", included: true },
     ],
     cta: "Go Pro",
     popular: true,
@@ -87,17 +90,18 @@ const plans = [
     id: "organization",
     name: "Organization",
     description: "For teams and consultants",
-    price: 199,
-    priceAnnual: 2028,
+    price: 249,
+    priceAnnual: 2388,
+    successFee: "2% on grants won",
     features: [
       { text: "Everything in Pro", included: true },
-      { text: "Unlimited auto-apply drafts", included: true },
+      { text: "100 Smart Fills per month", included: true },
       { text: "Up to 10 team members", included: true },
+      { text: "Lowest success fee (2%)", included: true },
       { text: "Smart Budget Builder", included: true },
       { text: "Competitive Intelligence", included: true },
       { text: "Custom AI tone & templates", included: true },
       { text: "Dedicated success manager", included: true },
-      { text: "Full reporting & export", included: true },
     ],
     cta: "Contact Sales",
     popular: false,
@@ -308,6 +312,12 @@ function PricingContent() {
                       )}
                     </>
                   )}
+                  {plan.successFee && (
+                    <p className="text-xs text-amber-400/80 mt-2 flex items-center gap-1">
+                      <span className="inline-block w-1 h-1 rounded-full bg-amber-400" />
+                      + {plan.successFee}
+                    </p>
+                  )}
                 </div>
 
                 <ul className="space-y-3 mb-6">
@@ -419,9 +429,9 @@ function PricingContent() {
                 </h3>
                 <p className="text-slate-400">
                   Pro and Organization plans include our Grant Guarantee: if you don&apos;t
-                  win a grant within 12 months of subscribing, we&apos;ll refund your
-                  subscription in full. We&apos;re that confident in our matching and
-                  AI application intelligence.
+                  win a grant within 12 months of subscribing (after submitting at least
+                  10 applications using Smart Fill), we&apos;ll extend your subscription
+                  3 months free. We only succeed when you succeed.
                 </p>
               </CardContent>
             </Card>
@@ -457,6 +467,35 @@ function PricingContent() {
                 <p className="text-slate-400">
                   Yes! You can upgrade or downgrade at any time. Changes take effect
                   immediately, and we&apos;ll prorate your billing.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">
+                  How does the success fee work?
+                </h3>
+                <p className="text-slate-400">
+                  When you win a grant using GrantPilot, a small success fee applies based
+                  on your plan (2-5%). The fee is automatically invoiced only when you report
+                  a win. Starter plans have no success fee. Growth plans have no fee on
+                  grants under $10K. This aligns our incentives — we only earn when you win.
+                  Compared to grant consultants who charge $5K-$15K per application, our
+                  success fee is a fraction of the cost.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="text-white font-medium mb-2 text-sm sm:text-base">
+                  What is Smart Fill?
+                </h3>
+                <p className="text-slate-400">
+                  Smart Fill is our AI engine that generates complete grant applications scored
+                  to 100/100. It reads the grant&apos;s scoring criteria, pulls from your Content
+                  Library (company data, team bios, impact metrics), and auto-optimizes each
+                  section up to 3 rounds until every criterion is addressed. You see exactly
+                  what the AI changed and why, tied to the scoring rubric.
                 </p>
               </CardContent>
             </Card>

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const planLimits = PLANS[plan].limits;
 
     // Check if user has auto-apply access
-    if ((planLimits.autoApplyPerMonth as number) <= 0 && planLimits.autoApplyPerMonth !== -1) {
+    if ((planLimits.autoApplyPerMonth as number) <= 0 && (planLimits.autoApplyPerMonth as number) !== -1) {
       return NextResponse.json(
         {
           error: "Auto-Apply requires a paid subscription",
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if user has reached their limit (if not unlimited)
-    if (planLimits.autoApplyPerMonth !== -1) {
+    if ((planLimits.autoApplyPerMonth as number) !== -1) {
       // Check if usage needs reset
       const now = new Date();
       const resetDate = user.usageResetDate ? new Date(user.usageResetDate) : now;
