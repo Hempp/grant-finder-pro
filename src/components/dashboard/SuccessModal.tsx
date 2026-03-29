@@ -27,7 +27,7 @@ export function SuccessModal({ show, grantTitle, applicationId, onClose }: Succe
             &ldquo;{grantTitle}&rdquo; has been submitted. We&apos;ll track the outcome and notify you.
           </p>
         </ModalContent>
-        <ModalFooter justify="center" className="gap-3">
+        <ModalFooter className="justify-center gap-3">
           <Link href={`/dashboard/applications/${applicationId}`}>
             <Button variant="outline" size="sm">
               Track Application
