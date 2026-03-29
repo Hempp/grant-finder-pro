@@ -23,6 +23,7 @@ import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
+import { ToastProvider } from "@/components/ui";
 
 const navGroups = [
   {
@@ -198,13 +199,15 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <main id="main-content" className="flex-1 overflow-auto bg-slate-950" role="main">
-        <TrialBanner />
-        <Breadcrumbs />
-        <ErrorBoundary>
-          <div className="bg-glow-emerald">
-            {children}
-          </div>
-        </ErrorBoundary>
+        <ToastProvider>
+          <TrialBanner />
+          <Breadcrumbs />
+          <ErrorBoundary>
+            <div className="bg-glow-emerald">
+              {children}
+            </div>
+          </ErrorBoundary>
+        </ToastProvider>
       </main>
     </div>
   );
