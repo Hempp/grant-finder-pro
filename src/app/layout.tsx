@@ -45,21 +45,12 @@ export const metadata: Metadata = {
     title: "GrantPilot — AI-Powered Grant Intelligence Platform",
     description:
       "Find grants you'll win. AI fills your application to 100/100, optimized for each funder's scoring criteria. 3% success fee — we only earn when you win.",
-    images: [
-      {
-        url: `${BASE_URL}/og-image.png`,
-        width: 1200,
-        height: 630,
-        alt: "GrantPilot — Find Grants You'll Win",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "GrantPilot — AI-Powered Grant Intelligence",
     description:
       "AI fills grant applications to 100/100. Upload your docs, enter your URL, click Apply. We only charge when you win.",
-    images: [`${BASE_URL}/og-image.png`],
   },
   robots: {
     index: true,
