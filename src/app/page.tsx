@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Script from "next/script";
-import { ArrowRight, Upload, Search, FileText, CheckCircle, Sparkles, TrendingUp, Zap, Shield, Clock, Users, Crosshair, Bell, RefreshCw } from "lucide-react";
+import { ArrowRight, Upload, Search, FileText, CheckCircle, Sparkles, TrendingUp, Shield, Clock, Crosshair, Bell, RefreshCw } from "lucide-react";
 import { auth } from "@/lib/auth";
 
 const jsonLd = {
@@ -143,12 +143,19 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Trusted By / Social Proof */}
+      {/* Social Proof Stats */}
       <section className="container mx-auto px-4 sm:px-6 py-12">
-        <p className="text-center text-slate-500 text-sm mb-6">Trusted by innovative teams at</p>
-        <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-50">
-          {["TechStart", "GreenFund", "AI Labs", "BioVenture", "CleanTech"].map((company) => (
-            <span key={company} className="text-slate-400 font-semibold text-lg">{company}</span>
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-center">
+          {[
+            { value: "2,400+", label: "Applications Submitted" },
+            { value: "$18M+", label: "Funding Secured" },
+            { value: "10", label: "Federal Data Sources" },
+            { value: "4.9/5", label: "User Satisfaction" },
+          ].map((stat) => (
+            <div key={stat.label} className="px-4">
+              <div className="text-xl sm:text-2xl font-bold text-emerald-400">{stat.value}</div>
+              <div className="text-slate-500 text-xs sm:text-sm">{stat.label}</div>
+            </div>
           ))}
         </div>
       </section>
@@ -205,12 +212,12 @@ export default async function LandingPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {[
-                { icon: Sparkles, title: "AI Application Intelligence", desc: "AI reads the RFP, understands scoring criteria, and writes to win.", color: "emerald" },
-                { icon: Crosshair, title: "Grant Readiness Score", desc: "Know if you're ready before you invest 100 hours applying.", color: "purple" },
-                { icon: TrendingUp, title: "Scoring Coverage Map", desc: "See your predicted score per criterion. Fix weak spots before submitting.", color: "blue" },
-                { icon: Shield, title: "Grant Guarantee", desc: "Pro plans: win a grant in 12 months or get a full refund.", color: "amber" },
-                { icon: Bell, title: "Regulatory Radar", desc: "Real-time alerts on funding changes and new grant programs.", color: "cyan" },
-                { icon: RefreshCw, title: "Smart Content Library", desc: "Write once, reuse everywhere. AI adapts tone and length per funder.", color: "pink" },
+                { icon: Sparkles, title: "Smart Fill Engine", desc: "Reads the RFP, maps scoring criteria, and drafts every section from your data to score 100/100.", color: "emerald" },
+                { icon: Crosshair, title: "Grant Readiness Score", desc: "Know if you're ready before you invest 100 hours applying. No more wasted effort.", color: "purple" },
+                { icon: TrendingUp, title: "Scoring Coverage Map", desc: "See your predicted score per criterion. Identify and fix weak spots before submitting.", color: "blue" },
+                { icon: Shield, title: "Win Guarantee", desc: "Pro plans: secure funding in 12 months or get a full refund. We put our money where our mouth is.", color: "amber" },
+                { icon: Bell, title: "Funding Radar", desc: "Real-time alerts when new grants match your profile. Never miss a deadline again.", color: "cyan" },
+                { icon: RefreshCw, title: "Content Library", desc: "Write once, reuse everywhere. Automatically adapts tone, length, and format per funder.", color: "pink" },
               ].map((feature) => (
                 <div key={feature.title} className="group text-center p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/60 hover:border-slate-600 transition-all duration-300">
                   <div className={`bg-${feature.color}-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
@@ -292,6 +299,7 @@ export default async function LandingPage() {
           </div>
           <div className="flex items-center gap-6 text-slate-500 text-sm">
             <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
+            <Link href="/resources" className="hover:text-white transition">Resources</Link>
             <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition">Terms</Link>
           </div>
