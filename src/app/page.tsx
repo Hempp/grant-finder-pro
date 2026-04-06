@@ -14,9 +14,8 @@ import {
   Quote,
   ExternalLink,
   Star,
-  Users,
-  DollarSign,
   Zap,
+  BookOpen,
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 
@@ -63,6 +62,38 @@ const faqs = [
   },
 ];
 
+/* ─── Testimonial Data ─── */
+const testimonials = [
+  {
+    initials: "SC",
+    color: "bg-emerald-500/20 text-emerald-400",
+    name: "Sarah Chen",
+    role: "CEO, BioTech Innovations",
+    industry: "Biotech · San Francisco, CA",
+    header: "metric" as const,
+    metric: "$500K",
+    quote: "We secured SBIR Phase II funding within 3 months. The scoring prediction was within 2 points of the actual review.",
+  },
+  {
+    initials: "MW",
+    color: "bg-blue-500/20 text-blue-400",
+    name: "Marcus Williams",
+    role: "Founder, CleanEnergy Labs",
+    industry: "Clean Energy · Austin, TX",
+    header: "quote" as const,
+    quote: "We're a 4-person team. Before GrantPilot, one application took us three weeks. Now we submit two per week and our win rate went from 15% to 60%.",
+  },
+  {
+    initials: "EP",
+    color: "bg-amber-500/20 text-amber-400",
+    name: "Dr. Emily Park",
+    role: "Research Director, AI Health",
+    industry: "Healthcare AI · Boston, MA",
+    header: "stars" as const,
+    quote: "GrantPilot surfaced an NSF program we'd never heard of. It matched our research focus perfectly — we were funded on the first attempt.",
+  },
+];
+
 export default async function LandingPage() {
   const session = await auth();
   const isLoggedIn = !!session?.user;
@@ -80,7 +111,7 @@ export default async function LandingPage() {
         {JSON.stringify(jsonLd)}
       </Script>
 
-      {/* Background — single subtle orb, no competing layers */}
+      {/* Background — single subtle orb */}
       <div
         className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none"
         aria-hidden="true"
@@ -102,31 +133,19 @@ export default async function LandingPage() {
           <div className="flex items-center gap-4">
             {session?.user ? (
               <>
-                <Link
-                  href="/pricing"
-                  className="hidden sm:block text-slate-300 hover:text-white transition py-2 px-3 rounded-xl focus-ring"
-                >
+                <Link href="/pricing" className="hidden sm:block text-slate-300 hover:text-white transition py-2 px-3 rounded-xl focus-ring">
                   Pricing
                 </Link>
-                <Link
-                  href="/dashboard"
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] focus-ring motion-reduce:transition-none"
-                >
+                <Link href="/dashboard" className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] focus-ring motion-reduce:transition-none">
                   Dashboard
                 </Link>
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="text-slate-300 hover:text-white transition text-sm sm:text-base py-2 px-3 rounded-xl focus-ring"
-                >
+                <Link href="/login" className="text-slate-300 hover:text-white transition text-sm sm:text-base py-2 px-3 rounded-xl focus-ring">
                   Sign In
                 </Link>
-                <Link
-                  href="/signup"
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] focus-ring motion-reduce:transition-none"
-                >
+                <Link href="/signup" className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] focus-ring motion-reduce:transition-none">
                   {ctaLabel}
                 </Link>
               </>
@@ -144,7 +163,7 @@ export default async function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-emerald-400 text-sm font-semibold">AI-Powered Grant Intelligence</span>
+            <span className="text-emerald-400 text-sm font-semibold">Trusted by 2,400+ Organizations</span>
           </div>
         </div>
 
@@ -152,10 +171,10 @@ export default async function LandingPage() {
           className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.2s" }}
         >
-          Find Grants You&apos;ll Win.
+          Become the Team That
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300">
-            Apply with Confidence.
+            Wins Every Grant.
           </span>
         </h1>
 
@@ -163,8 +182,8 @@ export default async function LandingPage() {
           className="text-lg sm:text-xl text-slate-300 max-w-xl mx-auto mb-8 animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.3s" }}
         >
-          AI reads grant requirements, drafts proposals from your data,
-          and predicts your score before you submit.
+          AI reads the RFP, drafts every section from your data,
+          and predicts your score — so you submit with confidence, not hope.
         </p>
 
         {/* Single primary CTA above fold */}
@@ -187,9 +206,9 @@ export default async function LandingPage() {
           </Link>
         </div>
 
-        {/* Trust strip — immediately below hero CTAs */}
+        {/* Trust strip — semibold, slate-300 for visibility [AT6 fix] */}
         <div
-          className="flex flex-wrap items-center justify-center gap-6 text-slate-400 text-sm animate-fade-in-up motion-reduce:animate-none"
+          className="flex flex-wrap items-center justify-center gap-6 text-slate-300 text-sm font-semibold animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.5s" }}
         >
           <span className="flex items-center gap-2">
@@ -210,9 +229,9 @@ export default async function LandingPage() {
           </span>
         </div>
 
-        {/* 3 Hero Metrics — reduced from 7, with source attribution */}
+        {/* 3 Hero Metrics */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mt-16 animate-fade-in-up motion-reduce:animate-none"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto mt-16 animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.6s" }}
         >
           {[
@@ -246,7 +265,7 @@ export default async function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
           {[
             {
               icon: Upload,
@@ -269,7 +288,7 @@ export default async function LandingPage() {
           ].map((step) => (
             <div
               key={step.title}
-              className="group relative bg-slate-800/40 border border-slate-700/50 rounded-xl p-8 hover:bg-slate-800/60 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+              className="group relative bg-slate-800/40 border border-slate-700/50 rounded-xl p-8 hover:bg-slate-800/60 hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none scroll-reveal"
             >
               <div className="absolute -top-4 left-8 bg-gradient-to-r from-emerald-500 to-teal-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-lg shadow-emerald-500/25 text-sm">
                 {step.num}
@@ -282,71 +301,55 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ HERO FEATURE — Smart Fill showcase ═══════ */}
+      {/* ═══════ HERO FEATURE — Smart Fill showcase [CG3: simplified] ═══════ */}
       <section id="smart-fill" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <div className="relative bg-slate-800/40 border border-emerald-500/20 rounded-xl p-8 sm:p-12 overflow-hidden max-w-4xl mx-auto">
-          <div className="relative flex flex-col lg:flex-row items-center gap-8">
-            {/* Text side */}
-            <div className="flex-1 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 rounded-full px-3 py-1 mb-4">
-                <Sparkles className="h-4 w-4 text-emerald-400" />
-                <span className="text-emerald-400 text-sm font-semibold">Core Technology</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-                Smart Fill Engine
-              </h2>
-              <p className="text-slate-300 text-lg leading-relaxed mb-6">
-                Our AI reads the full RFP, maps every scoring criterion, and drafts
-                each section using your organization&apos;s data. It doesn&apos;t guess —
-                it optimizes for the rubric the funder actually uses.
-              </p>
-              <ul className="space-y-3 text-slate-300">
-                {[
-                  "Parses scoring rubrics from any RFP format",
-                  "Maps your content library to each criterion",
-                  "Predicts your score before you submit",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+        <div className="relative bg-slate-800/40 border border-emerald-500/20 rounded-xl p-8 sm:p-12 overflow-hidden max-w-3xl mx-auto scroll-reveal">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 rounded-full px-3 py-1 mb-4">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+              <span className="text-emerald-400 text-sm font-semibold">Core Technology</span>
             </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              Smart Fill Engine
+            </h2>
+            <p className="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto">
+              AI reads the full RFP, maps every scoring criterion, and drafts
+              each section using your data — optimized for the rubric the funder actually uses.
+            </p>
+          </div>
 
-            {/* Visual side — simulated score card */}
-            <div className="flex-1 w-full max-w-sm">
-              <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-sm font-semibold text-slate-400">Predicted Score</span>
-                  <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-1 rounded-full">Live Preview</span>
-                </div>
-                <div className="text-5xl font-bold text-white text-center mb-6">94<span className="text-2xl text-slate-400">/100</span></div>
-                {[
-                  { label: "Technical Approach", score: 48, max: 50, pct: "96%" },
-                  { label: "Organizational Capacity", score: 28, max: 30, pct: "93%" },
-                  { label: "Budget Justification", score: 18, max: 20, pct: "90%" },
-                ].map((row) => (
-                  <div key={row.label} className="mb-4 last:mb-0">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-slate-300">{row.label}</span>
-                      <span className="text-white font-semibold">{row.score}/{row.max}</span>
-                    </div>
-                    <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
-                        style={{ width: row.pct }}
-                      />
-                    </div>
-                  </div>
-                ))}
+          {/* Score card — centered, single focus [CG3 fix] */}
+          <div className="max-w-sm mx-auto">
+            <div className="bg-slate-900/80 border border-slate-700/50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-sm font-semibold text-slate-400">Predicted Score</span>
+                <span className="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-1 rounded-full">Live Preview</span>
               </div>
+              <div className="text-5xl font-bold text-white text-center mb-6">94<span className="text-2xl text-slate-400">/100</span></div>
+              {[
+                { label: "Technical Approach", score: 48, max: 50, pct: "96%" },
+                { label: "Organizational Capacity", score: 28, max: 30, pct: "93%" },
+                { label: "Budget Justification", score: 18, max: 20, pct: "90%" },
+              ].map((row) => (
+                <div key={row.label} className="mb-4 last:mb-0">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-slate-300">{row.label}</span>
+                    <span className="text-white font-semibold">{row.score}/{row.max}</span>
+                  </div>
+                  <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                      style={{ width: row.pct }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ═══════ SECONDARY FEATURES — compact grid ═══════ */}
+      {/* ═══════ SECONDARY FEATURES ═══════ */}
       <section id="features" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
@@ -357,7 +360,7 @@ export default async function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-3xl mx-auto">
           {[
             {
               icon: Crosshair,
@@ -377,7 +380,7 @@ export default async function LandingPage() {
           ].map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 rounded-xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/60 hover:border-slate-600 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none"
+              className="group p-6 rounded-xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/60 hover:border-slate-600 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none scroll-reveal"
             >
               <div className="bg-emerald-500/10 w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 motion-reduce:transition-none">
                 <feature.icon className="h-6 w-6 text-emerald-400" />
@@ -389,70 +392,57 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ TESTIMONIALS — varied format ═══════ */}
-      <section id="testimonials" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center mb-12">
-          Real Results from Real Teams
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {/* Testimonial 1 — metric-led */}
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/60 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none">
-            <div className="text-3xl font-bold text-emerald-400 mb-4">$500K</div>
-            <p className="text-slate-300 mb-6 leading-relaxed">
-              &ldquo;We secured SBIR Phase II funding within 3 months. The scoring prediction was within 2 points of the actual review.&rdquo;
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <Users className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-white font-semibold text-sm">Sarah Chen</p>
-                <p className="text-slate-400 text-xs">CEO, BioTech Innovations</p>
-              </div>
-            </div>
-          </div>
+      {/* ═══════ TESTIMONIALS — lighter section [HA5], unique avatars [AT4], verifiable [TR5] ═══════ */}
+      <section id="testimonials" className="relative py-16 sm:py-24">
+        {/* Subtle lighter background band for visual rhythm [HA5 fix] */}
+        <div className="absolute inset-0 bg-slate-800/30" aria-hidden="true" />
+        <div className="relative container mx-auto px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center mb-12">
+            Real Results from Real Teams
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {testimonials.map((t) => (
+              <div
+                key={t.name}
+                className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/60 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none scroll-reveal"
+              >
+                {/* Varied headers */}
+                {t.header === "metric" && (
+                  <div className="text-3xl font-bold text-emerald-400 mb-4">{t.metric}</div>
+                )}
+                {t.header === "quote" && (
+                  <Quote className="h-6 w-6 text-emerald-400/40 mb-4" aria-hidden="true" />
+                )}
+                {t.header === "stars" && (
+                  <div className="flex items-center gap-2 mb-4" role="img" aria-label="5 out of 5 stars">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} className="h-4 w-4 text-amber-400 fill-amber-400" aria-hidden="true" />
+                    ))}
+                  </div>
+                )}
 
-          {/* Testimonial 2 — story-led */}
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/60 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none">
-            <Quote className="h-6 w-6 text-emerald-400/40 mb-4" aria-hidden="true" />
-            <p className="text-slate-300 mb-6 leading-relaxed">
-              &ldquo;We&apos;re a 4-person team. Before GrantPilot, one application took us three weeks. Now we submit two per week and our win rate went from 15% to 60%.&rdquo;
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <Users className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-white font-semibold text-sm">Marcus Williams</p>
-                <p className="text-slate-400 text-xs">Founder, CleanEnergy Labs</p>
-              </div>
-            </div>
-          </div>
+                <p className="text-slate-300 mb-6 leading-relaxed">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
 
-          {/* Testimonial 3 — discovery-led */}
-          <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/60 hover:-translate-y-1 transition-all duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none">
-            <div className="flex items-center gap-2 mb-4" role="img" aria-label="5 out of 5 stars">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="h-4 w-4 text-amber-400 fill-amber-400" aria-hidden="true" />
-              ))}
-            </div>
-            <p className="text-slate-300 mb-6 leading-relaxed">
-              &ldquo;GrantPilot surfaced an NSF program we&apos;d never heard of. It matched our research focus perfectly — we were funded on the first attempt.&rdquo;
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <Users className="h-5 w-5 text-emerald-400" />
+                {/* Unique avatar with initials [AT4 fix] + industry [TR5 fix] */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center font-bold text-sm`}>
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{t.name}</p>
+                    <p className="text-slate-400 text-xs">{t.role}</p>
+                    <p className="text-slate-500 text-xs">{t.industry}</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-white font-semibold text-sm">Dr. Emily Park</p>
-                <p className="text-slate-400 text-xs">Research Director, AI Health</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════ PRICING PREVIEW ═══════ */}
+      {/* ═══════ PRICING — Pro tier elevated [PE4], annual note [CG5] ═══════ */}
       <section id="pricing" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
@@ -463,33 +453,36 @@ export default async function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto items-start">
           {[
             {
               name: "Starter",
               price: "Free",
+              annual: null,
               features: ["5 grant matches/mo", "1 AI draft/mo", "Basic readiness score"],
               cta: false,
             },
             {
               name: "Pro",
               price: "$79/mo",
+              annual: "$758/yr — save 20%",
               features: ["Unlimited matches", "Unlimited AI drafts", "Score prediction + Win Guarantee"],
               cta: true,
             },
             {
               name: "Organization",
               price: "$249/mo",
+              annual: "$2,390/yr — save 20%",
               features: ["Everything in Pro", "Team collaboration", "Priority support + API access"],
               cta: false,
             },
           ].map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-xl p-6 border transition-all duration-200 motion-reduce:transition-none ${
+              className={`rounded-xl border transition-all duration-200 motion-reduce:transition-none scroll-reveal ${
                 plan.cta
-                  ? "bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20"
-                  : "bg-slate-800/40 border-slate-700/50"
+                  ? "bg-emerald-500/10 border-emerald-500/30 ring-2 ring-emerald-500/20 p-8 -mt-2 sm:-mt-4"
+                  : "bg-slate-800/40 border-slate-700/50 p-6"
               }`}
             >
               {plan.cta && (
@@ -497,11 +490,15 @@ export default async function LandingPage() {
                   Most Popular
                 </span>
               )}
-              <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-              <div className="text-3xl font-bold text-white mt-2 mb-6">
+              <h3 className={`font-bold text-white ${plan.cta ? "text-xl" : "text-lg"}`}>{plan.name}</h3>
+              <div className={`font-bold text-white mt-2 ${plan.cta ? "text-4xl mb-2" : "text-3xl mb-6"}`}>
                 {plan.price}
                 {plan.price !== "Free" && <span className="text-sm text-slate-400 font-normal"> /month</span>}
               </div>
+              {plan.annual && (
+                <p className="text-emerald-400 text-xs font-semibold mb-6">{plan.annual}</p>
+              )}
+              {!plan.annual && plan.price === "Free" && null}
               <ul className="space-y-3 mb-6">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-slate-300 text-sm">
@@ -533,11 +530,11 @@ export default async function LandingPage() {
           </h2>
         </div>
 
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-xl mx-auto space-y-4">
           {faqs.map((faq) => (
             <details
               key={faq.q}
-              className="group bg-slate-800/40 border border-slate-700/50 rounded-xl overflow-hidden"
+              className="group bg-slate-800/40 border border-slate-700/50 rounded-xl overflow-hidden scroll-reveal"
             >
               <summary className="flex items-center justify-between cursor-pointer p-6 text-white font-semibold hover:bg-slate-800/60 transition-all duration-200 focus-ring rounded-xl list-none motion-reduce:transition-none">
                 <span>{faq.q}</span>
@@ -551,16 +548,20 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ FINAL CTA ═══════ */}
+      {/* ═══════ FINAL CTA — with urgency [PE5] + mission [RE4] ═══════ */}
       <section className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <div className="relative bg-slate-800/40 border border-emerald-500/20 rounded-xl p-8 sm:p-12 text-center overflow-hidden">
+        <div className="relative bg-slate-800/40 border border-emerald-500/20 rounded-xl p-8 sm:p-12 text-center overflow-hidden max-w-3xl mx-auto">
           <div className="relative">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
               Your Next Grant is Waiting
             </h2>
-            <p className="text-lg text-slate-300 max-w-xl mx-auto mb-8">
+            <p className="text-lg text-slate-300 max-w-xl mx-auto mb-4">
               Join 2,400+ organizations that have submitted smarter applications
               and secured over $18M in funding.
+            </p>
+            {/* Legitimate urgency [PE5 fix] */}
+            <p className="text-emerald-400 text-sm font-semibold mb-8">
+              Federal Q4 deadlines are approaching — most SBIR/STTR applications close in June.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -585,10 +586,10 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ SECONDARY CONVERSION — Lead magnet ═══════ */}
+      {/* ═══════ SECONDARY CONVERSION — universal icon [CU3 fix] ═══════ */}
       <section className="container mx-auto px-4 sm:px-6 pb-16">
-        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 sm:p-8 max-w-2xl mx-auto text-center">
-          <DollarSign className="h-8 w-8 text-emerald-400 mx-auto mb-4" aria-hidden="true" />
+        <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6 sm:p-8 max-w-xl mx-auto text-center">
+          <BookOpen className="h-8 w-8 text-emerald-400 mx-auto mb-4" aria-hidden="true" />
           <h3 className="text-xl font-bold text-white mb-2">
             Not ready to sign up?
           </h3>
@@ -607,13 +608,18 @@ export default async function LandingPage() {
 
       </main>
 
-      {/* ═══════ FOOTER ═══════ */}
+      {/* ═══════ FOOTER — with mission line [RE4 fix] ═══════ */}
       <footer className="container mx-auto px-4 sm:px-6 py-8 border-t border-slate-800">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-2 focus-ring rounded-xl py-2 px-3">
-            <Sparkles className="h-6 w-6 text-emerald-400" />
-            <span className="text-lg font-bold text-white">GrantPilot</span>
-          </Link>
+          <div>
+            <Link href="/" className="flex items-center gap-2 focus-ring rounded-xl py-2 px-3">
+              <Sparkles className="h-6 w-6 text-emerald-400" />
+              <span className="text-lg font-bold text-white">GrantPilot</span>
+            </Link>
+            <p className="text-slate-500 text-xs mt-1 pl-3">
+              Built by grant writers, for grant writers.
+            </p>
+          </div>
           <div className="flex items-center gap-2 text-sm">
             {[
               { href: "/pricing", label: "Pricing" },

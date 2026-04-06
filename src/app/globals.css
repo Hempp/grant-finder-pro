@@ -318,6 +318,23 @@ body {
   animation: slide-up-stagger 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Scroll-triggered reveal for below-fold elements */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
 /* Stagger delays for lists */
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.1s; }
