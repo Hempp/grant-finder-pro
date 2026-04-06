@@ -111,6 +111,9 @@ export default async function LandingPage() {
         {JSON.stringify(jsonLd)}
       </Script>
 
+      {/* Scroll progress bar [FL5 fix] */}
+      <div className="scroll-progress-bar" aria-hidden="true" />
+
       {/* Background — single subtle orb */}
       <div
         className="fixed inset-0 bg-grid-pattern opacity-20 pointer-events-none"
