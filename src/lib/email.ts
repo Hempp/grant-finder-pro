@@ -816,3 +816,152 @@ export async function sendSubscriptionCanceledEmail(to: string, userName?: strin
     throw error;
   }
 }
+
+// Application submission confirmation email
+interface ApplicationConfirmationParams {
+  userName?: string;
+  grantTitle: string;
+  funder: string;
+  confirmationNumber: string;
+  submittedAt: Date;
+  completionScore: number | null;
+  confidenceScore: number | null;
+  grantAmount: string | null;
+  deadline: Date | null;
+  applicationId: string;
+}
+
+export async function sendApplicationConfirmationEmail(
+  to: string,
+  params: ApplicationConfirmationParams
+) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not configured, skipping email");
+    return null;
+  }
+
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantfinder.pro";
+  const greeting = params.userName ? `Hi ${params.userName}` : "Hi there";
+  const submittedDate = params.submittedAt.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+  const deadlineStr = params.deadline
+    ? new Date(params.deadline).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : "Not specified";
+  const scoreHtml = params.completionScore
+    ? `<div style="background: #064e3b; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
+        <p style="color: #6ee7b7; font-size: 14px; margin: 0 0 4px;">Predicted Score</p>
+        <p style="color: white; font-size: 32px; font-weight: bold; margin: 0;">${params.completionScore}/100</p>
+        ${params.confidenceScore ? `<p style="color: #6ee7b7; font-size: 12px; margin: 4px 0 0;">AI Confidence: ${params.confidenceScore}%</p>` : ""}
+      </div>`
+    : "";
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; margin-top: 20px; margin-bottom: 20px;">
+        <div style="background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%); padding: 32px 40px; text-align: center;">
+          <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0 0 8px;">Application Submitted</p>
+          <h1 style="color: white; font-size: 24px; margin: 0;">Confirmation: ${params.confirmationNumber}</h1>
+        </div>
+        <div style="padding: 32px 40px;">
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            ${greeting}, your grant application has been submitted successfully.
+          </p>
+
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #334155;">Grant</td>
+              <td style="color: #e2e8f0; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid #334155; font-weight: 600;">${params.grantTitle}</td>
+            </tr>
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #334155;">Funder</td>
+              <td style="color: #e2e8f0; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid #334155;">${params.funder}</td>
+            </tr>
+            ${params.grantAmount ? `
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #334155;">Amount</td>
+              <td style="color: #e2e8f0; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid #334155;">${params.grantAmount}</td>
+            </tr>` : ""}
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #334155;">Deadline</td>
+              <td style="color: #e2e8f0; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid #334155;">${deadlineStr}</td>
+            </tr>
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid #334155;">Submitted</td>
+              <td style="color: #e2e8f0; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid #334155;">${submittedDate}</td>
+            </tr>
+            <tr>
+              <td style="color: #94a3b8; padding: 8px 0; font-size: 14px;">Confirmation</td>
+              <td style="color: #10b981; padding: 8px 0; font-size: 14px; text-align: right; font-weight: 600;">${params.confirmationNumber}</td>
+            </tr>
+          </table>
+
+          ${scoreHtml}
+
+          <h3 style="color: #e2e8f0; font-size: 16px; margin: 24px 0 12px;">What Happens Next</h3>
+          <div style="background: #0f172a; border-radius: 8px; padding: 20px;">
+            <div style="display: flex; margin-bottom: 16px;">
+              <div style="min-width: 24px; height: 24px; background: #10b981; border-radius: 50%; color: white; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; margin-right: 12px;">✓</div>
+              <div>
+                <p style="color: #e2e8f0; font-size: 14px; margin: 0; font-weight: 600;">Application Submitted</p>
+                <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0;">Your application has been received and recorded.</p>
+              </div>
+            </div>
+            <div style="display: flex; margin-bottom: 16px;">
+              <div style="min-width: 24px; height: 24px; background: #334155; border-radius: 50%; color: #94a3b8; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; margin-right: 12px;">2</div>
+              <div>
+                <p style="color: #e2e8f0; font-size: 14px; margin: 0; font-weight: 600;">Under Review</p>
+                <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0;">The funder reviews your application against their scoring criteria.</p>
+              </div>
+            </div>
+            <div style="display: flex;">
+              <div style="min-width: 24px; height: 24px; background: #334155; border-radius: 50%; color: #94a3b8; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; margin-right: 12px;">3</div>
+              <div>
+                <p style="color: #e2e8f0; font-size: 14px; margin: 0; font-weight: 600;">Decision</p>
+                <p style="color: #94a3b8; font-size: 13px; margin: 4px 0 0;">We'll prompt you to report the outcome so we can improve future applications.</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="${APP_URL}/dashboard/applications/${params.applicationId}" style="display: block; text-align: center; background: linear-gradient(135deg, #10b981, #14b8a6); color: white; text-decoration: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; margin-top: 24px;">
+            View Application Status
+          </a>
+        </div>
+        <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
+          <p style="color: #64748b; font-size: 12px; margin: 0;">
+            Save this email for your records. Confirmation: ${params.confirmationNumber}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) return null;
+
+    const result = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "GrantPilot <grants@resend.dev>",
+      to,
+      subject: `✓ Application Submitted — ${params.grantTitle} (${params.confirmationNumber})`,
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to send application confirmation email:", error);
+    throw error;
+  }
+}

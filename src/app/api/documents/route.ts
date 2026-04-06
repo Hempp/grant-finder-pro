@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { parseDocumentContent } from "@/lib/content-library/parse-document";
+import { extractBlocksFromDocument } from "@/lib/content-library/extract-documents";
+import { createBlocks } from "@/lib/content-library/content-manager";
 
 // GET - Fetch documents for current user
 export async function GET() {
@@ -26,49 +29,143 @@ export async function GET() {
   }
 }
 
-// POST - Upload/create document record
+// POST - Upload document, parse it, and auto-extract to Content Library
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const body = await request.json();
     const userId = session.user.id;
 
+    const contentType = request.headers.get("content-type") || "";
+
+    let fileName: string;
+    let fileBuffer: Buffer;
+    let mimeType: string;
+    let fileSize: number;
+
+    if (contentType.includes("multipart/form-data")) {
+      // Handle multipart file upload
+      const formData = await request.formData();
+      const file = formData.get("file") as File | null;
+      if (!file) {
+        return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      }
+      fileName = file.name;
+      mimeType = file.type || "application/octet-stream";
+      const arrayBuffer = await file.arrayBuffer();
+      fileBuffer = Buffer.from(arrayBuffer);
+      fileSize = fileBuffer.length;
+    } else {
+      // Handle JSON with base64 content
+      const body = await request.json();
+      if (!body.name) {
+        return NextResponse.json({ error: "File name required" }, { status: 400 });
+      }
+      fileName = body.name;
+      mimeType = body.mimeType || "application/octet-stream";
+      fileSize = body.fileSize || 0;
+
+      if (body.content) {
+        // base64-encoded file content
+        fileBuffer = Buffer.from(body.content, "base64");
+        fileSize = fileBuffer.length;
+      } else {
+        // Legacy: no content provided, create record only (no parsing)
+        const document = await prisma.document.create({
+          data: {
+            userId,
+            name: fileName,
+            type: detectDocumentType(fileName),
+            filePath: `/uploads/${userId}/${fileName}`,
+            fileSize,
+            mimeType,
+            parsed: false,
+          },
+        });
+        return NextResponse.json(document);
+      }
+    }
+
+    // Validate file size (50MB max)
+    if (fileBuffer.length > 50 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "File too large. Maximum 50MB." },
+        { status: 400 }
+      );
+    }
+
+    // Create document record
     const document = await prisma.document.create({
       data: {
         userId,
-        name: body.name,
-        type: body.type || detectDocumentType(body.name),
-        filePath: body.filePath || `/uploads/${userId}/${body.name}`,
-        fileSize: body.fileSize || 0,
-        mimeType: body.mimeType || "application/octet-stream",
+        name: fileName,
+        type: detectDocumentType(fileName),
+        filePath: `/uploads/${userId}/${fileName}`,
+        fileSize,
+        mimeType,
         parsed: false,
       },
     });
 
-    // In production, trigger async parsing job here
-    // For demo, we'll simulate parsing
-    setTimeout(async () => {
+    // Parse document content
+    let parsedText: string;
+    try {
+      parsedText = await parseDocumentContent(fileBuffer, mimeType, fileName);
+    } catch (parseError) {
+      // Mark as failed but don't block the upload
       await prisma.document.update({
         where: { id: document.id },
         data: {
-          parsed: true,
+          parsed: false,
           parsedData: JSON.stringify({
-            extracted: true,
-            fields: ["company_name", "revenue", "team_size", "mission"],
+            error: parseError instanceof Error ? parseError.message : "Parse failed",
           }),
-          updatedAt: new Date(),
         },
       });
-    }, 2000);
+      return NextResponse.json({
+        ...document,
+        parseWarning: "Could not extract text from this file. Try uploading a text-based PDF.",
+      });
+    }
 
-    return NextResponse.json(document);
+    // Store parsed text
+    await prisma.document.update({
+      where: { id: document.id },
+      data: {
+        parsed: true,
+        parsedData: parsedText.slice(0, 100_000), // Cap at 100KB of text
+      },
+    });
+
+    // Auto-extract to Content Library in background
+    let blocksCreated = 0;
+    try {
+      const blocks = await extractBlocksFromDocument(document.id, userId);
+      if (blocks.length > 0) {
+        await createBlocks(userId, blocks);
+        blocksCreated = blocks.length;
+      }
+    } catch (extractError) {
+      console.error("Content extraction failed (non-blocking):", extractError);
+    }
+
+    const updatedDoc = await prisma.document.findUnique({
+      where: { id: document.id },
+    });
+
+    return NextResponse.json({
+      ...updatedDoc,
+      blocksCreated,
+      message: blocksCreated > 0
+        ? `Extracted ${blocksCreated} content blocks from "${fileName}". Your Content Library has been updated.`
+        : `Parsed "${fileName}" successfully.`,
+    });
   } catch (error) {
-    console.error("Failed to create document:", error);
+    console.error("Failed to upload document:", error);
     return NextResponse.json(
-      { error: "Failed to create document" },
+      { error: "Failed to upload document" },
       { status: 500 }
     );
   }
@@ -77,7 +174,6 @@ export async function POST(request: NextRequest) {
 // DELETE - Remove document
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify user is authenticated
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -93,7 +189,6 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Verify the document exists and belongs to the user
     const document = await prisma.document.findUnique({
       where: { id },
       select: { userId: true },
@@ -132,5 +227,8 @@ function detectDocumentType(filename: string): string {
   if (lower.includes("pitch") || lower.includes("deck")) return "pitch_deck";
   if (lower.includes("financial") || lower.includes("statement")) return "financials";
   if (lower.includes("business") || lower.includes("plan")) return "business_plan";
+  if (lower.includes("grant") || lower.includes("proposal")) return "grant_proposal";
+  if (lower.includes("resume") || lower.includes("cv") || lower.includes("bio")) return "team_bios";
+  if (lower.includes("tax") || lower.includes("990") || lower.includes("w9")) return "tax_document";
   return "other";
 }

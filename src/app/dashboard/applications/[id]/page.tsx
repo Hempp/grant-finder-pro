@@ -51,6 +51,8 @@ interface Application {
   outcomeReportedAt?: string | null;
   outcomeNotes?: string | null;
   feedbackReceived?: string | null;
+  awardedAt?: string | null;
+  rejectedAt?: string | null;
   awardAmount?: number | null;
   grant: {
     id: string;
@@ -325,6 +327,36 @@ ${formData.budgetJustification}
     const saved = await saveApplication("ready_for_review");
     if (saved) {
       router.push("/dashboard/applications");
+    }
+  };
+
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmationNumber, setConfirmationNumber] = useState<string | null>(null);
+
+  const handleSubmitApplication = async () => {
+    if (!application) return;
+    // Save first, then submit
+    const saved = await saveApplication("ready_for_review");
+    if (!saved) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/applications/${application.id}/submit`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to submit");
+      }
+      const data = await res.json();
+      setConfirmationNumber(data.confirmationNumber);
+      setApplication({ ...application, ...data, status: "submitted", submittedAt: data.submittedAt });
+      setMode("view");
+    } catch (err) {
+      console.error("Failed to submit application:", err);
+      alert(err instanceof Error ? err.message : "Failed to submit application");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -743,6 +775,101 @@ ${formData.budgetJustification}
             </CardContent>
           </Card>
 
+          {/* Confirmation Banner */}
+          {confirmationNumber && (
+            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
+              <CheckCircle className="h-8 w-8 text-emerald-400 mx-auto mb-3" />
+              <h3 className="text-lg font-bold text-white mb-1">Application Submitted</h3>
+              <p className="text-slate-300 text-sm mb-3">
+                A confirmation email has been sent to your inbox.
+              </p>
+              <p className="text-emerald-400 font-mono font-bold text-lg">{confirmationNumber}</p>
+              <p className="text-slate-500 text-xs mt-2">Save this confirmation number for your records.</p>
+            </div>
+          )}
+
+          {/* Status Timeline — shown for submitted/awarded/rejected */}
+          {["submitted", "pending", "awarded", "rejected"].includes(application.status) && (
+            <Card>
+              <CardHeader>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-emerald-400" />
+                  Application Timeline
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-0">
+                  {/* Step 1: Created */}
+                  <TimelineStep
+                    status="complete"
+                    title="Application Created"
+                    date={application.createdAt}
+                    description="You started this application."
+                    isLast={false}
+                  />
+                  {/* Step 2: Submitted */}
+                  <TimelineStep
+                    status={application.submittedAt ? "complete" : "upcoming"}
+                    title="Submitted to Funder"
+                    date={application.submittedAt || null}
+                    description={
+                      application.submittedAt
+                        ? `Submitted on ${new Date(application.submittedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}.`
+                        : "Awaiting submission."
+                    }
+                    isLast={false}
+                  />
+                  {/* Step 3: Under Review */}
+                  <TimelineStep
+                    status={
+                      application.status === "awarded" || application.status === "rejected"
+                        ? "complete"
+                        : application.submittedAt
+                          ? "current"
+                          : "upcoming"
+                    }
+                    title="Under Review"
+                    date={null}
+                    description={
+                      application.status === "submitted"
+                        ? "The funder is reviewing your application against their scoring criteria."
+                        : application.status === "awarded" || application.status === "rejected"
+                          ? "Review complete."
+                          : "Pending submission."
+                    }
+                    isLast={false}
+                  />
+                  {/* Step 4: Decision */}
+                  <TimelineStep
+                    status={
+                      application.status === "awarded"
+                        ? "success"
+                        : application.status === "rejected"
+                          ? "failed"
+                          : "upcoming"
+                    }
+                    title={
+                      application.status === "awarded"
+                        ? `Awarded${application.awardAmount ? ` — ${formatCurrency(application.awardAmount)}` : ""}`
+                        : application.status === "rejected"
+                          ? "Not Selected"
+                          : "Decision Pending"
+                    }
+                    date={application.awardedAt || application.rejectedAt || null}
+                    description={
+                      application.status === "awarded"
+                        ? "Congratulations! Your application was successful."
+                        : application.status === "rejected"
+                          ? application.feedbackReceived || "The funder did not select this application."
+                          : "We'll prompt you to report the outcome once the review period ends."
+                    }
+                    isLast={true}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4">
             <Button variant="secondary" onClick={handleDelete} disabled={deleting}>
@@ -754,24 +881,40 @@ ${formData.budgetJustification}
               Delete Application
             </Button>
 
-            {isEditable && (
-              <div className="flex gap-3">
-                <Button variant="secondary" onClick={() => setMode("edit")}>
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  Continue Editing
-                </Button>
-                {application.status !== "ready_for_review" && (
-                  <Button onClick={handleMarkReadyForReview} disabled={saving}>
-                    {saving ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4 mr-2" />
-                    )}
-                    Mark Ready for Review
+            <div className="flex gap-3">
+              {isEditable && (
+                <>
+                  <Button variant="secondary" onClick={() => setMode("edit")}>
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    Continue Editing
                   </Button>
-                )}
-              </div>
-            )}
+                  {application.status !== "ready_for_review" && (
+                    <Button onClick={handleMarkReadyForReview} disabled={saving}>
+                      {saving ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
+                      Mark Ready for Review
+                    </Button>
+                  )}
+                </>
+              )}
+              {(application.status === "ready_for_review" || application.status === "in_progress") && (
+                <Button
+                  onClick={handleSubmitApplication}
+                  disabled={submitting}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400"
+                >
+                  {submitting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  {submitting ? "Submitting..." : "Submit Application"}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1168,6 +1311,56 @@ ${formData.budgetJustification}
           </div>
         </CardFooter>
       </Card>
+    </div>
+  );
+}
+
+/* ─── Timeline Step Component ─── */
+function TimelineStep({
+  status,
+  title,
+  date,
+  description,
+  isLast,
+}: {
+  status: "complete" | "current" | "upcoming" | "success" | "failed";
+  title: string;
+  date: string | null;
+  description: string;
+  isLast: boolean;
+}) {
+  const dotColor = {
+    complete: "bg-emerald-500",
+    current: "bg-blue-500 animate-pulse",
+    upcoming: "bg-slate-600",
+    success: "bg-emerald-500",
+    failed: "bg-red-500",
+  }[status];
+
+  const lineColor = status === "complete" || status === "success" ? "bg-emerald-500/30" : "bg-slate-700";
+  const textColor = status === "upcoming" ? "text-slate-500" : "text-white";
+
+  return (
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className={`w-3 h-3 rounded-full ${dotColor} mt-1.5 shrink-0`} />
+        {!isLast && <div className={`w-0.5 flex-1 ${lineColor} my-1`} />}
+      </div>
+      <div className={`pb-6 ${isLast ? "pb-0" : ""}`}>
+        <p className={`font-semibold text-sm ${textColor}`}>{title}</p>
+        {date && (
+          <p className="text-slate-500 text-xs mt-0.5">
+            {new Date(date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        )}
+        <p className="text-slate-400 text-xs mt-1">{description}</p>
+      </div>
     </div>
   );
 }
