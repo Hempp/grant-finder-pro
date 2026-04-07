@@ -43,19 +43,19 @@ export async function GET(request: NextRequest) {
     // Run matching algorithm
     const matchResults = matchScholarshipsToStudent(
       {
-        educationLevel: profile.educationLevel,
-        fieldOfStudy: profile.fieldOfStudy ?? null,
-        major: profile.major ?? null,
+        educationLevel: profile.educationLevel || "undergrad_fr",
+        fieldOfStudy: profile.fieldOfStudy || null,
+        major: profile.major || null,
         gpa: profile.gpa ?? null,
         gpaScale: profile.gpaScale ?? null,
-        stateOfResidence: profile.stateOfResidence ?? null,
-        citizenship: profile.citizenship ?? null,
-        financialNeed: profile.financialNeed ?? null,
+        stateOfResidence: profile.stateOfResidence || "",
+        citizenship: profile.citizenship || "us_citizen",
+        financialNeed: profile.financialNeed || "not_disclosed",
         firstGeneration: profile.firstGeneration ?? false,
         minority: profile.minority ?? false,
         veteran: profile.veteran ?? false,
-        careerGoal: profile.careerGoal ?? null,
-        extracurriculars: profile.extracurriculars ?? null,
+        careerGoal: profile.careerGoal || null,
+        extracurriculars: profile.extracurriculars || null,
       },
       scholarships
     );

@@ -23,8 +23,8 @@ interface Scholarship {
   id: string;
   title: string;
   provider: string;
-  description: string | null;
-  scholarshipType: string | null;
+  description: string;
+  scholarshipType: string;
   minGPA: number | null;
   educationLevels: string | null;
   fieldsOfStudy: string | null;
