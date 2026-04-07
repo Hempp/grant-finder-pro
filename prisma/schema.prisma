@@ -54,6 +54,11 @@ model User {
   referrals          User[]    @relation("Referrals") // Users this person referred
   referralCredits    Int       @default(0)      // Bonus matches earned from referrals
 
+  // User type
+  userType              String    @default("organization") // organization, student
+  stripePaymentMethodId String?
+  outcomesOverdue       Int       @default(0)
+
   accounts      Account[]
   sessions      Session[]
   organization  Organization?
@@ -64,6 +69,8 @@ model User {
   referralsReceived Referral[] @relation("ReferralsReceived")
   notifications Notification[]
   contentBlocks ContentBlock[]
+  studentProfile       StudentProfile?
+  studentApplications  StudentApplication[]
 
   // Performance indexes
   @@index([plan])
@@ -149,6 +156,183 @@ model Organization {
   @@index([userId])
   @@index([type])
   @@index([profileComplete])
+}
+
+model StudentProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identity
+  firstName   String?
+  lastName    String?
+  dateOfBirth DateTime?
+
+  // School
+  schoolName     String?
+  schoolType     String?  // high_school, community_college, university, graduate
+  educationLevel String?  // high_school, undergraduate, graduate, doctoral
+
+  // Academic
+  major                String?
+  minor                String?
+  gpa                  Float?
+  gpaScale             Float    @default(4.0)
+  expectedGraduation   String?
+  fieldOfStudy         String?
+
+  // Career
+  careerGoal     String?
+  intendedDegree String?
+
+  // Test Scores
+  satScore  Int?
+  actScore  Int?
+  greScore  Int?
+  mcatScore Int?
+  lsatScore Int?
+  gmatScore Int?
+
+  // Eligibility
+  stateOfResidence String?
+  citizenship      String?
+  financialNeed    String   @default("not_disclosed") // not_disclosed, no_need, some_need, high_need
+
+  // Demographics
+  firstGeneration Boolean?
+  minority        Boolean?
+  veteran         Boolean?
+  disability      Boolean?
+  gender          String?
+  ethnicity       String?
+
+  // Activities (JSON strings)
+  extracurriculars   String?
+  workExperience     String?
+  communityService   String?
+  awards             String?
+  researchExperience String?
+
+  // Status
+  profileComplete  Boolean   @default(false)
+  readinessScore   Int?
+  lastAssessedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([educationLevel])
+  @@index([stateOfResidence])
+  @@index([fieldOfStudy])
+}
+
+model Scholarship {
+  id          String @id @default(cuid())
+  title       String
+  provider    String
+  description String
+
+  // Amount
+  amount    String?
+  amountMin Int?
+  amountMax Int?
+
+  // Dates
+  deadline DateTime?
+
+  // Links
+  url            String?
+  applicationUrl String?
+
+  // Type
+  scholarshipType    String
+  renewable          Boolean @default(false)
+  renewalConditions  String?
+
+  // Requirements
+  minGPA              Float?
+  maxGPA              Float?
+  educationLevels     String?  // JSON array
+  fieldsOfStudy       String?  // JSON array
+  citizenshipRequired String?
+  stateRestriction    String?
+  eligibilityText     String?
+
+  // Essay
+  essayRequired  Boolean @default(false)
+  essayPrompt    String?
+  essayWordLimit Int?
+
+  // Submission
+  submissionMethod    String  @default("portal") // portal, email, mail
+  portalUrl           String?
+  portalInstructions  String?
+
+  // Matching
+  tags       String?  // JSON array
+  matchScore Int?
+
+  // Source
+  sourceId   String?
+  sourceUrl  String?
+  lastScraped DateTime?
+  status     String    @default("active") // active, expired, inactive
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications StudentApplication[]
+
+  @@index([deadline])
+  @@index([scholarshipType])
+  @@index([status])
+  @@index([stateRestriction])
+}
+
+model StudentApplication {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scholarshipId String
+  scholarship   Scholarship @relation(fields: [scholarshipId], references: [id], onDelete: Cascade)
+
+  status String @default("draft") // draft, in_progress, submitted, awarded, rejected
+
+  // Content
+  essayDraft  String?
+  essayFinal  String?
+  responses   String?  // JSON of form responses
+
+  // Submission
+  submissionMethod    String?
+  confirmationNumber  String?
+  submittedAt         DateTime?
+  portalInstructions  String?
+
+  // Outcome
+  awardedAt          DateTime?
+  rejectedAt         DateTime?
+  awardAmount        Int?
+  outcomeReportedAt  DateTime?
+  outcomeNotes       String?
+
+  // Success fee
+  successFeePercent  Int      @default(8)
+  successFeeAmount   Int?
+  successFeeStatus   String   @default("not_applicable") // not_applicable, pending, invoiced, paid, waived
+  successFeePaidAt   DateTime?
+  stripePaymentId    String?
+  installmentPlan    String?  // JSON
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([scholarshipId])
+  @@index([status])
+  @@index([successFeeStatus])
+  @@index([userId, status])
 }
 
 model Document {
