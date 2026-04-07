@@ -500,6 +500,13 @@ model Application {
   outcomeNotes       String?
   feedbackReceived   String?
 
+  // Success fee
+  successFeePercent   Int?
+  successFeeAmount    Int?
+  successFeeStatus    String?  // pending, charged, installment, waived, failed
+  successFeePaidAt    DateTime?
+  stripePaymentId     String?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

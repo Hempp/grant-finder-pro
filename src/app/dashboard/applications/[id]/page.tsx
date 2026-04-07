@@ -54,6 +54,9 @@ interface Application {
   awardedAt?: string | null;
   rejectedAt?: string | null;
   awardAmount?: number | null;
+  successFeePercent?: number | null;
+  successFeeAmount?: number | null;
+  successFeeStatus?: string | null;
   grant: {
     id: string;
     title: string;
@@ -125,7 +128,18 @@ export default function ApplicationDetailPage() {
   const [outcomeResult, setOutcomeResult] = useState<"awarded" | "rejected" | "no_response" | null>(null);
   const [outcomeNotes, setOutcomeNotes] = useState("");
   const [outcomeFeedback, setOutcomeFeedback] = useState("");
+  const [outcomeAwardAmount, setOutcomeAwardAmount] = useState("");
   const [submittingOutcome, setSubmittingOutcome] = useState(false);
+
+  // Celebration modal state
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState<{
+    grantTitle: string;
+    awardAmount: number;
+    feePercent: number;
+    feeAmount: number;
+    feeStatus: string | null;
+  } | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     projectTitle: "",
@@ -386,6 +400,8 @@ ${formData.budgetJustification}
     setSubmittingOutcome(true);
 
     try {
+      const parsedAward = outcomeAwardAmount ? parseInt(outcomeAwardAmount.replace(/[^0-9]/g, ""), 10) : undefined;
+
       const res = await fetch(`/api/applications/${application.id}/outcome`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -393,6 +409,7 @@ ${formData.budgetJustification}
           result: outcomeResult,
           notes: outcomeNotes || undefined,
           feedback: outcomeFeedback || undefined,
+          awardAmount: outcomeResult === "awarded" && parsedAward ? parsedAward : undefined,
         }),
       });
 
@@ -406,6 +423,20 @@ ${formData.budgetJustification}
       setOutcomeResult(null);
       setOutcomeNotes("");
       setOutcomeFeedback("");
+      setOutcomeAwardAmount("");
+
+      // Show celebration modal if awarded
+      if (outcomeResult === "awarded" && parsedAward) {
+        const fee = data.fee;
+        setCelebrationData({
+          grantTitle: application.grant.title,
+          awardAmount: parsedAward,
+          feePercent: fee?.feePercent ?? 0,
+          feeAmount: fee?.feeAmount ?? 0,
+          feeStatus: fee ? fee.status : null,
+        });
+        setShowCelebration(true);
+      }
     } catch (err) {
       console.error("Failed to submit outcome:", err);
     } finally {
@@ -615,6 +646,25 @@ ${formData.budgetJustification}
                 </button>
               </div>
 
+              {/* Award amount (shown when "awarded" is selected) */}
+              {outcomeResult === "awarded" && (
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                    Award Amount <span className="text-slate-500">(optional, enables fee calculation)</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border border-slate-600 bg-slate-700 pl-7 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                      placeholder="50,000"
+                      value={outcomeAwardAmount}
+                      onChange={(e) => setOutcomeAwardAmount(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="mb-3">
                 <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -666,6 +716,71 @@ ${formData.budgetJustification}
                   {submittingOutcome ? "Submitting..." : "Submit Outcome"}
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Celebration Modal */}
+        {showCelebration && celebrationData && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-md rounded-2xl border border-emerald-500/40 bg-slate-800 p-6 shadow-2xl text-center">
+              <div className="text-5xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold text-white mb-1">Congratulations!</h2>
+              <p className="text-slate-400 text-sm mb-5">
+                You were awarded the <span className="text-white font-medium">{celebrationData.grantTitle}</span> grant.
+              </p>
+
+              {/* Award Amount */}
+              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4 mb-4">
+                <p className="text-slate-400 text-xs mb-1">Award Amount</p>
+                <p className="text-3xl font-bold text-emerald-400">
+                  ${celebrationData.awardAmount.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Fee breakdown */}
+              {celebrationData.feeAmount > 0 ? (
+                <div className="rounded-xl bg-slate-700/50 border border-slate-600 p-4 mb-5 text-left space-y-2">
+                  <p className="text-slate-300 text-sm font-medium mb-2">GrantPilot Success Fee</p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">Fee ({celebrationData.feePercent}%)</span>
+                    <span className="text-white font-medium">${celebrationData.feeAmount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm border-t border-slate-600 pt-2 mt-1">
+                    <span className="text-slate-400">You net</span>
+                    <span className="text-emerald-400 font-bold">
+                      ${(celebrationData.awardAmount - celebrationData.feeAmount).toLocaleString()}
+                    </span>
+                  </div>
+
+                  {celebrationData.feeStatus === "charged" ? (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 rounded-lg px-3 py-2">
+                      <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                      Fee paid automatically — thank you!
+                    </div>
+                  ) : (
+                    <div className="mt-2 flex items-center gap-2 text-xs text-amber-400 bg-amber-500/10 rounded-lg px-3 py-2">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                      Fee pending —{" "}
+                      <Link href="/dashboard/settings" className="underline hover:text-amber-300">
+                        add a payment method
+                      </Link>{" "}
+                      to settle.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl bg-slate-700/50 border border-slate-600 p-4 mb-5 text-sm text-slate-400">
+                  No success fee on your current plan for this grant.
+                </div>
+              )}
+
+              <Button
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400"
+                onClick={() => setShowCelebration(false)}
+              >
+                Awesome, let&apos;s keep going!
+              </Button>
             </div>
           </div>
         )}
