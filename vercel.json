@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/outcome-prompts",
       "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-scholarships",
+      "schedule": "0 7 * * *"
     }
   ]
 }
