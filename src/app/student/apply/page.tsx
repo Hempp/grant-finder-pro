@@ -11,6 +11,7 @@ import {
   Loader2,
   Sparkles,
   FileText,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,6 +39,7 @@ interface Application {
   essayDraft: string | null;
   essayFinal: string | null;
   submissionMethod: string | null;
+  successFeePercent: number;
 }
 
 type Decision = "approved" | "skipped";
@@ -143,8 +145,12 @@ export default function BatchApplyQueuePage() {
   const [submitTotal, setSubmitTotal] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
+  const [hasPaymentMethod, setHasPaymentMethod] = useState<boolean | null>(null);
+  const [needsPaymentMethod, setNeedsPaymentMethod] = useState(false);
+  const [addingPaymentMethod, setAddingPaymentMethod] = useState(false);
+  const [paymentMethodAdded, setPaymentMethodAdded] = useState(false);
 
-  // Fetch draft applications
+  // Fetch draft applications + payment method status
   useEffect(() => {
     async function fetchDrafts() {
       try {
@@ -154,6 +160,14 @@ export default function BatchApplyQueuePage() {
         // Only show applications that have an essay draft
         const withEssays = data.filter((a) => a.essayDraft);
         setApplications(withEssays);
+
+        // Check payment method
+        const pmRes = await fetch("/api/student/payment-method");
+        const pmData = await pmRes.json();
+        setHasPaymentMethod(pmData.hasPaymentMethod);
+        // Check if user needs payment method (free tier with fee > 0)
+        const needsPM = withEssays.some((a) => a.successFeePercent > 0) && !pmData.hasPaymentMethod;
+        setNeedsPaymentMethod(needsPM);
       } catch (err) {
         console.error("Failed to fetch draft applications:", err);
       } finally {
@@ -267,6 +281,25 @@ export default function BatchApplyQueuePage() {
     });
   }
 
+  async function handleAddPaymentMethod() {
+    setAddingPaymentMethod(true);
+    try {
+      const res = await fetch("/api/student/payment-method", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.ok) {
+        setHasPaymentMethod(true);
+        setNeedsPaymentMethod(false);
+        setPaymentMethodAdded(true);
+      }
+    } catch (err) {
+      console.error("Failed to add payment method:", err);
+    } finally {
+      setAddingPaymentMethod(false);
+    }
+  }
+
   async function handleSubmitAll() {
     const toSubmit = approvedApps;
     if (toSubmit.length === 0) return;
@@ -328,6 +361,80 @@ export default function BatchApplyQueuePage() {
             Find Scholarships
           </Button>
         </Link>
+      </div>
+    );
+  }
+
+  // ── Render: Payment Method Gate ─────────────────────────────────────────
+
+  if (needsPaymentMethod && !hasPaymentMethod) {
+    return (
+      <div className="p-6 lg:p-8 flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
+        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8 max-w-md w-full space-y-6">
+          {/* Icon + Title */}
+          <div className="flex items-center gap-3">
+            <div className="bg-emerald-500/10 p-3 rounded-xl">
+              <CreditCard className="h-6 w-6 text-emerald-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white">
+              Add a Payment Method to Continue
+            </h2>
+          </div>
+
+          {/* Explanation */}
+          <p className="text-slate-400 text-sm leading-relaxed">
+            You won&apos;t be charged until you win a scholarship. We keep your
+            card on file to collect the{" "}
+            <span className="text-white font-medium">8% success fee</span> on
+            awards.
+          </p>
+
+          {/* Success message after adding */}
+          {paymentMethodAdded && (
+            <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
+              <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+              <p className="text-emerald-400 text-sm">
+                Card setup initiated — your payment method will be confirmed
+                shortly.
+              </p>
+            </div>
+          )}
+
+          {/* Primary CTA */}
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full"
+            onClick={handleAddPaymentMethod}
+            isLoading={addingPaymentMethod}
+            loadingText="Setting up..."
+            disabled={addingPaymentMethod || paymentMethodAdded}
+          >
+            <CreditCard className="h-4 w-4 mr-2" />
+            Add Payment Method
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-700" />
+            <span className="text-slate-500 text-xs uppercase tracking-wide">or</span>
+            <div className="flex-1 h-px bg-slate-700" />
+          </div>
+
+          {/* Upgrade CTA */}
+          <div className="text-center space-y-2">
+            <p className="text-slate-400 text-sm">
+              Upgrade to Pro ($9.99/mo) for{" "}
+              <span className="text-white font-medium">0% fees</span>
+            </p>
+            <Link href="/student/upgrade">
+              <Button variant="outline" className="w-full">
+                Upgrade to Pro
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
