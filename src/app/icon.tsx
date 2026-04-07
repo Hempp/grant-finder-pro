@@ -14,11 +14,15 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #10b981, #06b6d4)",
-          borderRadius: "6px",
+          background: "linear-gradient(135deg, #10b981, #14b8a6, #06b6d4)",
+          borderRadius: "8px",
         }}
       >
-        <span style={{ fontSize: "20px", color: "white" }}>✦</span>
+        {/* Upward arrow mark — simplified for 32px */}
+        <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
+          <path d="M20 4L32 20L26 20L26 36L14 36L14 20L8 20Z" fill="white" fillOpacity="0.95" />
+          <circle cx="20" cy="18" r="3" fill="white" />
+        </svg>
       </div>
     ),
     { ...size }

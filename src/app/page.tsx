@@ -165,9 +165,7 @@ export default async function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <nav aria-label="Main navigation" className="flex items-center justify-between py-5 animate-fade-in-down motion-reduce:animate-none">
             <Link href="/" className="flex items-center gap-2.5 group focus-ring rounded-xl">
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-shadow">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
+              <img src="/logo.svg" alt="" width={36} height={36} className="group-hover:scale-105 transition-transform" />
               <span className="text-xl font-bold text-white">
                 Grant<span className="text-emerald-400">Pilot</span>
               </span>
@@ -749,9 +747,7 @@ export default async function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2 focus-ring rounded-xl">
-                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-white" />
-                </div>
+                <img src="/logo.svg" alt="" width={32} height={32} />
                 <span className="font-bold text-white">
                   Grant<span className="text-emerald-400">Pilot</span>
                 </span>
