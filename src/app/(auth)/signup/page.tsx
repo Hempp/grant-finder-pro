@@ -112,8 +112,8 @@ function SignupForm() {
       )}
 
       <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Create Account</h1>
-        <p className="text-slate-400">Start finding grants for your organization</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Start winning grants today</h1>
+        <p className="text-slate-400 text-sm">Join 2,400+ organizations and students using AI to find and win funding.</p>
       </div>
 
       {/* User Type Selector */}

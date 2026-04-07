@@ -3,7 +3,11 @@ import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Sign In",
+  title: {
+    template: "%s | GrantPilot",
+    default: "Sign In | GrantPilot",
+  },
+  description: "Access your GrantPilot account to find grants, manage applications, and track funding.",
   robots: { index: false, follow: false },
 };
 

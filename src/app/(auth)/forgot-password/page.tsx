@@ -41,11 +41,11 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
       <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Reset Password</h1>
-        <p className="text-slate-400">
+        <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Forgot your password?</h1>
+        <p className="text-slate-400 text-sm">
           {success
-            ? "Check your email for a reset link"
-            : "Enter your email and we'll send you a reset link"}
+            ? "Check your email — we sent you a secure reset link."
+            : "No worries. Enter your email and we'll send you a reset link."}
         </p>
       </div>
 
