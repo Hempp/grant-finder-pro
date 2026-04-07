@@ -42,8 +42,8 @@ export async function checkWinnerList(
     const profile = app.user.studentProfile;
     if (!profile) continue;
 
-    const fullName = `${profile.firstName} ${profile.lastName}`.toLowerCase();
-    const lastName = profile.lastName.toLowerCase();
+    const fullName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim().toLowerCase();
+    const lastName = (profile.lastName || "").toLowerCase();
 
     for (const winnerName of winnerNames) {
       const normalizedWinner = winnerName.trim().toLowerCase();
