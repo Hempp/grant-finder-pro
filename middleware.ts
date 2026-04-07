@@ -33,8 +33,9 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Protected dashboard routes
+  // Protected dashboard and student routes
   const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard");
+  const isStudentRoute = nextUrl.pathname.startsWith("/student");
 
   // Protected API routes (except auth and webhook)
   const isProtectedApiRoute =
@@ -44,7 +45,7 @@ export default auth((req) => {
     !nextUrl.pathname.startsWith("/api/cron");
 
   // Redirect to login if not authenticated
-  if (!isLoggedIn && isDashboardRoute) {
+  if (!isLoggedIn && (isDashboardRoute || isStudentRoute)) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
