@@ -190,24 +190,30 @@ export default function StudentApplicationDetailPage() {
   const [submittingOutcome, setSubmittingOutcome] = useState(false);
   const [outcomeSubmitted, setOutcomeSubmitted] = useState(false);
 
+  // Celebration + fee modal
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [chargingFee, setChargingFee] = useState(false);
+
   // ── Fetch application ──────────────────────────────────────────────────────
 
-  useEffect(() => {
-    async function fetchApplication() {
-      try {
-        const res = await fetch(`/api/student/applications/${params.id}`);
-        if (!res.ok) throw new Error("Application not found");
-        const data: StudentApplication = await res.json();
-        setApplication(data);
-        setEssayText(data.essayDraft || "");
-      } catch (err) {
-        console.error("Failed to fetch application:", err);
-        setError("Application not found");
-      } finally {
-        setLoading(false);
-      }
+  const fetchApplication = async () => {
+    try {
+      const res = await fetch(`/api/student/applications/${params.id}`);
+      if (!res.ok) throw new Error("Application not found");
+      const data: StudentApplication = await res.json();
+      setApplication(data);
+      setEssayText(data.essayDraft || "");
+    } catch (err) {
+      console.error("Failed to fetch application:", err);
+      setError("Application not found");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     if (params.id) fetchApplication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   // ── Save essay draft ───────────────────────────────────────────────────────
@@ -264,10 +270,69 @@ export default function StudentApplicationDetailPage() {
       const updated: StudentApplication = await res.json();
       setApplication(updated);
       setOutcomeSubmitted(true);
+      if (outcomeResult === "awarded") {
+        setShowCelebration(true);
+      }
     } catch (err) {
       console.error("Failed to submit outcome:", err);
     } finally {
       setSubmittingOutcome(false);
+    }
+  };
+
+  // ── Success fee charge handlers ────────────────────────────────────────────
+
+  const handlePayFee = async () => {
+    if (!application) return;
+    setChargingFee(true);
+    try {
+      const res = await fetch(
+        `/api/student/applications/${application.id}/charge-fee`,
+        { method: "POST" }
+      );
+      const data = await res.json();
+      if (data.success) {
+        setShowCelebration(false);
+        await fetchApplication();
+      } else {
+        alert(
+          data.error === "no_payment_method"
+            ? "Please add a payment method in Settings"
+            : "Payment failed. Try installment plan."
+        );
+      }
+    } catch (err) {
+      console.error("Failed to charge fee:", err);
+      alert("Payment failed. Please try again.");
+    } finally {
+      setChargingFee(false);
+    }
+  };
+
+  const handleInstallments = async () => {
+    if (!application) return;
+    setChargingFee(true);
+    try {
+      const res = await fetch(
+        `/api/student/applications/${application.id}/charge-fee`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ installments: 4 }),
+        }
+      );
+      const data = await res.json();
+      if (data.success || data.plan) {
+        setShowCelebration(false);
+        await fetchApplication();
+      } else {
+        alert("Failed to set up installment plan.");
+      }
+    } catch (err) {
+      console.error("Failed to set up installment plan:", err);
+      alert("Failed to set up installment plan.");
+    } finally {
+      setChargingFee(false);
     }
   };
 
@@ -731,6 +796,105 @@ export default function StudentApplicationDetailPage() {
           <p className="text-sm text-emerald-300">
             Outcome recorded. Thank you for keeping your application up to date.
           </p>
+        </div>
+      )}
+
+      {/* ── Celebration + Fee Modal ──────────────────────────────────────── */}
+      {showCelebration && application.status === "awarded" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-xl border border-emerald-500/30 bg-slate-800 p-6 text-center">
+            <div className="text-5xl mb-4">🎉</div>
+            <h2 className="text-2xl font-bold text-white mb-2">Congratulations!</h2>
+            <p className="text-slate-300 mb-1">
+              You won{" "}
+              <span className="text-emerald-400 font-bold">
+                {application.scholarship.title}
+              </span>
+            </p>
+            <p className="text-3xl font-bold text-white mb-6">
+              ${application.awardAmount?.toLocaleString()}
+            </p>
+
+            {application.successFeePercent > 0 && (
+              <>
+                <div className="bg-slate-900/50 rounded-xl p-4 mb-4 text-left">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-slate-400">
+                      GrantPilot fee ({application.successFeePercent}%)
+                    </span>
+                    <span className="text-white font-semibold">
+                      $
+                      {Math.round(
+                        (application.awardAmount! * application.successFeePercent) / 100
+                      ).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm mb-3">
+                    <span className="text-slate-400">You earned</span>
+                    <span className="text-emerald-400 font-bold">
+                      $
+                      {Math.round(
+                        application.awardAmount! *
+                          (1 - application.successFeePercent / 100)
+                      ).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-slate-500 text-xs">
+                    That&apos;s $
+                    {Math.round(
+                      (application.awardAmount! *
+                        (1 - application.successFeePercent / 100)) /
+                        (10 / 60)
+                    ).toLocaleString()}
+                    /hour for 10 minutes of work.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2 mb-4">
+                  <button
+                    onClick={handlePayFee}
+                    disabled={chargingFee}
+                    className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white font-semibold transition disabled:opacity-60"
+                  >
+                    {chargingFee ? "Processing..." : "Pay Now"}
+                  </button>
+                  <button
+                    onClick={handleInstallments}
+                    disabled={chargingFee}
+                    className="w-full py-3 rounded-xl border border-slate-600 text-slate-300 hover:text-white font-semibold transition disabled:opacity-60"
+                  >
+                    Split into 4 payments of $
+                    {Math.ceil(
+                      (application.awardAmount! * application.successFeePercent) /
+                        100 /
+                        4
+                    ).toLocaleString()}
+                  </button>
+                </div>
+
+                <div className="border-t border-slate-700 pt-4">
+                  <p className="text-slate-400 text-xs mb-2">
+                    Upgrade to eliminate fees on future awards
+                  </p>
+                  <a
+                    href="/student/settings"
+                    className="text-emerald-400 hover:text-emerald-300 text-sm font-semibold"
+                  >
+                    Upgrade to Pro ($9.99/mo) &rarr;
+                  </a>
+                </div>
+              </>
+            )}
+
+            {application.successFeePercent === 0 && (
+              <button
+                onClick={() => setShowCelebration(false)}
+                className="w-full py-3 rounded-xl bg-emerald-500 text-white font-semibold"
+              >
+                Continue
+              </button>
+            )}
+          </div>
         </div>
       )}
 
