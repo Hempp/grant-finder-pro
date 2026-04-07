@@ -86,13 +86,8 @@ export async function POST(request: NextRequest) {
       select: { plan: true },
     });
 
-    const planFeeMap: Record<string, number> = {
-      free: 8,
-      growth: 3,
-      pro: 0,
-      organization: 0,
-    };
-    const successFeePercent = planFeeMap[user?.plan ?? "free"] ?? 8;
+    const { getStudentFeePercent } = await import("@/lib/stripe");
+    const successFeePercent = getStudentFeePercent(user?.plan ?? "free");
 
     const application = await prisma.studentApplication.create({
       data: {

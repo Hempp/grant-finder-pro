@@ -63,9 +63,9 @@ const plans = [
     successFee: "5% on grants $10K+",
     highlight: "No fee on grants under $10K",
     features: [
-      { text: "25 grant matches per month", included: true },
-      { text: "5 Smart Fills per month", included: true },
-      { text: "Content Library (50 blocks)", included: true },
+      { text: "50 grant matches per month", included: true },
+      { text: "10 Smart Fills per month", included: true },
+      { text: "Content Library (100 blocks)", included: true },
       { text: "Website intelligence import", included: true },
       { text: "Daily email alerts", included: true },
       { text: "Full Grant Readiness Score", included: true },
@@ -88,9 +88,9 @@ const plans = [
     successFee: "3% on grants won",
     highlight: "Grant Guarantee included",
     features: [
-      { text: "Unlimited grant matches", included: true },
-      { text: "25 Smart Fills per month", included: true },
-      { text: "Unlimited Content Library", included: true },
+      { text: "200 grant matches per month", included: true },
+      { text: "50 Smart Fills per month", included: true },
+      { text: "Content Library (500 blocks)", included: true },
       { text: "Auto-optimize to 100/100", included: true },
       { text: "Scoring + diff transparency", included: true },
       { text: "Grant Guarantee: win or 3 months free", included: true },
@@ -113,12 +113,12 @@ const plans = [
     successFee: "2% on grants won",
     highlight: "Lowest success fee rate",
     features: [
-      { text: "Everything in Pro", included: true },
-      { text: "100 Smart Fills per month", included: true },
+      { text: "500 grant matches per month", included: true },
+      { text: "200 Smart Fills per month", included: true },
+      { text: "Content Library (1,000 blocks)", included: true },
       { text: "Up to 10 team members", included: true },
       { text: "Lowest success fee (2%)", included: true },
       { text: "Smart Budget Builder", included: true },
-      { text: "Competitive Intelligence", included: true },
       { text: "Custom AI tone & templates", included: true },
       { text: "Dedicated success manager", included: true },
     ],
@@ -138,15 +138,15 @@ const studentPlan = {
   priceAnnual: 96,
   freeFeatures: [
     "141+ scholarship database",
-    "5 matches per month",
-    "Basic essay generation",
+    "10 matches per month",
+    "5 AI essay drafts per month",
     "8% success fee on wins",
   ],
   proFeatures: [
-    "Unlimited scholarship matches",
+    "100 scholarship matches per month",
     "25 AI essay drafts per month",
-    "Batch auto-apply",
-    "No success fee",
+    "25 batch auto-applies per month",
+    "Reduced 3% success fee",
     "Personal statement coaching",
     "Winner verification system",
   ],
@@ -172,7 +172,7 @@ const faqs = [
   },
   {
     q: "What's included in the student plan?",
-    a: "Students get access to 141+ scholarships, AI-powered essay drafts personalized to each prompt, batch auto-apply to submit multiple applications at once, and winner verification. Free students pay an 8% success fee; Student Pro ($9.99/mo) removes the fee entirely.",
+    a: "Students get access to 141+ scholarships, AI-powered essay drafts personalized to each prompt, batch auto-apply to submit multiple applications at once, and winner verification. Free students pay an 8% success fee; Student Pro ($9.99/mo) reduces it to just 3% — saving you 63% on every win.",
   },
   {
     q: "Is my data secure?",
@@ -559,7 +559,7 @@ function PricingContent() {
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10 mb-6">
                 <CheckCircle className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
-                <span className="text-xs text-emerald-400 font-medium">No success fee — keep 100%</span>
+                <span className="text-xs text-emerald-400 font-medium">Only 3% success fee — save 63% vs Free</span>
               </div>
               <Button
                 className="w-full mb-6"

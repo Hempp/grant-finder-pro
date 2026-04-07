@@ -28,6 +28,7 @@ export const stripe = stripeSecretKey
   : (null as unknown as Stripe);
 
 // Pricing plans configuration
+// NOTE: No plan has unlimited (-1) usage — all plans have real caps to control API costs.
 export const PLANS = {
   free: {
     name: "Starter",
@@ -63,20 +64,20 @@ export const PLANS = {
     priceId: process.env.STRIPE_GROWTH_PRICE_ID ?? null,
     priceIdAnnual: process.env.STRIPE_GROWTH_ANNUAL_PRICE_ID ?? null,
     features: [
-      "25 grant matches per month",
-      "5 Smart Fills per month",
-      "Content Library (50 blocks)",
+      "50 grant matches per month",
+      "10 Smart Fills per month",
+      "Content Library (100 blocks)",
       "Website import",
       "Daily email alerts",
       "Full Grant Readiness Score",
       "5% success fee on grants $10K+",
     ],
     limits: {
-      matchesPerMonth: 25,
-      savedGrants: 50,
-      autoApplyPerMonth: 5,
-      smartFillPerMonth: 5,
-      contentBlocks: 50,
+      matchesPerMonth: 50,
+      savedGrants: 100,
+      autoApplyPerMonth: 10,
+      smartFillPerMonth: 10,
+      contentBlocks: 100,
       documents: 20,
       teamMembers: 1,
     },
@@ -91,9 +92,9 @@ export const PLANS = {
     priceId: process.env.STRIPE_PRO_PRICE_ID ?? null,
     priceIdAnnual: process.env.STRIPE_PRO_ANNUAL_PRICE_ID ?? null,
     features: [
-      "Unlimited grant matches",
-      "25 Smart Fills per month",
-      "Unlimited Content Library",
+      "200 grant matches per month",
+      "50 Smart Fills per month",
+      "Content Library (500 blocks)",
       "AI Application Intelligence",
       "Auto-optimize to 100/100",
       "Scoring + diff transparency",
@@ -103,12 +104,12 @@ export const PLANS = {
       "Priority support",
     ],
     limits: {
-      matchesPerMonth: -1,
-      savedGrants: -1,
-      autoApplyPerMonth: 25,
-      smartFillPerMonth: 25,
-      contentBlocks: -1,
-      documents: -1,
+      matchesPerMonth: 200,
+      savedGrants: 200,
+      autoApplyPerMonth: 50,
+      smartFillPerMonth: 50,
+      contentBlocks: 500,
+      documents: 50,
       teamMembers: 3,
     },
     successFeePercent: 3,
@@ -123,28 +124,57 @@ export const PLANS = {
     priceIdAnnual: process.env.STRIPE_ORG_ANNUAL_PRICE_ID ?? null,
     features: [
       "Everything in Pro",
-      "100 Smart Fills per month",
+      "500 grant matches per month",
+      "200 Smart Fills per month",
+      "Content Library (1,000 blocks)",
       "Up to 10 team members",
       "2% success fee (lowest rate)",
       "Smart Budget Builder",
       "Competitive Intelligence",
       "Custom AI tone & templates",
       "Dedicated success manager",
-      "Full reporting & export",
     ],
     limits: {
-      matchesPerMonth: -1,
-      savedGrants: -1,
-      autoApplyPerMonth: -1,
-      smartFillPerMonth: 100,
-      contentBlocks: -1,
-      documents: -1,
+      matchesPerMonth: 500,
+      savedGrants: 500,
+      autoApplyPerMonth: 200,
+      smartFillPerMonth: 200,
+      contentBlocks: 1000,
+      documents: 100,
       teamMembers: 10,
     },
     successFeePercent: 2,
     successFeeThreshold: 0,
   },
 } as const;
+
+// Student plan limits (keyed by user.plan value — students use the same plan field)
+export const STUDENT_LIMITS = {
+  free: {
+    matchesPerMonth: 10,
+    essayDraftsPerMonth: 5,
+    autoApplyPerMonth: 5,
+    contentBlocks: 10,
+    successFeePercent: 8,
+  },
+  student_pro: {
+    matchesPerMonth: 100,
+    essayDraftsPerMonth: 25,
+    autoApplyPerMonth: 25,
+    contentBlocks: 100,
+    successFeePercent: 3,
+  },
+} as const;
+
+export function getStudentLimits(plan: string) {
+  if (plan === "student_pro") return STUDENT_LIMITS.student_pro;
+  return STUDENT_LIMITS.free;
+}
+
+export function getStudentFeePercent(plan: string): number {
+  if (plan === "student_pro") return STUDENT_LIMITS.student_pro.successFeePercent;
+  return STUDENT_LIMITS.free.successFeePercent;
+}
 
 export type PlanType = keyof typeof PLANS;
 

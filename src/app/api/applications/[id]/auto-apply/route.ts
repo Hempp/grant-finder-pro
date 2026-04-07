@@ -42,50 +42,41 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const planLimits = PLANS[plan].limits;
 
     // Check if user has auto-apply access
-    if ((planLimits.autoApplyPerMonth as number) <= 0 && (planLimits.autoApplyPerMonth as number) !== -1) {
+    if (planLimits.autoApplyPerMonth <= 0) {
       return NextResponse.json(
-        {
-          error: "Auto-Apply requires a paid subscription",
-          code: "UPGRADE_REQUIRED"
-        },
+        { error: "Auto-Apply requires a paid subscription", code: "UPGRADE_REQUIRED" },
         { status: 403 }
       );
     }
 
-    // Check if user has reached their limit (if not unlimited)
-    if ((planLimits.autoApplyPerMonth as number) !== -1) {
-      // Check if usage needs reset
-      const now = new Date();
-      const resetDate = user.usageResetDate ? new Date(user.usageResetDate) : now;
-      const daysSinceReset = Math.floor(
-        (now.getTime() - resetDate.getTime()) / (1000 * 60 * 60 * 24)
+    // Check if user has reached their monthly limit
+    const now = new Date();
+    const resetDate = user.usageResetDate ? new Date(user.usageResetDate) : now;
+    const daysSinceReset = Math.floor(
+      (now.getTime() - resetDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    let currentUsage = user.autoApplyUsedThisMonth;
+
+    // Reset usage if needed
+    if (daysSinceReset >= 30) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { autoApplyUsedThisMonth: 0, usageResetDate: now },
+      });
+      currentUsage = 0;
+    }
+
+    if (currentUsage >= planLimits.autoApplyPerMonth) {
+      return NextResponse.json(
+        {
+          error: `You've used all ${planLimits.autoApplyPerMonth} Auto-Apply drafts this month. Upgrade for more.`,
+          code: "LIMIT_REACHED",
+          used: currentUsage,
+          limit: planLimits.autoApplyPerMonth,
+        },
+        { status: 429 }
       );
-
-      let currentUsage = user.autoApplyUsedThisMonth;
-
-      // Reset usage if needed
-      if (daysSinceReset >= 30) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            autoApplyUsedThisMonth: 0,
-            usageResetDate: now,
-          },
-        });
-        currentUsage = 0;
-      }
-
-      if (currentUsage >= planLimits.autoApplyPerMonth) {
-        return NextResponse.json(
-          {
-            error: `You've used all ${planLimits.autoApplyPerMonth} Auto-Apply drafts this month. Upgrade to Teams for unlimited.`,
-            code: "LIMIT_REACHED",
-            used: currentUsage,
-            limit: planLimits.autoApplyPerMonth
-          },
-          { status: 403 }
-        );
-      }
     }
 
     // Fetch the application with grant details

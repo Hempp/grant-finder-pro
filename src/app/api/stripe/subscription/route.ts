@@ -85,14 +85,8 @@ export async function GET(request: NextRequest) {
       usage: {
         matchesUsed,
         autoApplyUsed,
-        matchesRemaining:
-          limits.matchesPerMonth === -1
-            ? "unlimited"
-            : Math.max(0, limits.matchesPerMonth - matchesUsed),
-        autoApplyRemaining:
-          limits.autoApplyPerMonth === -1
-            ? "unlimited"
-            : Math.max(0, limits.autoApplyPerMonth - autoApplyUsed),
+        matchesRemaining: Math.max(0, limits.matchesPerMonth - matchesUsed),
+        autoApplyRemaining: Math.max(0, limits.autoApplyPerMonth - autoApplyUsed),
       },
       billingPeriodEnd: user.stripeCurrentPeriodEnd,
       daysUntilReset: 30 - daysSinceReset,

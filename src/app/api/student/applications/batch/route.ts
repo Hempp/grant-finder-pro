@@ -3,17 +3,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { generateScholarshipEssay } from "@/lib/smart-fill/essay-adapter";
 import { checkOutcomeGate } from "@/lib/student/outcome-gate";
-
-const PLAN_FEE_MAP: Record<string, number> = {
-  free: 8,
-  growth: 3,
-  pro: 0,
-  organization: 0,
-};
-
-function getSuccessFeePercent(plan: string): number {
-  return PLAN_FEE_MAP[plan] ?? 8;
-}
+import { getStudentLimits, getStudentFeePercent } from "@/lib/stripe";
 
 // POST - Batch draft applications for multiple scholarships
 export async function POST(request: NextRequest) {
@@ -52,17 +42,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch user (for plan → fee percent)
+    // Fetch user (for plan → fee percent + usage limits)
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { plan: true },
+      select: { plan: true, autoApplyUsedThisMonth: true, usageResetDate: true },
     });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const successFeePercent = getSuccessFeePercent(user.plan);
+    // Enforce monthly auto-apply limit
+    const studentLimits = getStudentLimits(user.plan);
+    const usedThisMonth = user.autoApplyUsedThisMonth || 0;
+    const remaining = studentLimits.autoApplyPerMonth - usedThisMonth;
+
+    if (remaining <= 0) {
+      return NextResponse.json({
+        error: "Monthly limit reached",
+        message: `You've used all ${studentLimits.autoApplyPerMonth} auto-apply drafts this month. ${user.plan === "free" ? "Upgrade to Student Pro for 25/month." : "Your limit resets next billing cycle."}`,
+        limit: studentLimits.autoApplyPerMonth,
+        used: usedThisMonth,
+      }, { status: 429 });
+    }
+
+    // Cap batch size to remaining quota
+    const allowedCount = Math.min(scholarshipIds.length, remaining);
+    const idsToProcess = (scholarshipIds as string[]).slice(0, allowedCount);
+
+    const successFeePercent = getStudentFeePercent(user.plan);
 
     // Fetch student profile
     const studentProfile = await prisma.studentProfile.findUnique({
@@ -81,9 +89,9 @@ export async function POST(request: NextRequest) {
       where: { userId },
     });
 
-    // Fetch scholarships
+    // Fetch scholarships (only process up to the allowed count)
     const scholarships = await prisma.scholarship.findMany({
-      where: { id: { in: scholarshipIds as string[] } },
+      where: { id: { in: idsToProcess } },
     });
 
     if (scholarships.length === 0) {
@@ -184,7 +192,23 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ drafted, applications: results });
+    // Increment monthly usage counter
+    if (drafted > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { autoApplyUsedThisMonth: { increment: drafted } },
+      });
+    }
+
+    return NextResponse.json({
+      drafted,
+      applications: results,
+      usage: {
+        used: usedThisMonth + drafted,
+        limit: studentLimits.autoApplyPerMonth,
+        remaining: remaining - drafted,
+      },
+    });
   } catch (error) {
     console.error("Failed to batch draft applications:", error);
     return NextResponse.json(

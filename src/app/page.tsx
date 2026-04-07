@@ -71,7 +71,7 @@ const faqs = [
   },
   {
     q: "What is the success fee?",
-    a: "You pay nothing until you win. Students on the free plan pay 8% of any scholarship won through GrantPilot. Organizations pay 2-5% depending on plan. Student Pro and Org Pro plans eliminate fees entirely. Compared to grant consultants who charge $5K-$15K per application, our model is a fraction of the cost.",
+    a: "You pay nothing until you win. Students on the free plan pay 8% of any scholarship won through GrantPilot; Student Pro reduces it to 3%. Organizations pay 2-5% depending on plan. Every plan includes a success fee — we earn when you earn. Compared to grant consultants who charge $5K-$15K per application, our model is a fraction of the cost.",
   },
   {
     q: "Is my data secure?",
@@ -515,7 +515,7 @@ export default async function LandingPage() {
             { icon: Zap, title: "Deadline Alerts", desc: "Real-time notifications for new opportunities and approaching deadlines. Never miss a match." },
             { icon: BookOpen, title: "Content Library", desc: "Your reusable data vault. Essays, team bios, financials — Smart Fill pulls from it automatically." },
             { icon: Shield, title: "Grant Guarantee", desc: "Pro plans: win within 12 months or get 3 months free. We only succeed when you do." },
-            { icon: Award, title: "Success Fee Pricing", desc: "Pay nothing until you win. 2-5% for orgs, 8% for student free plan. Pro eliminates all fees." },
+            { icon: Award, title: "Success Fee Pricing", desc: "Pay nothing until you win. 2-5% for orgs, 3-8% for students. Every plan has aligned incentives." },
           ].map((feature) => (
             <div
               key={feature.title}
@@ -613,7 +613,7 @@ export default async function LandingPage() {
               name: "Pro",
               price: "$79",
               desc: "For serious seekers",
-              features: ["Unlimited matches", "Smart Fill to 100/100", "Grant Guarantee", "3% success fee"],
+              features: ["200 matches/mo", "50 Smart Fills/mo", "Grant Guarantee", "3% success fee"],
               accent: "emerald",
               cta: true,
             },
@@ -621,7 +621,7 @@ export default async function LandingPage() {
               name: "Student",
               price: "$0",
               desc: "For scholarship applicants",
-              features: ["141+ scholarships", "AI essay drafts", "Batch auto-apply", "8% success fee (Pro: 0%)"],
+              features: ["141+ scholarships", "5 AI essay drafts/mo", "Batch auto-apply", "8% fee (Pro: 3%)"],
               accent: "purple",
               cta: false,
             },
