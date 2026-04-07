@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -59,6 +59,18 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Redirect students to /student dashboard
+  useEffect(() => {
+    fetch("/api/user/type")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.userType === "student") {
+          window.location.href = "/student";
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });

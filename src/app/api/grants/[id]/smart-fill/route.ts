@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { runSmartFill } from "@/lib/smart-fill/smart-fill-engine";
 import { PLANS, PlanType } from "@/lib/stripe";
+import { rateLimit } from "@/lib/rate-limit";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -12,6 +13,12 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit: 10 AI requests per minute
+  const rateLimitResult = await rateLimit("ai", `user:${session.user.id}`);
+  if (!rateLimitResult.success && rateLimitResult.response) {
+    return rateLimitResult.response;
   }
 
   const { id: grantId } = await params;

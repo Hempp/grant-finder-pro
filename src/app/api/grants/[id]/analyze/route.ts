@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 import Anthropic from "@anthropic-ai/sdk";
 import { PDFParse } from "pdf-parse";
 
@@ -50,6 +51,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 AI requests per minute
+    const rateLimitResult = await rateLimit("ai", `user:${session.user.id}`);
+    if (!rateLimitResult.success && rateLimitResult.response) {
+      return rateLimitResult.response;
     }
 
     // Check plan limits

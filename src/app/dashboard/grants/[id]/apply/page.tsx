@@ -17,6 +17,8 @@ import {
   Copy,
   Check,
   AlertCircle,
+  CloudOff,
+  Cloud,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -131,6 +133,33 @@ export default function ApplyPage() {
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Auto-save draft every 30 seconds when form has changes
+  const [lastSavedData, setLastSavedData] = useState<string>("");
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+
+  useEffect(() => {
+    const serialized = JSON.stringify(formData);
+    if (serialized === lastSavedData || !grant) return;
+
+    // Don't auto-save if form is completely empty
+    const hasContent = Object.values(formData).some((v) => v.trim() !== "");
+    if (!hasContent) return;
+
+    const timer = setTimeout(async () => {
+      setAutoSaveStatus("saving");
+      const saved = await saveApplication();
+      if (saved) {
+        setLastSavedData(serialized);
+        setAutoSaveStatus("saved");
+        setTimeout(() => setAutoSaveStatus("idle"), 2000);
+      } else {
+        setAutoSaveStatus("idle");
+      }
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [formData, grant, lastSavedData]);
 
   const generateWithAI = async (field: string, prompt: string) => {
     if (!grant) return;
@@ -389,6 +418,15 @@ ${formData.budgetJustification}
           </span>
           <span>•</span>
           <span>Due {new Date(grant.deadline).toLocaleDateString()}</span>
+          {autoSaveStatus !== "idle" && (
+            <>
+              <span>•</span>
+              <span className="flex items-center gap-1 text-xs">
+                {autoSaveStatus === "saving" && <><Loader2 className="h-3 w-3 animate-spin" /> Saving...</>}
+                {autoSaveStatus === "saved" && <><Cloud className="h-3 w-3 text-emerald-400" /> Saved</>}
+              </span>
+            </>
+          )}
         </div>
       </div>
 

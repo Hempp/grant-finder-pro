@@ -51,6 +51,30 @@ export async function createBlock(
   input: ContentBlockInput
 ): Promise<ContentBlockWithId> {
   const confidence = input.confidence ?? SOURCE_CONFIDENCE[input.source] ?? 80;
+
+  // Dedup: if same category+title exists, update if new content is richer
+  const existing = await prisma.contentBlock.findFirst({
+    where: { userId, category: input.category, title: input.title },
+  });
+
+  if (existing) {
+    // Update only if new content is longer or from a higher-confidence source
+    if (input.content.length > existing.content.length || confidence > existing.confidence) {
+      const updated = await prisma.contentBlock.update({
+        where: { id: existing.id },
+        data: {
+          content: input.content,
+          source: input.source,
+          sourceRef: input.sourceRef,
+          confidence,
+          lastVerified: new Date(),
+        },
+      });
+      return updated as ContentBlockWithId;
+    }
+    return existing as ContentBlockWithId;
+  }
+
   const block = await prisma.contentBlock.create({
     data: {
       userId,
