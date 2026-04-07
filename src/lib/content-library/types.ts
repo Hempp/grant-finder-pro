@@ -12,7 +12,20 @@ export type ContentCategory =
   | "facilities"
   | "ip_patents"
   | "environmental"
-  | "custom";
+  | "custom"
+  // Student-specific categories
+  | "personal_statement"
+  | "activities"
+  | "work_experience"
+  | "community_service"
+  | "awards_honors"
+  | "career_goals"
+  | "challenges_overcome"
+  | "leadership"
+  | "research_experience"
+  | "why_this_field"
+  | "financial_need_statement"
+  | "diversity_statement";
 
 export type ContentSource = "profile" | "document" | "website" | "application" | "manual";
 
@@ -39,6 +52,19 @@ export const CATEGORY_LABELS: Record<ContentCategory, string> = {
   ip_patents: "IP & Patents",
   environmental: "Environmental Impact",
   custom: "Custom",
+  // Student categories
+  personal_statement: "Personal Statement",
+  activities: "Activities & Extracurriculars",
+  work_experience: "Work Experience",
+  community_service: "Community Service",
+  awards_honors: "Awards & Honors",
+  career_goals: "Career Goals",
+  challenges_overcome: "Challenges Overcome",
+  leadership: "Leadership Experience",
+  research_experience: "Research Experience",
+  why_this_field: "Why This Field",
+  financial_need_statement: "Financial Need Statement",
+  diversity_statement: "Diversity Statement",
 };
 
 export interface ContentBlockInput {
