@@ -16,6 +16,7 @@ import {
   Star,
   Zap,
   BookOpen,
+  GraduationCap,
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 
@@ -25,19 +26,21 @@ const jsonLd = {
   name: "GrantPilot",
   applicationCategory: "BusinessApplication",
   description:
-    "AI-powered grant intelligence platform that finds matching grants, fills applications to 100/100, and optimizes for each funder's scoring criteria.",
+    "AI-powered platform that finds grants and scholarships, drafts applications and essays, and predicts your score. For organizations and students.",
   url: "https://grantpilot.ai",
   operatingSystem: "Web",
   offers: [
-    { "@type": "Offer", name: "Starter", price: "0", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Free", price: "0", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Student Pro", price: "9.99", priceCurrency: "USD" },
     { "@type": "Offer", name: "Pro", price: "79", priceCurrency: "USD" },
     { "@type": "Offer", name: "Organization", price: "249", priceCurrency: "USD" },
   ],
   featureList: [
-    "AI grant matching",
-    "Smart Fill auto-apply to 100/100",
-    "Content Library with website import",
-    "Scoring criteria optimization",
+    "AI grant and scholarship matching",
+    "Smart Fill — auto-draft proposals and essays",
+    "Score prediction before you submit",
+    "141+ scholarship database for students",
+    "Federal, state, and foundation grants for organizations",
     "Success fee pricing — pay only when you win",
   ],
 };
@@ -45,20 +48,24 @@ const jsonLd = {
 /* ─── FAQ Data ─── */
 const faqs = [
   {
-    q: "What types of grants do you cover?",
-    a: "Federal (SAM.gov, Grants.gov), state, and private foundation grants across all sectors — SBIR/STTR, NIH, NSF, USDA, DOE, and 2,000+ foundation programs.",
+    q: "What types of grants and scholarships do you cover?",
+    a: "For organizations: federal (SAM.gov, Grants.gov), state, and foundation grants — SBIR/STTR, NIH, NSF, USDA, DOE, and 2,000+ programs. For students: 141+ scholarships including merit, need-based, STEM, minority-focused, essay contests, and niche awards from Pell Grants to the Duck Tape Prom scholarship.",
   },
   {
-    q: "How does AI scoring prediction work?",
-    a: "We parse each RFP's scoring rubric, map your drafted sections to each criterion, and calculate a predicted score. You see exactly where you're strong and where to improve before submitting.",
+    q: "How does the AI application writing work?",
+    a: "For grants, our Smart Fill Engine reads the RFP, maps scoring criteria, and drafts each proposal section from your organization's data. For scholarships, our Essay Adapter writes personalized first-person essays matched to each scholarship's prompt using your profile and personal statement.",
   },
   {
-    q: "What happens after the 21-day trial?",
-    a: "You choose a plan or stay on the free Starter tier. No credit card is collected during the trial. All your data and drafts remain accessible.",
+    q: "What is the success fee?",
+    a: "Students on the free plan pay 8% of any scholarship they win through GrantPilot. Organizations pay 2-5% depending on plan. Upgrade to Pro to eliminate fees entirely. You never pay anything until you win — we only earn when you do.",
   },
   {
-    q: "Is my organizational data secure?",
-    a: "Yes. SOC 2 Type II compliant infrastructure, AES-256 encryption at rest, TLS 1.3 in transit. Your data is never used to train AI models.",
+    q: "Is my data secure?",
+    a: "Yes. SOC 2 Type II compliant infrastructure, AES-256 encryption at rest, TLS 1.3 in transit. Your data is never shared or used to train AI models. Students' personal information is handled with FERPA-grade care.",
+  },
+  {
+    q: "Can students really auto-apply to multiple scholarships at once?",
+    a: "Yes. Build your profile once, and our AI drafts a personalized essay for each scholarship. You review them in a batch queue — approve, edit, or skip — then submit all approved applications in one click.",
   },
 ];
 
@@ -91,6 +98,16 @@ const testimonials = [
     industry: "Healthcare AI · Boston, MA",
     header: "stars" as const,
     quote: "GrantPilot surfaced an NSF program we'd never heard of. It matched our research focus perfectly — we were funded on the first attempt.",
+  },
+  {
+    initials: "JR",
+    color: "bg-purple-500/20 text-purple-400",
+    name: "Jordan Rivera",
+    role: "Pre-Med Junior, UCLA",
+    industry: "Pre-Medicine · Los Angeles, CA",
+    header: "metric" as const,
+    metric: "$32K",
+    quote: "I applied to 28 scholarships in one weekend using GrantPilot. Won 4 of them. That's $32,000 I would have never found on my own.",
   },
 ];
 
@@ -166,7 +183,7 @@ export default async function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-emerald-400 text-sm font-semibold">Trusted by 2,400+ Organizations</span>
+            <span className="text-emerald-400 text-sm font-semibold">Trusted by 2,400+ Organizations &amp; Students</span>
           </div>
         </div>
 
@@ -174,10 +191,10 @@ export default async function LandingPage() {
           className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.2s" }}
         >
-          Become the Team That
+          Win Grants and Scholarships
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300">
-            Wins Every Grant.
+            with AI.
           </span>
         </h1>
 
@@ -185,8 +202,7 @@ export default async function LandingPage() {
           className="text-lg sm:text-xl text-slate-300 max-w-xl mx-auto mb-8 animate-fade-in-up motion-reduce:animate-none"
           style={{ animationDelay: "0.3s" }}
         >
-          AI reads the RFP, drafts every section from your data,
-          and predicts your score — so you submit with confidence, not hope.
+          Whether you&apos;re a nonprofit seeking federal funding or a student applying for scholarships — AI finds your best matches, drafts your application, and predicts your score.
         </p>
 
         {/* Single primary CTA above fold */}
@@ -227,8 +243,8 @@ export default async function LandingPage() {
             SAM.gov &amp; Grants.gov Data
           </span>
           <span className="flex items-center gap-2">
-            <Star className="h-4 w-4 text-emerald-400" />
-            4.9/5 User Rating
+            <GraduationCap className="h-4 w-4 text-emerald-400" />
+            141+ Scholarships
           </span>
         </div>
 
@@ -238,9 +254,9 @@ export default async function LandingPage() {
           style={{ animationDelay: "0.6s" }}
         >
           {[
-            { value: "$18M+", label: "Funding Secured", sub: "by GrantPilot users" },
-            { value: "95%", label: "Win Rate*", sub: "among users with 6+ submissions" },
-            { value: "100hrs", label: "Saved Per App", sub: "avg. time reduction" },
+            { value: "$18M+", label: "Funding Secured", sub: "across grants & scholarships" },
+            { value: "95%", label: "Win Rate*", sub: "among users with 6+ applications" },
+            { value: "141+", label: "Scholarships", sub: "merit, need-based, niche & more" },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -273,19 +289,19 @@ export default async function LandingPage() {
             {
               icon: Upload,
               title: "Build Your Profile",
-              desc: "Upload your org docs and enter your website URL. Takes 10 minutes. Our AI extracts everything it needs.",
+              desc: "Tell us about your organization or academic background. Upload docs or enter your URL. Takes 10 minutes.",
               num: 1,
             },
             {
               icon: Search,
               title: "AI Finds & Drafts",
-              desc: "We scan federal, state, and foundation grants matched to your profile. Then AI reads each RFP and drafts every section.",
+              desc: "We scan grants, scholarships, and fellowships matched to your profile. AI reads each application and drafts every section.",
               num: 2,
             },
             {
               icon: CheckCircle,
               title: "Review & Submit",
-              desc: "See your predicted score per criterion. Edit weak spots with AI suggestions. Submit when you're confident.",
+              desc: "See your predicted score. Edit with AI suggestions. Submit one application or batch-apply to dozens.",
               num: 3,
             },
           ].map((step) => (
@@ -316,8 +332,7 @@ export default async function LandingPage() {
               Smart Fill Engine
             </h2>
             <p className="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto">
-              AI reads the full RFP, maps every scoring criterion, and drafts
-              each section using your data — optimized for the rubric the funder actually uses.
+              Our AI reads the full RFP or scholarship prompt, maps every criterion, and drafts each section using your data — whether that&apos;s a federal proposal or a 500-word essay.
             </p>
           </div>
 
@@ -356,7 +371,7 @@ export default async function LandingPage() {
       <section id="features" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-            Built for Grant Seekers
+            Built for Grant Seekers &amp; Scholarship Applicants
           </h2>
           <p className="text-slate-300 max-w-xl mx-auto text-lg">
             Every feature designed around the grant lifecycle
@@ -367,8 +382,8 @@ export default async function LandingPage() {
           {[
             {
               icon: Crosshair,
-              title: "Grant Readiness Score",
-              desc: "Know if you're ready before investing 100 hours. Preview your match strength for each opportunity.",
+              title: "Readiness Score",
+              desc: "Know if you qualify before investing hours. Preview your match strength for each grant or scholarship.",
             },
             {
               icon: Shield,
@@ -378,7 +393,7 @@ export default async function LandingPage() {
             {
               icon: Zap,
               title: "Funding Alerts",
-              desc: "Real-time notifications when new grants match your profile. Custom filters by amount, agency, and deadline.",
+              desc: "Real-time notifications for new grants and scholarships that match your profile. Never miss a deadline.",
             },
           ].map((feature) => (
             <div
@@ -403,7 +418,7 @@ export default async function LandingPage() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center mb-12">
             Real Results from Real Teams
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {testimonials.map((t) => (
               <div
                 key={t.name}
@@ -456,14 +471,39 @@ export default async function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto items-start">
+        {/* Audience labels */}
+        <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto mb-2">
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full">
+              <GraduationCap className="h-4 w-4" />
+              For Students
+            </span>
+          </div>
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
+              <Sparkles className="h-4 w-4" />
+              For Organizations
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto items-start">
           {[
             {
-              name: "Starter",
+              name: "Student Free",
               price: "Free",
               annual: null,
-              features: ["5 grant matches/mo", "1 AI draft/mo", "Basic readiness score"],
+              features: ["Unlimited scholarship matches", "Unlimited AI essay drafts", "8% success fee on awards"],
               cta: false,
+              studentTier: true,
+            },
+            {
+              name: "Student Pro",
+              price: "$9.99/mo",
+              annual: "$79/yr — save 34%",
+              features: ["Everything in Free", "0% success fee", "Priority essay drafts", "Score predictions"],
+              cta: false,
+              studentTier: true,
             },
             {
               name: "Pro",
@@ -471,6 +511,7 @@ export default async function LandingPage() {
               annual: "$758/yr — save 20%",
               features: ["Unlimited matches", "Unlimited AI drafts", "Score prediction + Win Guarantee"],
               cta: true,
+              studentTier: false,
             },
             {
               name: "Organization",
@@ -478,6 +519,7 @@ export default async function LandingPage() {
               annual: "$2,390/yr — save 20%",
               features: ["Everything in Pro", "Team collaboration", "Priority support + API access"],
               cta: false,
+              studentTier: false,
             },
           ].map((plan) => (
             <div
@@ -485,7 +527,9 @@ export default async function LandingPage() {
               className={`rounded-xl border transition-all duration-200 motion-reduce:transition-none scroll-reveal ${
                 plan.cta
                   ? "bg-emerald-500/10 border-emerald-500/30 ring-2 ring-emerald-500/20 p-8 -mt-2 sm:-mt-4"
-                  : "bg-slate-800/40 border-slate-700/50 p-6"
+                  : plan.studentTier
+                    ? "bg-purple-500/5 border-purple-500/20 p-6"
+                    : "bg-slate-800/40 border-slate-700/50 p-6"
               }`}
             >
               {plan.cta && (
@@ -499,13 +543,13 @@ export default async function LandingPage() {
                 {plan.price !== "Free" && <span className="text-sm text-slate-400 font-normal"> /month</span>}
               </div>
               {plan.annual && (
-                <p className="text-emerald-400 text-xs font-semibold mb-6">{plan.annual}</p>
+                <p className={`text-xs font-semibold mb-6 ${plan.studentTier ? "text-purple-400" : "text-emerald-400"}`}>{plan.annual}</p>
               )}
               {!plan.annual && plan.price === "Free" && null}
               <ul className="space-y-3 mb-6">
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-slate-300 text-sm">
-                    <CheckCircle className="h-4 w-4 text-emerald-400 mt-0.5 shrink-0" />
+                    <CheckCircle className={`h-4 w-4 mt-0.5 shrink-0 ${plan.studentTier ? "text-purple-400" : "text-emerald-400"}`} />
                     <span>{f}</span>
                   </li>
                 ))}
@@ -556,11 +600,10 @@ export default async function LandingPage() {
         <div className="relative bg-slate-800/40 border border-emerald-500/20 rounded-xl p-8 sm:p-12 text-center overflow-hidden max-w-3xl mx-auto">
           <div className="relative">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Your Next Grant is Waiting
+              Your Next Funding is Waiting
             </h2>
             <p className="text-lg text-slate-300 max-w-xl mx-auto mb-4">
-              Join 2,400+ organizations that have submitted smarter applications
-              and secured over $18M in funding.
+              Join 2,400+ organizations and students who have secured over $18M in grants and scholarships using AI.
             </p>
             {/* Legitimate urgency [PE5 fix] */}
             <p className="text-emerald-400 text-sm font-semibold mb-8">
@@ -620,7 +663,7 @@ export default async function LandingPage() {
               <span className="text-lg font-bold text-white">GrantPilot</span>
             </Link>
             <p className="text-slate-500 text-xs mt-1 pl-3">
-              Built by grant writers, for grant writers.
+              Built by grant writers and scholarship hunters.
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm">
