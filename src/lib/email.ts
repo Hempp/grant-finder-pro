@@ -965,3 +965,198 @@ export async function sendApplicationConfirmationEmail(
     throw error;
   }
 }
+
+// ─── Student Outcome Nudge ────────────────────────────────────────────────────
+
+export async function sendStudentOutcomeNudgeEmail(
+  to: string,
+  params: {
+    userName?: string;
+    scholarshipTitle: string;
+    deadline: Date;
+    applicationId: string;
+    nudgeNumber: number; // 1, 2, or 3
+  }
+) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not configured, skipping email");
+    return null;
+  }
+
+  const { userName, scholarshipTitle, deadline, applicationId, nudgeNumber } = params;
+  const reportUrl = `${APP_URL}/student/applications/${applicationId}`;
+  const deadlineFormatted = new Date(deadline).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Tone varies by nudge number
+  const nudgeConfig = {
+    1: {
+      subject: `Have you heard back from ${scholarshipTitle}?`,
+      headerText: "Just Checking In",
+      headerGradient: "linear-gradient(135deg, #10b981 0%, #06b6d4 100%)",
+      intro: "Just checking in — the deadline for this scholarship has passed and we'd love to know how it went!",
+      body: "Did you receive a decision? Letting us know takes just a moment and helps you keep your account in good standing.",
+      ctaText: "Report Outcome",
+      tone: "friendly",
+    },
+    2: {
+      subject: `Quick update needed: ${scholarshipTitle}`,
+      headerText: "Your Response Helps Other Students",
+      headerGradient: "linear-gradient(135deg, #8b5cf6 0%, #10b981 100%)",
+      intro: "When you report your scholarship outcome, you help other students understand their chances — and keep your GrantPilot account fully active.",
+      body: "It only takes 10 seconds. Did you receive an award, a rejection, or are you still waiting?",
+      ctaText: "Report My Outcome",
+      tone: "direct",
+    },
+    3: {
+      subject: `Action required: Report your outcome for ${scholarshipTitle}`,
+      headerText: "Report Your Outcome to Continue",
+      headerGradient: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
+      intro: "Your account is currently gated from submitting new scholarship applications until you report the outcome of this past-deadline application.",
+      body: "Please take a moment to report whether you received an award, a rejection, or if you're still waiting. This keeps our data accurate and your account active.",
+      ctaText: "Report Now — Unlock My Account",
+      tone: "firm",
+    },
+  };
+
+  const config = nudgeConfig[nudgeNumber as 1 | 2 | 3] ?? nudgeConfig[1];
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0f172a; margin: 0; padding: 40px 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+
+        <!-- Header -->
+        <div style="background: ${config.headerGradient}; padding: 40px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">
+            ${config.headerText}
+          </h1>
+          <p style="color: rgba(255,255,255,0.85); margin: 10px 0 0; font-size: 14px;">GrantPilot</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 40px;">
+          <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+            Hi ${userName || "there"},
+          </p>
+
+          <p style="color: #94a3b8; font-size: 15px; line-height: 1.7; margin: 0 0 20px;">
+            ${config.intro}
+          </p>
+
+          <!-- Scholarship Card -->
+          <div style="background-color: #0f172a; border-radius: 10px; padding: 24px; margin: 24px 0; border: 1px solid #334155;">
+            <p style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">Scholarship</p>
+            <h2 style="color: #e2e8f0; font-size: 18px; margin: 0 0 8px; font-weight: 600;">${scholarshipTitle}</h2>
+            <p style="color: #64748b; font-size: 13px; margin: 0;">
+              Deadline was <span style="color: #f59e0b;">${deadlineFormatted}</span>
+            </p>
+          </div>
+
+          <p style="color: #94a3b8; font-size: 15px; line-height: 1.7; margin: 0 0 32px;">
+            ${config.body}
+          </p>
+
+          <!-- CTA -->
+          <div style="text-align: center;">
+            <a href="${reportUrl}"
+               style="display: inline-block; background: ${config.headerGradient}; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.2px;">
+              ${config.ctaText}
+            </a>
+          </div>
+
+          <p style="color: #475569; font-size: 13px; text-align: center; margin: 24px 0 0;">
+            Or visit: <a href="${reportUrl}" style="color: #10b981; text-decoration: none;">${reportUrl}</a>
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="border-top: 1px solid #334155; padding: 20px 40px; text-align: center;">
+          <p style="color: #475569; font-size: 12px; margin: 0; line-height: 1.6;">
+            You're receiving this because you have a submitted application past its deadline.<br>
+            <a href="${APP_URL}/student/settings" style="color: #64748b; text-decoration: underline;">Manage notification preferences</a>
+          </p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) {
+      console.warn("Resend client not available, skipping email");
+      return null;
+    }
+
+    const result = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "GrantPilot <grants@resend.dev>",
+      to,
+      subject: config.subject,
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to send student outcome nudge email:", error);
+    throw error;
+  }
+}
+
+// ─── Overdue Outcome Query Helper ─────────────────────────────────────────────
+
+import { prisma } from "@/lib/db";
+
+export async function getOverdueStudentOutcomes(): Promise<
+  Array<{
+    userId: string;
+    email: string;
+    name: string | null;
+    applicationId: string;
+    scholarshipTitle: string;
+    deadline: Date;
+    daysPastDeadline: number;
+  }>
+> {
+  const now = new Date();
+
+  const applications = await prisma.studentApplication.findMany({
+    where: {
+      status: "submitted",
+      outcomeReportedAt: null,
+      scholarship: {
+        deadline: { lt: now },
+      },
+    },
+    include: {
+      scholarship: { select: { title: true, deadline: true } },
+      user: { select: { id: true, email: true, name: true } },
+    },
+  });
+
+  return applications
+    .filter((a) => a.scholarship.deadline !== null)
+    .map((a) => {
+      const deadline = a.scholarship.deadline as Date;
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const daysPastDeadline = Math.floor((now.getTime() - deadline.getTime()) / msPerDay);
+
+      return {
+        userId: a.userId,
+        email: a.user.email ?? "",
+        name: a.user.name ?? null,
+        applicationId: a.id,
+        scholarshipTitle: a.scholarship.title,
+        deadline,
+        daysPastDeadline,
+      };
+    });
+}

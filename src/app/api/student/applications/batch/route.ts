@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { generateScholarshipEssay } from "@/lib/smart-fill/essay-adapter";
+import { checkOutcomeGate } from "@/lib/student/outcome-gate";
 
 const PLAN_FEE_MAP: Record<string, number> = {
   free: 8,
@@ -23,6 +24,15 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id;
+
+    const gate = await checkOutcomeGate(userId);
+    if (gate.gated) {
+      return NextResponse.json({
+        error: "outcome_gate",
+        message: `Report outcomes for ${gate.overdueCount} past-deadline applications before submitting new ones.`,
+        overdueApplications: gate.applications,
+      }, { status: 403 });
+    }
 
     const body = await request.json();
     const { scholarshipIds } = body as { scholarshipIds: unknown };
