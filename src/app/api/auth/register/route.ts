@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, password, name, referralCode } = body;
+    const { email, password, name, referralCode, userType } = body;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         name: name || email.split("@")[0],
+        userType: userType || "organization",
         referralCode: generateReferralCode(),
         referredById: referrer?.id || null,
         // Give referee their bonus matches

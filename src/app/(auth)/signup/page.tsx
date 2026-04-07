@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Input, Card } from "@/components/ui";
-import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle, Gift } from "lucide-react";
+import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle, Gift, Building2, GraduationCap } from "lucide-react";
 
 function GoogleIcon() {
   return (
@@ -31,6 +31,7 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
 
+  const [userType, setUserType] = useState<"organization" | "student">("organization");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -59,7 +60,7 @@ function SignupForm() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, referralCode }),
+        body: JSON.stringify({ name, email, password, referralCode, userType }),
       });
 
       const data = await res.json();
@@ -83,7 +84,8 @@ function SignupForm() {
         return;
       }
 
-      router.push("/dashboard/organization");
+      const redirectUrl = userType === "student" ? "/student/onboarding" : "/dashboard/organization";
+      router.push(redirectUrl);
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -112,6 +114,36 @@ function SignupForm() {
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Create Account</h1>
         <p className="text-slate-400">Start finding grants for your organization</p>
+      </div>
+
+      {/* User Type Selector */}
+      <div className="flex gap-4 mb-6">
+        <button
+          type="button"
+          onClick={() => setUserType("organization")}
+          className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border transition-colors ${
+            userType === "organization"
+              ? "border-emerald-500/50 bg-emerald-500/10"
+              : "border-slate-700 hover:border-slate-600"
+          }`}
+        >
+          <Building2 className="h-6 w-6 text-slate-300" />
+          <span className="text-sm font-medium text-white">Organization</span>
+          <span className="text-xs text-slate-400 text-center">Nonprofits, startups, research</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setUserType("student")}
+          className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border transition-colors ${
+            userType === "student"
+              ? "border-emerald-500/50 bg-emerald-500/10"
+              : "border-slate-700 hover:border-slate-600"
+          }`}
+        >
+          <GraduationCap className="h-6 w-6 text-slate-300" />
+          <span className="text-sm font-medium text-white">Student</span>
+          <span className="text-xs text-slate-400 text-center">Undergrad, graduate, medical, law</span>
+        </button>
       </div>
 
       {/* Social Signup */}
