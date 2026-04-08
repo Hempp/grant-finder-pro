@@ -1,33 +1,45 @@
 /**
  * GrantPilot Logo System
  *
- * Three variants:
- * - Logomark: The icon alone (for favicons, app icons, compact spaces)
- * - Logotype: The wordmark alone
- * - Logo: Logomark + Logotype combined (default)
+ * The Mark: A circular lens/compass containing three ascending chevrons
+ * (motion trail effect) with a central AI spark node and orbiting data points.
+ * Represents: navigation through funding → upward trajectory → AI intelligence.
  *
- * The mark is a stylized compass-arrow: an upward-pointing chevron
- * (growth/funding) with a central spark node (AI intelligence) and
- * radiating facets (navigation/discovery). It reads as "guided upward"
- * at a glance.
+ * Variants:
+ * - mark: Icon only (favicons, compact spaces)
+ * - wordmark: Text only
+ * - full: Mark + wordmark (default)
+ *
+ * The animated variant adds a subtle breathing glow and rotating orbit.
  */
 
 interface LogoProps {
   variant?: "full" | "mark" | "wordmark";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   theme?: "dark" | "light";
+  animated?: boolean;
   className?: string;
 }
 
 const SIZES = {
-  xs: { mark: 20, height: 20, wordSize: 14, gap: 4 },
-  sm: { mark: 28, height: 28, wordSize: 18, gap: 6 },
-  md: { mark: 36, height: 36, wordSize: 22, gap: 8 },
-  lg: { mark: 48, height: 48, wordSize: 30, gap: 10 },
-  xl: { mark: 64, height: 64, wordSize: 40, gap: 14 },
+  xs: { mark: 20, fontSize: "text-sm", gap: "gap-1.5" },
+  sm: { mark: 28, fontSize: "text-base", gap: "gap-2" },
+  md: { mark: 36, fontSize: "text-xl", gap: "gap-2.5" },
+  lg: { mark: 48, fontSize: "text-2xl", gap: "gap-3" },
+  xl: { mark: 64, fontSize: "text-3xl", gap: "gap-4" },
 };
 
-export function GrantPilotMark({ size = 36, className = "" }: { size?: number; className?: string }) {
+export function GrantPilotMark({
+  size = 36,
+  animated = false,
+  className = "",
+}: {
+  size?: number;
+  animated?: boolean;
+  className?: string;
+}) {
+  const id = `gp-${size}-${Math.random().toString(36).slice(2, 6)}`;
+
   return (
     <svg
       width={size}
@@ -39,112 +51,113 @@ export function GrantPilotMark({ size = 36, className = "" }: { size?: number; c
       aria-hidden="true"
     >
       <defs>
-        {/* Brand gradient: emerald → teal → cyan */}
-        <linearGradient id="gp-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="50%" stopColor="#14b8a6" />
+        <linearGradient id={`${id}-bg`} x1="0" y1="64" x2="64" y2="0">
+          <stop offset="0%" stopColor="#059669" />
+          <stop offset="40%" stopColor="#10b981" />
+          <stop offset="70%" stopColor="#14b8a6" />
           <stop offset="100%" stopColor="#06b6d4" />
         </linearGradient>
-        {/* Subtle inner glow */}
-        <radialGradient id="gp-glow" cx="50%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="#34d399" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+        <linearGradient id={`${id}-hi`} x1="0" y1="0" x2="64" y2="64">
+          <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+          <stop offset="50%" stopColor="white" stopOpacity="0" />
+          <stop offset="100%" stopColor="white" stopOpacity="0.08" />
+        </linearGradient>
+        <radialGradient id={`${id}-depth`} cx="30%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="white" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#000" stopOpacity="0.1" />
         </radialGradient>
-        {/* Shadow filter */}
-        <filter id="gp-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#10b981" floodOpacity="0.3" />
+        <filter id={`${id}-glow`}>
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
+        {animated && (
+          <filter id={`${id}-pulse`}>
+            <feGaussianBlur stdDeviation="2">
+              <animate attributeName="stdDeviation" values="1.5;2.5;1.5" dur="3s" repeatCount="indefinite" />
+            </feGaussianBlur>
+            <feComposite in="SourceGraphic" in2="" operator="over" />
+          </filter>
+        )}
       </defs>
 
-      {/* Background rounded square */}
-      <rect
-        x="2" y="2" width="60" height="60" rx="16"
-        fill="url(#gp-grad)"
-        filter="url(#gp-shadow)"
-      />
+      {/* Squircle background */}
+      <rect x="1" y="1" width="62" height="62" rx="18" fill={`url(#${id}-bg)`} />
+      <rect x="1" y="1" width="62" height="62" rx="18" fill={`url(#${id}-depth)`} />
+      <rect x="1" y="1" width="62" height="62" rx="18" fill={`url(#${id}-hi)`} />
 
-      {/* Inner glow layer */}
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#gp-glow)" />
+      {/* The Mark */}
+      <g filter={`url(#${id}-glow)`}>
+        {/* Compass ring */}
+        <circle cx="32" cy="32" r="19" stroke="white" strokeWidth="2.5" strokeOpacity="0.9" fill="none" />
 
-      {/* The Mark: Upward compass-arrow with spark */}
-      <g transform="translate(32, 32)">
-        {/* Main upward chevron — the "pilot" arrow */}
-        <path
-          d="M0 -18 L14 4 L8 4 L8 18 L-8 18 L-8 4 L-14 4 Z"
-          fill="white"
-          fillOpacity="0.95"
-        />
+        {/* Triple ascending chevrons — motion trail */}
+        <path d="M22 38 L32 30 L42 38" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.3" fill="none" />
+        <path d="M24 33 L32 25 L40 33" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.6" fill="none" />
+        <path d="M26 28 L32 20 L38 28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.95" fill="none">
+          {animated && (
+            <animate attributeName="strokeOpacity" values="0.95;1;0.95" dur="2s" repeatCount="indefinite" />
+          )}
+        </path>
 
-        {/* Spark node at center — the "AI" element */}
-        <circle cx="0" cy="2" r="3.5" fill="white" />
+        {/* Central AI spark */}
+        <circle cx="32" cy="31" r="2.5" fill="white" fillOpacity="0.95">
+          {animated && (
+            <animate attributeName="r" values="2.5;3;2.5" dur="2s" repeatCount="indefinite" />
+          )}
+        </circle>
 
-        {/* Small radiating facets — "discovery" rays */}
-        <line x1="-12" y1="-6" x2="-17" y2="-10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.7" />
-        <line x1="12" y1="-6" x2="17" y2="-10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.7" />
-        <line x1="-10" y1="10" x2="-15" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4" />
-        <line x1="10" y1="10" x2="15" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.4" />
+        {/* Orbiting data points */}
+        <circle cx="20" cy="25" r="1.2" fill="white" fillOpacity="0.5">
+          {animated && (
+            <animate attributeName="fillOpacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite" />
+          )}
+        </circle>
+        <circle cx="44" cy="25" r="1.2" fill="white" fillOpacity="0.5">
+          {animated && (
+            <animate attributeName="fillOpacity" values="0.5;0.8;0.5" dur="3s" begin="1s" repeatCount="indefinite" />
+          )}
+        </circle>
+        <circle cx="32" cy="46" r="1" fill="white" fillOpacity="0.3">
+          {animated && (
+            <animate attributeName="fillOpacity" values="0.3;0.6;0.3" dur="3s" begin="2s" repeatCount="indefinite" />
+          )}
+        </circle>
       </g>
+
+      {/* Inner border highlight */}
+      <rect x="2" y="2" width="60" height="60" rx="17" stroke="white" strokeOpacity="0.1" strokeWidth="0.5" fill="none" />
     </svg>
   );
 }
 
-export function GrantPilotWordmark({
-  size = 22,
+export function Logo({
+  variant = "full",
+  size = "md",
   theme = "dark",
+  animated = false,
   className = "",
-}: {
-  size?: number;
-  theme?: "dark" | "light";
-  className?: string;
-}) {
-  const textColor = theme === "dark" ? "white" : "#0f172a";
-  const accentColor = "#10b981";
-
-  return (
-    <svg
-      height={size}
-      viewBox="0 0 180 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      role="img"
-      aria-label="GrantPilot"
-    >
-      <defs>
-        <linearGradient id="gp-text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#06b6d4" />
-        </linearGradient>
-      </defs>
-      <text
-        x="0" y="30"
-        fontFamily="system-ui, -apple-system, 'Segoe UI', sans-serif"
-        fontWeight="800"
-        fontSize="32"
-        letterSpacing="-0.5"
-      >
-        <tspan fill={textColor}>Grant</tspan>
-        <tspan fill="url(#gp-text-grad)">Pilot</tspan>
-      </text>
-    </svg>
-  );
-}
-
-export function Logo({ variant = "full", size = "md", theme = "dark", className = "" }: LogoProps) {
+}: LogoProps) {
   const s = SIZES[size];
+  const textColor = theme === "dark" ? "text-white" : "text-slate-900";
 
   if (variant === "mark") {
-    return <GrantPilotMark size={s.mark} className={className} />;
+    return <GrantPilotMark size={s.mark} animated={animated} className={className} />;
   }
 
   if (variant === "wordmark") {
-    return <GrantPilotWordmark size={s.wordSize} theme={theme} className={className} />;
+    return (
+      <span className={`font-bold ${s.fontSize} ${textColor} ${className}`}>
+        Grant<span className="text-emerald-400">Pilot</span>
+      </span>
+    );
   }
 
   return (
-    <span className={`inline-flex items-center ${className}`} style={{ gap: s.gap }}>
-      <GrantPilotMark size={s.mark} />
-      <GrantPilotWordmark size={s.wordSize} theme={theme} />
+    <span className={`inline-flex items-center ${s.gap} ${className}`}>
+      <GrantPilotMark size={s.mark} animated={animated} />
+      <span className={`font-bold ${s.fontSize} ${textColor}`}>
+        Grant<span className="text-emerald-400">Pilot</span>
+      </span>
     </span>
   );
 }

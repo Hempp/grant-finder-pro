@@ -85,8 +85,8 @@ export default function DashboardLayout({
       {/* Mobile Header - sticky so it stays visible on scroll */}
       <div className="lg:hidden glass-dark border-b border-slate-800 p-3 sm:p-4 flex items-center justify-between sticky top-0 z-30">
         <Link href="/" className="flex items-center gap-2">
-          <Sparkles className="h-7 w-7 text-emerald-400" />
-          <span className="text-lg font-bold text-white">GrantPilot</span>
+          <img src="/logo.svg" alt="" width={28} height={28} />
+          <span className="text-lg font-bold text-white">Grant<span className="text-emerald-400">Pilot</span></span>
         </Link>
         <div className="flex items-center gap-1">
           <NotificationBell />
@@ -119,7 +119,7 @@ export default function DashboardLayout({
         {/* Logo - Desktop only */}
         <div className="hidden lg:flex items-center justify-between p-6 border-b border-slate-800/60">
           <Link href="/" className="flex items-center gap-2 group">
-            <Sparkles className="h-8 w-8 text-emerald-400 group-hover:scale-110 transition-transform duration-200" />
+            <img src="/logo.svg" alt="" width={36} height={36} className="group-hover:scale-105 transition-transform duration-200" />
             <span className="text-xl font-bold text-white">
               Grant<span className="text-emerald-400">Pilot</span>
             </span>

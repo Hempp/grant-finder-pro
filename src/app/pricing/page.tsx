@@ -241,9 +241,7 @@ function PricingContent() {
       <header className="relative border-b border-slate-800/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-lg flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-slate-900" />
-            </div>
+            <img src="/logo.svg" alt="" width={32} height={32} className="group-hover:scale-105 transition-transform" />
             <span className="font-bold text-white text-lg">
               Grant<span className="text-emerald-400">Pilot</span>
             </span>
