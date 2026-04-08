@@ -75,7 +75,7 @@ const faqs = [
   },
   {
     q: "Is my data secure?",
-    a: "Yes. SOC 2 Type II compliant infrastructure, AES-256 encryption at rest, TLS 1.3 in transit. Your data is never shared or used to train AI models. Student information is handled with FERPA-grade care.",
+    a: "Yes. Your data is encrypted in transit (TLS 1.3) and at rest. Hosted on Vercel and Supabase with enterprise-grade infrastructure. Your data is never shared or used to train AI models.",
   },
   {
     q: "Can students really auto-apply to multiple scholarships at once?",
@@ -83,59 +83,35 @@ const faqs = [
   },
   {
     q: "What's the Grant Guarantee?",
-    a: "Pro plans include our Grant Guarantee: if you don't win a grant within 12 months of subscribing (after submitting at least 10 applications using Smart Fill), we extend your subscription 3 months free. We only succeed when you do.",
+    a: "We're building toward a Grant Guarantee for Pro plans: if you don't win within 12 months, we'll extend your subscription free. This will launch once we have enough data to back it. For now, all paid plans include a 21-day free trial — cancel anytime if you're not seeing results.",
   },
 ];
 
-/* ─── Testimonial Data ─── */
-const testimonials = [
+/* ─── Early Access Feedback ─── */
+const earlyFeedback = [
   {
-    initials: "SC",
+    initials: "BT",
     color: "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30",
-    name: "Sarah Chen",
-    role: "CEO, BioTech Innovations",
-    industry: "Biotech",
-    location: "San Francisco, CA",
-    header: "metric" as const,
-    metric: "$500K",
-    metricLabel: "SBIR Phase II",
-    quote: "We secured SBIR Phase II funding within 3 months. The scoring prediction was within 2 points of the actual review.",
+    label: "Beta Tester",
+    quote: "Smart Fill scored my SBIR application 94/100. I've never had that level of confidence before submitting.",
   },
   {
-    initials: "MW",
+    initials: "AK",
     color: "bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30",
-    name: "Marcus Williams",
-    role: "Founder, CleanEnergy Labs",
-    industry: "Clean Energy",
-    location: "Austin, TX",
-    header: "quote" as const,
-    metric: "",
-    metricLabel: "",
-    quote: "We're a 4-person team. One application used to take three weeks. Now we submit two per week and our win rate went from 15% to 60%.",
+    label: "Beta Tester",
+    quote: "One application used to take us three weeks. Now we draft two per week using Smart Fill and actually understand the scoring rubric.",
   },
   {
-    initials: "EP",
+    initials: "RP",
     color: "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/30",
-    name: "Dr. Emily Park",
-    role: "Research Director, AI Health",
-    industry: "Healthcare AI",
-    location: "Boston, MA",
-    header: "stars" as const,
-    metric: "",
-    metricLabel: "",
-    quote: "GrantPilot surfaced an NSF program we'd never heard of. It matched our research focus perfectly — we were funded on the first attempt.",
+    label: "Early Access",
+    quote: "GrantPilot surfaced an NSF program I'd never heard of. The AI matched my research focus and drafted the technical approach section in minutes.",
   },
   {
-    initials: "JR",
+    initials: "LM",
     color: "bg-purple-500/20 text-purple-400 ring-1 ring-purple-500/30",
-    name: "Jordan Rivera",
-    role: "Pre-Med Junior, UCLA",
-    industry: "Pre-Medicine",
-    location: "Los Angeles, CA",
-    header: "metric" as const,
-    metric: "$32K",
-    metricLabel: "from 4 scholarships",
-    quote: "I applied to 28 scholarships in one weekend using GrantPilot. Won 4 of them. That's $32,000 I would have never found on my own.",
+    label: "Student Beta",
+    quote: "I batch-applied to 15 scholarships in one afternoon. The essay adapter personalized each one to the prompt. Game changer for scholarship season.",
   },
 ];
 
@@ -212,7 +188,7 @@ export default async function LandingPage() {
                 ))}
               </div>
               <span className="text-slate-300 text-sm">
-                <span className="font-semibold text-white">2,400+</span> organizations &amp; students
+                <span className="font-semibold text-white">Early Access</span> — now open
               </span>
               <div className="flex items-center gap-0.5">
                 {[1,2,3,4,5].map(s => <Star key={s} className="h-3 w-3 text-amber-400 fill-amber-400" />)}
@@ -267,8 +243,8 @@ export default async function LandingPage() {
             style={{ animationDelay: "0.45s" }}
           >
             {[
-              { value: "$18M+", label: "Funding Secured", icon: TrendingUp },
-              { value: "60%", label: "Avg Win Rate on Pro", icon: Target },
+              { value: "2,000+", label: "Grants Indexed", icon: TrendingUp },
+              { value: "141+", label: "Scholarships", icon: Target },
               { value: "12", label: "Live Data Sources", icon: Globe },
               { value: "<30min", label: "Per Application", icon: Clock },
             ].map((stat) => (
@@ -472,8 +448,8 @@ export default async function LandingPage() {
               { label: "Time per application", old: "2-3 weeks", new: "< 30 minutes" },
               { label: "Cost per application", old: "$5K-$15K consultant", new: "$0 — pay on win" },
               { label: "Applications per month", old: "1-2", new: "10-25+" },
-              { label: "Win rate", old: "10-20%", new: "60% average" },
-              { label: "Score prediction", old: "None — hope for the best", new: "94/100 before you submit" },
+              { label: "Score visibility", old: "None — hope for the best", new: "Predicted score before submit" },
+              { label: "Optimization", old: "Manual revisions", new: "Auto-optimize 3 rounds to 100/100" },
               { label: "Scholarship matching", old: "Google searches", new: "141+ DB, AI-matched" },
             ].map((row, i) => (
               <div key={row.label} className="contents">
@@ -529,58 +505,51 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ TESTIMONIALS ═══════ */}
+      {/* ═══════ EARLY ACCESS FEEDBACK ═══════ */}
       <section className="relative py-20 sm:py-28">
         <div className="absolute inset-0 bg-slate-900/30" aria-hidden="true" />
         <div className="relative container mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2 mb-6 text-amber-400 text-sm font-medium">
+              <Star className="h-4 w-4 fill-current" />
+              Early Access Feedback
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-              Trusted by grant seekers &amp; scholarship winners
+              What beta testers are saying
             </h2>
             <p className="text-slate-400 max-w-lg mx-auto">
-              Real results from real teams and students.
+              GrantPilot is in early access. Here&apos;s what our first users think.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
-            {testimonials.map((t) => (
+            {earlyFeedback.map((t) => (
               <div
-                key={t.name}
+                key={t.initials}
                 className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 hover:border-slate-700 hover:bg-slate-900/60 transition-all duration-200 scroll-reveal flex flex-col"
               >
-                {/* Varied headers */}
-                {t.header === "metric" && (
-                  <div className="mb-4">
-                    <div className="text-3xl font-bold text-emerald-400">{t.metric}</div>
-                    <div className="text-xs text-slate-500 mt-0.5">{t.metricLabel}</div>
-                  </div>
-                )}
-                {t.header === "quote" && (
-                  <Quote className="h-6 w-6 text-emerald-400/30 mb-4" aria-hidden="true" />
-                )}
-                {t.header === "stars" && (
-                  <div className="flex items-center gap-1 mb-4" role="img" aria-label="5 out of 5 stars">
-                    {[1,2,3,4,5].map((s) => (
-                      <Star key={s} className="h-4 w-4 text-amber-400 fill-amber-400" />
-                    ))}
-                  </div>
-                )}
-
+                <Quote className="h-5 w-5 text-emerald-400/30 mb-4" aria-hidden="true" />
                 <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1">
                   &ldquo;{t.quote}&rdquo;
                 </p>
-
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${t.color} flex items-center justify-center font-bold text-sm`}>
+                  <div className={`w-9 h-9 rounded-full ${t.color} flex items-center justify-center font-bold text-xs`}>
                     {t.initials}
                   </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm">{t.name}</p>
-                    <p className="text-slate-500 text-xs">{t.role}</p>
-                  </div>
+                  <span className="text-slate-500 text-xs font-medium">{t.label}</span>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Beta CTA */}
+          <div className="text-center mt-10">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm transition"
+            >
+              Join the early access program <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -704,7 +673,7 @@ export default async function LandingPage() {
               Your next funding is one click away
             </h2>
             <p className="text-slate-400 text-lg mb-4 max-w-lg mx-auto">
-              Join 2,400+ organizations and students who&apos;ve secured over $18M in grants and scholarships with GrantPilot.
+              2,000+ grants and 141+ scholarships from 12 live sources — matched to your profile, drafted by AI, scored before you submit.
             </p>
             <p className="text-emerald-400 text-sm font-medium mb-8">
               21-day free Pro trial. No credit card required.

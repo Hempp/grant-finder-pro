@@ -86,14 +86,14 @@ const plans = [
     price: 79,
     priceAnnual: 708,
     successFee: "3% on grants won",
-    highlight: "Grant Guarantee included",
+    highlight: "21-day free trial included",
     features: [
       { text: "200 grant matches per month", included: true },
       { text: "50 Smart Fills per month", included: true },
       { text: "Content Library (500 blocks)", included: true },
       { text: "Auto-optimize to 100/100", included: true },
       { text: "Scoring + diff transparency", included: true },
-      { text: "Grant Guarantee: win or 3 months free", included: true },
+      { text: "21-day free trial, cancel anytime", included: true },
       { text: "Up to 3 team members", included: true },
       { text: "Priority support", included: true },
     ],
@@ -155,8 +155,8 @@ const studentPlan = {
 /* ─── FAQ data ─── */
 const faqs = [
   {
-    q: "What is the Grant Guarantee?",
-    a: "Pro and Organization plans include our Grant Guarantee: if you don't win a grant within 12 months of subscribing (after submitting at least 10 applications using Smart Fill), we'll extend your subscription 3 months free.",
+    q: "Is there a money-back guarantee?",
+    a: "All paid plans include a 21-day free trial — no credit card required. Cancel anytime during the trial and you won't be charged. We're building toward a formal Grant Guarantee for Pro plans and will announce it once we have enough data.",
   },
   {
     q: "How does Smart Fill work?",
@@ -176,7 +176,7 @@ const faqs = [
   },
   {
     q: "Is my data secure?",
-    a: "SOC 2 Type II compliant infrastructure, AES-256 encryption at rest, TLS 1.3 in transit. Your data is never shared or used to train AI models. Student data is handled with FERPA-grade care.",
+    a: "Your data is encrypted in transit (TLS 1.3) and at rest. Hosted on Vercel and Supabase with enterprise-grade infrastructure. Your data is never shared or used to train AI models.",
   },
 ];
 
@@ -608,7 +608,7 @@ function PricingContent() {
             { icon: CheckCircle, text: "Cancel anytime", color: "text-emerald-400" },
             { icon: CheckCircle, text: "21-day free trial", color: "text-emerald-400" },
             { icon: Shield, text: "Secure via Stripe", color: "text-emerald-400" },
-            { icon: Award, text: "Grant Guarantee on Pro+", color: "text-amber-400" },
+            { icon: Award, text: "Success fee — we earn when you win", color: "text-amber-400" },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2">
               <item.icon className={`h-4 w-4 ${item.color}`} />
