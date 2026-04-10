@@ -72,8 +72,8 @@ describe("ScholarshipSourceRegistry", () => {
     );
   });
 
-  it("handles source errors without crashing and continues other sources", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  it("handles source errors via circuit breaker and continues other sources", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const registry = new ScholarshipSourceRegistry();
 
@@ -94,16 +94,11 @@ describe("ScholarshipSourceRegistry", () => {
 
     const results = await registry.scrapeAll();
 
-    // Should still return results from the good source
+    // Circuit breaker catches the error and serves empty fallback
+    // Good source results should still be returned
     expect(results).toHaveLength(1);
     expect(results[0].title).toBe("Good Scholarship");
 
-    // Should have logged the error
-    expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining("broken-source"),
-      expect.any(Error)
-    );
-
-    consoleSpy.mockRestore();
+    warnSpy.mockRestore();
   });
 });

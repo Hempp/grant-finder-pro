@@ -1,4 +1,5 @@
 import type { ScholarshipSource, ScrapedScholarship } from "./types";
+import { withCircuitBreaker } from "../circuit-breaker";
 
 export class ScholarshipSourceRegistry {
   private sources: ScholarshipSource[] = [];
@@ -14,14 +15,21 @@ export class ScholarshipSourceRegistry {
   async scrapeAll(): Promise<ScrapedScholarship[]> {
     const enabled = this.getEnabled();
     const results: ScrapedScholarship[] = [];
+
     for (const source of enabled) {
-      try {
-        const scholarships = await source.scrape();
-        results.push(...scholarships);
-      } catch (error) {
-        console.error(`Scholarship source ${source.id} failed:`, error);
+      const { result: scholarships, fromFallback } = await withCircuitBreaker(
+        `scholarship-${source.id}`,
+        () => source.scrape(),
+        [] as ScrapedScholarship[],
+      );
+
+      if (fromFallback) {
+        console.warn(`[ScholarshipRegistry] ${source.id}: circuit tripped, serving fallback`);
       }
+
+      results.push(...scholarships);
     }
+
     return results;
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ArrowLeft, Sparkles, GraduationCap, Award, PenLine, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles, GraduationCap, Award, PenLine, Plus, Trash2, DollarSign, Clock, Target } from "lucide-react";
 import { Button, Card, CardContent, Input, Textarea, Select } from "@/components/ui";
 
 const educationLevels = [
@@ -134,9 +134,18 @@ interface Activity {
   description: string;
 }
 
+// Sample scholarships shown before profile (the "aha moment")
+const PREVIEW_SCHOLARSHIPS = [
+  { title: "Gates Scholarship", amount: "$77,000", provider: "Gates Foundation", match: "High", deadline: "Sep 2026" },
+  { title: "Jack Kent Cooke Undergraduate", amount: "$55,000", provider: "JKCF", match: "High", deadline: "Nov 2026" },
+  { title: "Coca-Cola Scholars Program", amount: "$20,000", provider: "Coca-Cola Foundation", match: "Medium", deadline: "Oct 2026" },
+  { title: "Amazon Future Engineer", amount: "$40,000", provider: "Amazon", match: "Medium", deadline: "Dec 2026" },
+  { title: "Dell Scholars Program", amount: "$20,000", provider: "Michael & Susan Dell Foundation", match: "High", deadline: "Jan 2027" },
+];
+
 export default function StudentOnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 — the preview step
   const [saving, setSaving] = useState(false);
 
   // Step 1 — Who You Are
@@ -284,6 +293,61 @@ export default function StudentOnboardingPage() {
         ))}
       </div>
 
+      {/* Step 0 — Aha Moment: Show what's waiting for them */}
+      {step === 0 && (
+        <Card>
+          <CardContent className="p-6 sm:p-8 flex flex-col gap-6">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-8 w-8 text-emerald-400" />
+              </div>
+              <h1 className="text-2xl font-bold text-white mb-2">
+                $212,000+ in scholarships are waiting for you
+              </h1>
+              <p className="text-slate-400">
+                Here&apos;s a preview of what GrantPilot can match you with. Complete your profile to unlock personalized matches.
+              </p>
+            </div>
+
+            {/* Preview scholarship cards */}
+            <div className="space-y-3">
+              {PREVIEW_SCHOLARSHIPS.map((s) => (
+                <div key={s.title} className="flex items-center gap-4 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl">
+                  <div className="text-right min-w-[70px]">
+                    <div className="text-lg font-bold text-emerald-400">{s.amount}</div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm truncate">{s.title}</p>
+                    <p className="text-slate-500 text-xs">{s.provider}</p>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> {s.deadline}
+                    </span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      s.match === "High" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+                    }`}>
+                      {s.match}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 text-center">
+              <p className="text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
+                <Target className="h-4 w-4" />
+                141+ more scholarships — complete your profile to see your personalized matches
+              </p>
+            </div>
+
+            <Button onClick={() => setStep(1)} className="w-full" size="lg">
+              Build My Profile <ArrowRight className="h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Step 1 — Who You Are */}
       {step === 1 && (
         <Card>
@@ -291,10 +355,10 @@ export default function StudentOnboardingPage() {
             <div className="text-center">
               <Sparkles className="h-12 w-12 text-emerald-400 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-white mb-2">
-                Welcome to GrantPilot
+                Let&apos;s find your scholarships
               </h1>
               <p className="text-slate-400">
-                Let&apos;s set up your scholarship profile
+                Tell us about yourself to get personalized matches
               </p>
             </div>
             <div className="flex flex-col gap-4">

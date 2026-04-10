@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useTransition } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -282,13 +282,20 @@ export default function ScholarshipBrowsePage() {
   const [discovering, setDiscovering] = useState(false);
   const [hasProfile, setHasProfile] = useState(true);
 
-  // Filters & sort
+  // Filters & sort — useTransition keeps UI responsive during heavy filtering
+  const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [amountFilter, setAmountFilter] = useState("");
   const [deadlineFilter, setDeadlineFilter] = useState("");
   const [fieldFilter, setFieldFilter] = useState("");
   const [sortBy, setSortBy] = useState("match");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Wrap filter changes in transition so they don't block the UI
+  const setFilterWithTransition = (setter: (v: string) => void) => (v: string) => {
+    startTransition(() => setter(v));
+  };
 
   const fetchScholarships = useCallback(async () => {
     setLoading(true);
@@ -462,7 +469,7 @@ export default function ScholarshipBrowsePage() {
           type="text"
           placeholder="Search by title, provider, or description..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => startTransition(() => setSearch(e.target.value))}
           className="w-full pl-12 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm sm:text-base transition-colors"
         />
         {search && (
@@ -474,19 +481,38 @@ export default function ScholarshipBrowsePage() {
             <X className="h-4 w-4" />
           </button>
         )}
+        {isPending && (
+          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+            <div className="h-4 w-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
       </div>
 
-      {/* ── Filter Row ── */}
+      {/* ── Filters — Progressive Disclosure ── */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-1.5 text-slate-400 text-sm">
           <SlidersHorizontal className="h-4 w-4" />
           <span className="hidden sm:inline">Filters:</span>
         </div>
 
-        <FilterSelect value={typeFilter} onChange={setTypeFilter} options={TYPE_OPTIONS} />
-        <FilterSelect value={amountFilter} onChange={setAmountFilter} options={AMOUNT_OPTIONS} />
-        <FilterSelect value={deadlineFilter} onChange={setDeadlineFilter} options={DEADLINE_OPTIONS} />
-        <FilterSelect value={fieldFilter} onChange={setFieldFilter} options={FIELD_OPTIONS} />
+        {/* Core filters — always visible */}
+        <FilterSelect value={typeFilter} onChange={setFilterWithTransition(setTypeFilter)} options={TYPE_OPTIONS} />
+        <FilterSelect value={deadlineFilter} onChange={setFilterWithTransition(setDeadlineFilter)} options={DEADLINE_OPTIONS} />
+
+        {/* Advanced filters — revealed on demand (wave function collapse) */}
+        {showAdvancedFilters ? (
+          <>
+            <FilterSelect value={amountFilter} onChange={setFilterWithTransition(setAmountFilter)} options={AMOUNT_OPTIONS} />
+            <FilterSelect value={fieldFilter} onChange={setFilterWithTransition(setFieldFilter)} options={FIELD_OPTIONS} />
+          </>
+        ) : (
+          <button
+            onClick={() => setShowAdvancedFilters(true)}
+            className="text-xs text-emerald-400 hover:text-emerald-300 transition px-2 py-1.5 rounded-lg border border-emerald-500/20 hover:border-emerald-500/40"
+          >
+            + More Filters
+          </button>
+        )}
 
         {hasFilters && (
           <button

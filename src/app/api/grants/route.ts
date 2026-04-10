@@ -218,10 +218,17 @@ export async function GET() {
     // Sort by personalized match score
     grantsWithScores.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
 
-    return NextResponse.json({
+    // Stale-while-revalidate: serve cached response for 60s,
+    // revalidate in background for up to 5 minutes
+    const response = NextResponse.json({
       grants: grantsWithScores,
       hasProfile: !!organization?.profileComplete,
     });
+    response.headers.set(
+      "Cache-Control",
+      "public, s-maxage=60, stale-while-revalidate=300"
+    );
+    return response;
   } catch (error) {
     console.error("Failed to fetch grants:", error);
     return NextResponse.json(

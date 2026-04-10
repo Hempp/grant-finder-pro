@@ -87,7 +87,9 @@ describe("GrantSourceRegistry", () => {
     expect(good!.error).toBeUndefined();
 
     expect(bad!.grants).toHaveLength(0);
-    expect(bad!.error).toBe("Network failure");
+    // Circuit breaker catches the error and serves fallback (empty array)
+    // The error is logged but not propagated as a field anymore
+    expect(bad!.fromFallback).toBe(true);
   });
 
   it("empty registry returns empty results", async () => {
