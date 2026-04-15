@@ -239,21 +239,27 @@ export default function ApplicationsPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
         <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+          <label htmlFor="app-search" className="sr-only">
+            Search applications by grant title
+          </label>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
           <input
-            type="text"
+            id="app-search"
+            type="search"
             placeholder="Search applications..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 text-sm sm:text-base"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0">
+        <div role="group" aria-label="Filter applications by status" className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0">
           {filterOptions.map((opt) => (
             <button
               key={opt.value}
+              type="button"
               onClick={() => setFilter(opt.value)}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${
+              aria-pressed={filter === opt.value}
+              className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base whitespace-nowrap flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                 filter === opt.value
                   ? "bg-emerald-500 text-white"
                   : "bg-slate-800 text-slate-400 hover:text-white"

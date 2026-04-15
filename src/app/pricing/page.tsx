@@ -278,7 +278,7 @@ function PricingContent() {
         </div>
       </header>
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+      <main id="main-content" className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Banners */}
         {canceled && (
           <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center gap-3">

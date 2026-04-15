@@ -65,8 +65,9 @@ export function Dialog({
             {closeButton && (
               <RadixDialog.Close asChild>
                 <button
+                  type="button"
                   className="text-slate-500 hover:text-white rounded-lg p-1 transition-colors focus-ring"
-                  aria-label="Close dialog"
+                  aria-label={`Close ${title}`}
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
