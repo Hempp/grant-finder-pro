@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { parseJson, requireAuth } from "@/lib/api-helpers";
+import {
+  parseJson,
+  requireAuth,
+  isMissingTableError,
+  migrationPendingResponse,
+} from "@/lib/api-helpers";
 import { rateLimit } from "@/lib/rate-limit";
 import { logError, logEvent } from "@/lib/telemetry";
 import { audit } from "@/lib/audit-log";
@@ -51,6 +56,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ invitations });
   } catch (err) {
+    if (isMissingTableError(err)) return migrationPendingResponse("Team invitations");
     logError(err, { endpoint: "/api/org/invitations", method: "GET" });
     return NextResponse.json({ error: "Failed to load invitations" }, { status: 500 });
     void request;
@@ -190,6 +196,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ invitation }, { status: 201 });
   } catch (err) {
+    if (isMissingTableError(err)) return migrationPendingResponse("Team invitations");
     logError(err, { endpoint: "/api/org/invitations", method: "POST" });
     return NextResponse.json({ error: "Failed to create invitation" }, { status: 500 });
   }

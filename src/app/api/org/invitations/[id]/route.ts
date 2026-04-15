@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/api-helpers";
+import {
+  requireAuth,
+  isMissingTableError,
+  migrationPendingResponse,
+} from "@/lib/api-helpers";
 import { logError } from "@/lib/telemetry";
 import { audit } from "@/lib/audit-log";
 
@@ -57,6 +61,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (err) {
+    if (isMissingTableError(err)) return migrationPendingResponse("Team invitations");
     logError(err, { endpoint: "/api/org/invitations/[id]", method: "DELETE" });
     return NextResponse.json({ error: "Failed to revoke invitation" }, { status: 500 });
   }

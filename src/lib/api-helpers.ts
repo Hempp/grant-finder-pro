@@ -26,6 +26,33 @@ import { prisma } from "@/lib/db";
  */
 
 /**
+ * Detect Prisma's "relation does not exist" error (P2021), typically
+ * because a new model was merged before the production database was
+ * migrated. False positives here are harmless — the caller just swaps
+ * a raw 500 for a friendlier 503 with a migration-pending message.
+ */
+export function isMissingTableError(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false;
+  const e = err as { code?: unknown; message?: unknown };
+  if (e.code === "P2021") return true;
+  if (typeof e.message === "string" && /relation ".+" does not exist/i.test(e.message)) {
+    return true;
+  }
+  return false;
+}
+
+/** Standard 503 response when a route depends on a not-yet-migrated table. */
+export function migrationPendingResponse(feature: string): NextResponse {
+  return NextResponse.json(
+    {
+      error: `${feature} is being rolled out and isn't available on this deployment yet. Try again in a few minutes.`,
+      code: "migration_pending",
+    },
+    { status: 503 }
+  );
+}
+
+/**
  * Require an authenticated user. Returns the session on success, or a
  * 401 Response on failure (the caller returns that Response directly).
  */

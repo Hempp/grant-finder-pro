@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { parseJson, requireAuth } from "@/lib/api-helpers";
+import {
+  parseJson,
+  requireAuth,
+  isMissingTableError,
+  migrationPendingResponse,
+} from "@/lib/api-helpers";
 import { logError, logEvent } from "@/lib/telemetry";
 import { audit } from "@/lib/audit-log";
 import { hashInvitationToken } from "@/lib/invitation-token";
@@ -130,6 +135,7 @@ export async function POST(request: NextRequest) {
       role: invitation.role,
     });
   } catch (err) {
+    if (isMissingTableError(err)) return migrationPendingResponse("Team invitations");
     logError(err, { endpoint: "/api/org/invitations/accept", method: "POST" });
     return NextResponse.json({ error: "Failed to accept invitation" }, { status: 500 });
   }
