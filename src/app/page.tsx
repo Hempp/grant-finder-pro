@@ -188,7 +188,7 @@ export default async function LandingPage() {
 
           {/* Headline */}
           <h1
-            className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight animate-fade-in-up motion-reduce:animate-none"
+            className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6 leading-[1.15] tracking-tight animate-fade-in-up motion-reduce:animate-none"
             style={{ animationDelay: "0.15s" }}
           >
             Stop writing grants.

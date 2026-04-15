@@ -68,7 +68,22 @@ export async function POST(request: NextRequest) {
           }
 
           const priceId = subscription.items.data[0]?.price.id;
-          const plan = getPlanByPriceId(priceId) || "pro";
+          const plan = getPlanByPriceId(priceId);
+          if (!plan) {
+            // Unknown priceId = new Stripe price not yet synced to
+            // getPlanByPriceId. Silently defaulting to "pro" would flip
+            // free users into paid tier on mis-sync. Fail loud instead —
+            // Stripe will retry, webhook is idempotent.
+            logWarning("stripe.webhook.unknown_price_id", {
+              priceId,
+              subscriptionId: subscription.id,
+              userId,
+            });
+            return NextResponse.json(
+              { error: "Unknown price id — please sync SUBSCRIPTION_PLANS" },
+              { status: 500 }
+            );
+          }
 
           await prisma.user.update({
             where: { id: userId },
@@ -80,7 +95,7 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          console.info(`User ${userId} subscribed to ${plan}`);
+          logEvent("stripe.webhook.checkout_completed", { userId, plan });
         }
         break;
       }
@@ -103,7 +118,18 @@ export async function POST(request: NextRequest) {
         }
 
         const priceId = subscription.items.data[0]?.price.id;
-        const plan = getPlanByPriceId(priceId) || "pro";
+        const plan = getPlanByPriceId(priceId);
+        if (!plan) {
+          logWarning("stripe.webhook.unknown_price_id", {
+            priceId,
+            subscriptionId: subscription.id,
+            userId: user.id,
+          });
+          return NextResponse.json(
+            { error: "Unknown price id — please sync SUBSCRIPTION_PLANS" },
+            { status: 500 }
+          );
+        }
 
         await prisma.user.update({
           where: { id: user.id },

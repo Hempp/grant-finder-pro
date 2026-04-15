@@ -6,11 +6,16 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  // Preload the hero font to shave FOUT off LCP. Mono isn't above-the-fold.
+  preload: true,
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
+  display: "swap",
 });
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.ai";

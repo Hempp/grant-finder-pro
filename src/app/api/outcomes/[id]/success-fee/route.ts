@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { calculateSuccessFee, createSuccessFeeInvoice, PlanType } from "@/lib/stripe";
+import { logError, logEvent } from "@/lib/telemetry";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -92,14 +93,44 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     });
   }
 
-  // Create Stripe invoice
-  const invoiceId = await createSuccessFeeInvoice(
-    user.stripeCustomerId,
-    outcome.grant.title,
-    grantAmount,
-    feeAmount,
-    feePercent
-  );
+  // Create Stripe invoice. On failure we must STILL persist the fee
+  // calculation so the state machine isn't jammed — the outcome drops
+  // back to "pending" and a retry cron can re-attempt invoicing. Without
+  // this guard, a single Stripe network blip left the outcome eternally
+  // in limbo with no fee ever actually invoiced.
+  let invoiceId: string | null = null;
+  try {
+    invoiceId = await createSuccessFeeInvoice(
+      user.stripeCustomerId,
+      outcome.grant.title,
+      grantAmount,
+      feeAmount,
+      feePercent
+    );
+  } catch (err) {
+    logError(err, {
+      step: "stripe.createSuccessFeeInvoice",
+      outcomeId,
+      customerId: user.stripeCustomerId,
+    });
+    await prisma.grantOutcome.update({
+      where: { id: outcomeId },
+      data: {
+        successFeePercent: feePercent,
+        successFeeAmount: feeAmount,
+        successFeeStatus: "pending",
+      },
+    });
+    return NextResponse.json(
+      {
+        fee: feeAmount,
+        feePercent,
+        status: "pending",
+        reason: "Invoice creation failed — we'll retry shortly.",
+      },
+      { status: 502 }
+    );
+  }
 
   // Update outcome with fee details
   await prisma.grantOutcome.update({
@@ -111,6 +142,12 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       stripeInvoiceId: invoiceId,
       feeInvoicedAt: invoiceId ? new Date() : null,
     },
+  });
+  logEvent("outcome.success_fee.invoiced", {
+    outcomeId,
+    feeAmount,
+    feePercent,
+    invoiceId,
   });
 
   return NextResponse.json({

@@ -49,7 +49,9 @@ export function assertPublicHttpUrl(raw: string): URL {
     throw new SafeUrlError("Only http:// and https:// URLs are allowed.");
   }
 
-  const host = parsed.hostname.toLowerCase();
+  // URL constructor returns IPv6 hostnames wrapped in brackets (`[::1]`);
+  // strip them so our pattern tests match.
+  const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "");
 
   if (HOSTNAME_BLOCKLIST.has(host) || host.endsWith(".local") || host.endsWith(".internal")) {
     throw new SafeUrlError("That hostname isn't allowed.");
