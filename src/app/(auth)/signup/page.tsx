@@ -30,6 +30,7 @@ function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
+  const inviteToken = searchParams.get("invite");
 
   const [userType, setUserType] = useState<"organization" | "student">("organization");
   const [name, setName] = useState("");
@@ -84,7 +85,14 @@ function SignupForm() {
         return;
       }
 
-      const redirectUrl = userType === "student" ? "/student/onboarding" : "/dashboard/organization";
+      // Team-seat invites take precedence over the default onboarding
+      // destination — otherwise the token is lost after signup and the
+      // user can't finish accepting.
+      const redirectUrl = inviteToken
+        ? `/invite/accept?token=${encodeURIComponent(inviteToken)}`
+        : userType === "student"
+        ? "/student/onboarding"
+        : "/dashboard/organization";
       router.push(redirectUrl);
       router.refresh();
     } catch {
@@ -149,14 +157,26 @@ function SignupForm() {
       {/* Social Signup */}
       <div className="space-y-3 mb-6">
         <button
-          onClick={() => signIn("google", { callbackUrl: "/dashboard/organization" })}
+          onClick={() =>
+            signIn("google", {
+              callbackUrl: inviteToken
+                ? `/invite/accept?token=${encodeURIComponent(inviteToken)}`
+                : "/dashboard/organization",
+            })
+          }
           className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors"
         >
           <GoogleIcon />
           Sign up with Google
         </button>
         <button
-          onClick={() => signIn("github", { callbackUrl: "/dashboard/organization" })}
+          onClick={() =>
+            signIn("github", {
+              callbackUrl: inviteToken
+                ? `/invite/accept?token=${encodeURIComponent(inviteToken)}`
+                : "/dashboard/organization",
+            })
+          }
           className="w-full flex items-center justify-center gap-3 bg-slate-800 hover:bg-slate-700 text-white font-medium py-2.5 px-4 rounded-lg border border-slate-700 transition-colors"
         >
           <GitHubIcon />

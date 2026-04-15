@@ -18,6 +18,7 @@ import {
   X,
   Gift,
   BookOpen,
+  Users,
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -40,6 +41,7 @@ const navGroups = [
     label: "Organization",
     items: [
       { name: "Profile", href: "/dashboard/organization", icon: Building2 },
+      { name: "Team", href: "/dashboard/team", icon: Users },
       { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
   },

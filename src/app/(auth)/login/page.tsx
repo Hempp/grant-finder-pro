@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Input, Card } from "@/components/ui";
 import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
@@ -26,8 +26,23 @@ function GitHubIcon() {
   );
 }
 
+// useSearchParams triggers a client-side bailout; the Suspense wrapper
+// lets Next prerender the shell around it.
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("invite");
+  const nextRedirect = inviteToken
+    ? `/invite/accept?token=${encodeURIComponent(inviteToken)}`
+    : "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -52,7 +67,7 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(nextRedirect);
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -62,7 +77,7 @@ export default function LoginPage() {
 
   const handleSocialLogin = async (provider: string) => {
     setSocialLoading(provider);
-    await signIn(provider, { callbackUrl: "/dashboard" });
+    await signIn(provider, { callbackUrl: nextRedirect });
   };
 
   return (
