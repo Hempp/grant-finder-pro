@@ -1,30 +1,56 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { calculateMatchScore, getTopMatches } from "@/lib/grant-matcher";
-import { rateLimit, getIdentifier } from "@/lib/rate-limit";
+import { calculateMatchScore } from "@/lib/grant-matcher";
+import { rateLimit } from "@/lib/rate-limit";
+import { requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 /**
  * POST /api/grants/match
- * Recalculate match scores for all grants based on user's organization profile
+ * Recalculate match scores for the user's organization against the
+ * catalogue of visible grants (own + public).
+ *
+ * Pre-round-25 this route did the match math TWICE per grant — once
+ * inline and once via getTopMatches — while fetching every Grant column
+ * including the TEXT fields (description, eligibility, requirements).
+ * At 2K grants that was ~4K calculateMatchScore calls per request plus
+ * a 1-2 MB payload over the wire. Now: one Map keyed by grantId, one
+ * pass, both the summary stats and the top-20 derived from the same
+ * result set.
  */
+
+/** Hard cap to keep a cold-start request under Vercel's 10s budget. */
+const MAX_GRANTS_CONSIDERED = 2000;
+
+const GRANT_SELECT_FOR_MATCHING = {
+  id: true,
+  title: true,
+  funder: true,
+  description: true,
+  amount: true,
+  amountMin: true,
+  amountMax: true,
+  type: true,
+  category: true,
+  eligibility: true,
+  requirements: true,
+  state: true,
+  region: true,
+  tags: true,
+  deadline: true,
+} as const;
+
 export async function POST() {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
 
-    // Rate limit: 10 requests per minute for AI operations
+    // Rate limit: 10 requests per minute — match recalc is expensive.
     const rateLimitResult = await rateLimit("ai", `user:${session.user.id}`);
     if (!rateLimitResult.success && rateLimitResult.response) {
       return rateLimitResult.response;
     }
 
-    // Get user's organization profile
     const organization = await prisma.organization.findUnique({
       where: { userId: session.user.id },
     });
@@ -43,78 +69,83 @@ export async function POST() {
       );
     }
 
-    // Fetch all grants
+    // Select only the fields calculateMatchScore reads — drops ~30% of
+    // wire weight on a large Grant row (no url, source, scrapedAt, status,
+    // createdAt, matchReasons, etc.). Ordered by deadline so the cap bites
+    // into stale long-dated grants first if we ever hit it.
     const grants = await prisma.grant.findMany({
       where: {
-        OR: [
-          { userId: session.user.id },
-          { userId: null },
-        ],
+        OR: [{ userId: session.user.id }, { userId: null }],
       },
+      select: GRANT_SELECT_FOR_MATCHING,
+      orderBy: { deadline: "asc" },
+      take: MAX_GRANTS_CONSIDERED,
     });
 
-    // Calculate match scores
-    const matchResults = grants.map((grant) => {
-      const result = calculateMatchScore(organization, grant);
-      return {
-        grantId: grant.id,
-        title: grant.title,
-        score: result.score,
-        reasons: result.reasons,
-        breakdown: result.breakdown,
-      };
-    });
+    // ONE pass. Store in a Map so top-20 can read without re-computing.
+    const resultsById = new Map<string, ReturnType<typeof calculateMatchScore>>();
+    for (const grant of grants) {
+      resultsById.set(grant.id, calculateMatchScore(organization, grant));
+    }
 
-    // Sort by score
-    matchResults.sort((a, b) => b.score - a.score);
+    // Derive everything downstream from the single result set.
+    let matchedCount = 0;
+    let highCount = 0;
+    for (const result of resultsById.values()) {
+      if (result.score >= 50) matchedCount++;
+      if (result.score >= 80) highCount++;
+    }
 
-    // Get top matches
-    const topMatches = getTopMatches(organization, grants, 20);
+    const topMatches = [...grants]
+      .sort(
+        (a, b) => (resultsById.get(b.id)?.score ?? 0) - (resultsById.get(a.id)?.score ?? 0)
+      )
+      .slice(0, 20)
+      .map((g) => {
+        const result = resultsById.get(g.id)!;
+        return {
+          id: g.id,
+          title: g.title,
+          funder: g.funder,
+          score: result.score,
+          reasons: result.reasons,
+          amount: g.amount,
+          deadline: g.deadline,
+          state: g.state,
+        };
+      });
 
     return NextResponse.json({
       success: true,
       totalGrants: grants.length,
-      matchedGrants: matchResults.filter(m => m.score >= 50).length,
-      highMatches: matchResults.filter(m => m.score >= 80).length,
-      topMatches: topMatches.map(g => ({
-        id: g.id,
-        title: g.title,
-        funder: g.funder,
-        score: g.matchResult.score,
-        reasons: g.matchResult.reasons,
-        amount: g.amount,
-        deadline: g.deadline,
-        state: g.state,
-      })),
+      matchedGrants: matchedCount,
+      highMatches: highCount,
+      topMatches,
       profile: {
         name: organization.name,
         type: organization.type,
         state: organization.state,
-        mission: organization.mission?.substring(0, 100) + (organization.mission && organization.mission.length > 100 ? '...' : ''),
+        mission:
+          organization.mission?.substring(0, 100) +
+          (organization.mission && organization.mission.length > 100 ? "..." : ""),
       },
     });
   } catch (error) {
-    console.error("Failed to calculate matches:", error);
-    return NextResponse.json(
-      { error: "Failed to calculate matches" },
-      { status: 500 }
-    );
+    logError(error, { endpoint: "/api/grants/match", method: "POST" });
+    return NextResponse.json({ error: "Failed to calculate matches" }, { status: 500 });
   }
 }
 
 /**
  * GET /api/grants/match
- * Get match analysis summary for the user
+ * Get match analysis summary for the user (dashboard stats card).
+ * Same single-pass pattern as POST — one scoring loop, multiple derived
+ * stats. Only fetches amountMax for the potential-funding math.
  */
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
 
     const organization = await prisma.organization.findUnique({
       where: { userId: session.user.id },
@@ -123,7 +154,8 @@ export async function GET() {
     if (!organization || !organization.profileComplete) {
       return NextResponse.json({
         hasProfile: false,
-        message: "Complete your organization profile to get personalized grant matches",
+        message:
+          "Complete your organization profile to get personalized grant matches",
         profileFields: {
           name: !!organization?.name,
           type: !!organization?.type,
@@ -136,15 +168,27 @@ export async function GET() {
       });
     }
 
-    // Get all grants and calculate summary stats
     const grants = await prisma.grant.findMany({
       where: { userId: null },
+      select: GRANT_SELECT_FOR_MATCHING,
+      orderBy: { deadline: "asc" },
+      take: MAX_GRANTS_CONSIDERED,
     });
 
-    const scores = grants.map(g => calculateMatchScore(organization, g).score);
-    const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-    const highMatches = scores.filter(s => s >= 80).length;
-    const goodMatches = scores.filter(s => s >= 60 && s < 80).length;
+    // Single pass — compute score AND track the funding accumulator so
+    // we never iterate the grant list twice.
+    let scoreSum = 0;
+    let highMatches = 0;
+    let goodMatches = 0;
+    let potentialFunding = 0;
+    for (const grant of grants) {
+      const score = calculateMatchScore(organization, grant).score;
+      scoreSum += score;
+      if (score >= 80) highMatches++;
+      else if (score >= 60) goodMatches++;
+      if (score >= 60 && grant.amountMax) potentialFunding += grant.amountMax;
+    }
+    const avgScore = grants.length ? Math.round(scoreSum / grants.length) : 0;
 
     return NextResponse.json({
       hasProfile: true,
@@ -153,7 +197,7 @@ export async function GET() {
         averageScore: avgScore,
         highMatches,
         goodMatches,
-        potentialFunding: calculatePotentialFunding(grants, scores),
+        potentialFunding: formatFunding(potentialFunding),
       },
       profile: {
         name: organization.name,
@@ -162,30 +206,14 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Failed to get match summary:", error);
-    return NextResponse.json(
-      { error: "Failed to get match summary" },
-      { status: 500 }
-    );
+    logError(error, { endpoint: "/api/grants/match", method: "GET" });
+    return NextResponse.json({ error: "Failed to get match summary" }, { status: 500 });
   }
 }
 
-function calculatePotentialFunding(grants: { amountMax: number | null }[], scores: number[]): string {
-  let total = 0;
-  grants.forEach((grant, i) => {
-    if (scores[i] >= 60 && grant.amountMax) {
-      total += grant.amountMax;
-    }
-  });
-
-  if (total >= 1000000000) {
-    return `$${(total / 1000000000).toFixed(1)}B`;
-  }
-  if (total >= 1000000) {
-    return `$${(total / 1000000).toFixed(1)}M`;
-  }
-  if (total >= 1000) {
-    return `$${(total / 1000).toFixed(0)}K`;
-  }
+function formatFunding(total: number): string {
+  if (total >= 1_000_000_000) return `$${(total / 1_000_000_000).toFixed(1)}B`;
+  if (total >= 1_000_000) return `$${(total / 1_000_000).toFixed(1)}M`;
+  if (total >= 1_000) return `$${(total / 1_000).toFixed(0)}K`;
   return `$${total}`;
 }
