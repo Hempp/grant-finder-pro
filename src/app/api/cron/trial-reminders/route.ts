@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendTrialEndingEmail } from "@/lib/email";
+import { Notify } from "@/lib/notifications";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -83,6 +84,7 @@ export async function GET(request: NextRequest) {
 
         if (daysRemaining !== null) {
           await sendTrialEndingEmail(user.email, user.name || undefined, daysRemaining);
+          Notify.trialExpiring({ userId: user.id, daysLeft: daysRemaining });
           emailsSent++;
         }
       } catch (err) {

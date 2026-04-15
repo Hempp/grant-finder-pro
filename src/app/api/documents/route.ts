@@ -4,28 +4,22 @@ import { auth } from "@/lib/auth";
 import { parseDocumentContent } from "@/lib/content-library/parse-document";
 import { extractBlocksFromDocument } from "@/lib/content-library/extract-documents";
 import { createBlocks } from "@/lib/content-library/content-manager";
+import { requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 // GET - Fetch documents for current user
 export async function GET() {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const userId = session.user.id;
-
     const documents = await prisma.document.findMany({
-      where: { userId },
+      where: { userId: session.user.id },
       orderBy: { createdAt: "desc" },
     });
-
     return NextResponse.json(documents);
-  } catch (error) {
-    console.error("Failed to fetch documents:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch documents" },
-      { status: 500 }
-    );
+  } catch (err) {
+    logError(err, { endpoint: "/api/documents", method: "GET" });
+    return NextResponse.json({ error: "Failed to fetch documents" }, { status: 500 });
   }
 }
 

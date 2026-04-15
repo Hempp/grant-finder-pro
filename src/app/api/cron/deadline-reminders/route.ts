@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendDeadlineReminderEmail } from "@/lib/email";
+import { Notify } from "@/lib/notifications";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 
@@ -85,6 +86,23 @@ export async function GET(request: NextRequest) {
         }));
 
         await sendDeadlineReminderEmail(user.email, user.name || undefined, grants);
+
+        // Surface the same alert in-app so the bell matches the inbox.
+        // One notification per grant — easier to dismiss individually.
+        for (const app of applications) {
+          if (!app.grant.deadline) continue;
+          const daysUntil = Math.ceil(
+            (new Date(app.grant.deadline).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          if (daysUntil <= 0) continue;
+          Notify.deadlineApproaching({
+            userId: user.id,
+            grantTitle: app.grant.title,
+            grantId: app.grant.id,
+            daysUntilDeadline: daysUntil,
+          });
+        }
+
         emailsSent++;
       } catch (err) {
         console.error(`Failed to send deadline reminder to ${user.email}:`, err);
