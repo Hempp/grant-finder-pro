@@ -720,3 +720,22 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Explicit per-class reduced-motion guards for always-on ambient
+   animations. The blanket rule above zeroes all animations; these
+   selectors are a clearer signal when someone's scanning globals.css
+   for motion governance, and they also short-circuit the infinite
+   keyframes entirely instead of running a 0.01ms frame every tick. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-aurora,
+  .animate-drift,
+  .animate-breathe,
+  .animate-pulse-glow,
+  .animate-gradient,
+  .animate-spin-slow,
+  .animate-shimmer,
+  .animate-float,
+  .animate-text-shimmer {
+    animation: none !important;
+  }
+}

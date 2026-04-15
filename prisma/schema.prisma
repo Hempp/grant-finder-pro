@@ -524,7 +524,9 @@ model Application {
   @@index([grantId])
   @@index([status])
   @@index([submittedAt])
-  @@index([userId, status])  // Composite for user's applications by status
+  @@index([userId, status])          // User's applications by status
+  @@index([userId, submittedAt])     // "Apps this user submitted since…" time-window queries
+  @@index([grantId, userId])         // Duplicate-application detection + grant-level analytics
 }
 
 // Stores the AI-generated draft for auto-apply feature

@@ -21,6 +21,7 @@ import {
   Cloud,
   BookmarkPlus,
   X,
+  Lock,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -456,25 +457,48 @@ ${formData.budgetJustification}
     }
   };
 
-  const renderAIButton = (field: string, prompt: string) => (
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      onClick={() => generateWithAI(field, prompt)}
-      disabled={generating}
-      className="text-emerald-400 hover:text-emerald-300"
-    >
-      {generating ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <>
-          <Sparkles className="h-4 w-4 mr-1" />
-          Generate with AI
-        </>
-      )}
-    </Button>
-  );
+  const renderAIButton = (field: string, prompt: string) => {
+    // Render Smart Fill as VISIBLY locked on free tier instead of letting
+    // users click, see a spinner, and then hit a paywall modal. Showing
+    // the lock upfront is the honest UX — users know what's free and what
+    // isn't before they invest attention.
+    const locked = !canUseFeature("autoApply");
+    if (locked) {
+      return (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowUpgradePrompt(true)}
+          className="text-slate-400 hover:text-emerald-400"
+          aria-label={`Smart Fill requires Pro — click to see upgrade options for ${field}`}
+          title="Smart Fill is a Pro feature"
+        >
+          <Lock className="h-4 w-4 mr-1" aria-hidden="true" />
+          Smart Fill (Pro)
+        </Button>
+      );
+    }
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => generateWithAI(field, prompt)}
+        disabled={generating}
+        className="text-emerald-400 hover:text-emerald-300"
+      >
+        {generating ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <>
+            <Sparkles className="h-4 w-4 mr-1" aria-hidden="true" />
+            Generate with AI
+          </>
+        )}
+      </Button>
+    );
+  };
 
   const renderCopyButton = (text: string, field: string) => (
     <Button

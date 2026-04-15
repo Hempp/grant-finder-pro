@@ -99,6 +99,17 @@ export async function GET(request: NextRequest) {
           upcomingDeadlines,
         };
 
+        // Don't send an empty digest — it's the kind of noise that trains
+        // users to filter us into a folder they never open. Skip the send
+        // if we have nothing genuinely new to report.
+        if (
+          formattedGrants.length === 0 &&
+          applicationsInProgress === 0 &&
+          upcomingDeadlines === 0
+        ) {
+          continue;
+        }
+
         await sendWeeklyDigestEmail(user.email, user.name || undefined, formattedGrants, stats);
         emailsSent++;
       } catch (err) {
