@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { generateReferralCode, REFERRAL_CONFIG } from "@/lib/referral";
 import { rateLimit, getIdentifier } from "@/lib/rate-limit";
+import { audit } from "@/lib/audit-log";
 
 export async function POST(request: NextRequest) {
   try {
@@ -85,6 +86,13 @@ export async function POST(request: NextRequest) {
         }),
       ]);
     }
+
+    audit({
+      action: "auth.register",
+      userId: user.id,
+      request,
+      metadata: { referred: !!referrer, userType: user.userType ?? null },
+    });
 
     return NextResponse.json({
       id: user.id,

@@ -72,6 +72,7 @@ model User {
   studentProfile       StudentProfile?
   studentApplications  StudentApplication[]
   applicationTemplates UserApplicationTemplate[]
+  auditLogs            AuditLog[]
 
   // Performance indexes
   @@index([plan])
@@ -677,4 +678,38 @@ model ContentBlock {
 
   @@index([userId, category])
   @@index([userId, source])
+}
+
+/// Append-only security + billing audit trail. Intentionally decoupled
+/// from the User via SetNull so audit history survives account deletion
+/// (required by SOC2 CC6.4 — you can't prove absence of breach if your
+/// evidence disappears when the suspect's account is deleted).
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  /// Short dotted namespace: auth.login_failed, billing.invoice_created,
+  /// account.deleted, admin.grant_bulk_import, etc.
+  action    String
+
+  /// The resource being acted on (applicationId, grantId, subscriptionId).
+  resource  String?
+
+  /// "success" | "failure" — lets us count failure-rate per action type.
+  result    String
+
+  /// Optional extras as JSON string (reason, source IP, user agent,
+  /// masked identifiers). Keep out of indexable columns — search via
+  /// string-contains when needed.
+  metadata  String?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([result, createdAt])
 }

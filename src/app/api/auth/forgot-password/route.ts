@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
+import { audit } from "@/lib/audit-log";
 import crypto from "crypto";
 
 export async function POST(request: NextRequest) {
@@ -42,6 +43,17 @@ export async function POST(request: NextRequest) {
       // For now, log the URL (remove in production)
       console.info(`Password reset requested for ${email}: ${resetUrl}`);
     }
+
+    // Audit writes on BOTH branches — known-email and unknown-email —
+    // so failed enumeration attempts leave a footprint. userId stays null
+    // when the email doesn't exist, preserving the constant-time response.
+    audit({
+      action: "auth.password_reset.requested",
+      userId: user?.id ?? null,
+      request,
+      result: user ? "success" : "failure",
+      metadata: { userExists: !!user },
+    });
 
     return NextResponse.json({
       message: "If an account exists with that email, a reset link has been sent.",

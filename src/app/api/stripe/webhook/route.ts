@@ -4,6 +4,8 @@ import { getStripe, getPlanByPriceId } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 import { sendPaymentFailedEmail, sendSubscriptionCanceledEmail } from "@/lib/email";
 import { logError, logEvent, logWarning } from "@/lib/telemetry";
+import { Notify } from "@/lib/notifications";
+import { audit } from "@/lib/audit-log";
 import Stripe from "stripe";
 
 // Stripe SDK types lag behind the live API for `current_period_end` and
@@ -174,17 +176,23 @@ export async function POST(request: NextRequest) {
           },
         });
 
+        Notify.subscriptionCanceled({ userId: user.id });
+        audit({
+          action: "billing.subscription.canceled",
+          userId: user.id,
+          resource: subscription.id,
+        });
+
         // Send cancellation notification email
         if (user.email) {
           try {
             await sendSubscriptionCanceledEmail(user.email, user.name || undefined);
-            console.info(`Cancellation email sent to ${user.email}`);
           } catch (emailError) {
-            console.error(`Failed to send cancellation email to ${user.email}:`, emailError);
+            logError(emailError, { template: "subscription_canceled", userId: user.id });
           }
         }
 
-        console.info(`Subscription canceled for user ${user.id}`);
+        logEvent("stripe.webhook.subscription_canceled", { userId: user.id });
         break;
       }
 
@@ -224,16 +232,21 @@ export async function POST(request: NextRequest) {
           });
 
           if (user) {
-            // Send payment failed email notification
+            Notify.paymentFailed({ userId: user.id });
+            audit({
+              action: "billing.payment.failed",
+              userId: user.id,
+              resource: failedSubscriptionId,
+              result: "failure",
+            });
             if (user.email) {
               try {
                 await sendPaymentFailedEmail(user.email, user.name || undefined);
-                console.info(`Payment failed email sent to ${user.email}`);
               } catch (emailError) {
-                console.error(`Failed to send payment failed email to ${user.email}:`, emailError);
+                logError(emailError, { template: "payment_failed", userId: user.id });
               }
             }
-            console.info(`Payment failed for user ${user.id}`);
+            logEvent("stripe.webhook.payment_failed", { userId: user.id });
           }
         }
         break;

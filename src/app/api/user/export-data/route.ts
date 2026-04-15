@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/api-helpers";
 import { logEvent, logError } from "@/lib/telemetry";
+import { audit } from "@/lib/audit-log";
 
 /**
  * GDPR Article 15 (right of access) + Article 20 (right to portability).
@@ -81,6 +82,7 @@ export async function GET() {
     ]);
 
     logEvent("user.data_export", { userId });
+    audit({ action: "account.exported", userId });
 
     const bundle = {
       meta: {

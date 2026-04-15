@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseJson, requireAuth } from "@/lib/api-helpers";
 import { logEvent, logError } from "@/lib/telemetry";
+import { audit } from "@/lib/audit-log";
 
 /**
  * GDPR Article 17 (right to erasure).
@@ -73,6 +74,15 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
+    // Audit BEFORE delete so the trail survives (userId gets SetNull on
+    // the audit row when the user is deleted, preserving the event).
+    await audit({
+      action: "account.deleted",
+      userId,
+      request,
+      metadata: { email: user.email },
+    });
+
     // Cascade is wired in the Prisma schema; a single delete propagates.
     await prisma.user.delete({ where: { id: userId } });
 
