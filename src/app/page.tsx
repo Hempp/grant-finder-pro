@@ -766,8 +766,10 @@ export default async function LandingPage() {
                 { href: "/pricing", label: "Pricing" },
                 { href: "/resources", label: "Resources" },
                 { href: "mailto:support@grantpilot.ai", label: "Contact" },
+                { href: "/trust", label: "Trust" },
                 { href: "/privacy", label: "Privacy" },
                 { href: "/terms", label: "Terms" },
+                { href: "/dpa", label: "DPA" },
               ].map((link) => (
                 <Link key={link.label} href={link.href} className="text-slate-500 hover:text-white transition py-2 px-3 rounded-lg focus-ring text-xs sm:text-sm">
                   {link.label}
