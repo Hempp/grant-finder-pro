@@ -19,6 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
+import { InvoiceHistory } from "@/components/billing/InvoiceHistory";
 
 function SettingsContent() {
   const { data: session } = useSession();
@@ -410,6 +411,16 @@ function SettingsContent() {
             </div>
           ) : (
             <p className="text-slate-400">Unable to load subscription information.</p>
+          )}
+
+          {subscription?.plan && subscription.plan !== "free" && (
+            <div className="mt-8 pt-6 border-t border-slate-800">
+              <h3 className="text-sm font-semibold text-white mb-1">Invoice history</h3>
+              <p className="text-xs text-slate-500 mb-4">
+                Download PDF copies for your records. Subscription and success-fee invoices both appear here.
+              </p>
+              <InvoiceHistory />
+            </div>
           )}
         </div>
 

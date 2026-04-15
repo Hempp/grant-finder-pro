@@ -71,6 +71,7 @@ model User {
   contentBlocks ContentBlock[]
   studentProfile       StudentProfile?
   studentApplications  StudentApplication[]
+  applicationTemplates UserApplicationTemplate[]
 
   // Performance indexes
   @@index([plan])
@@ -547,6 +548,37 @@ model ApplicationDraft {
 }
 
 // Pre-defined templates for common funders/grant types
+/// User-saved application drafts reusable across similar grants.
+/// Distinct from `ApplicationTemplate`, which is a system-owned funder-style
+/// template (NSF boilerplate etc.). This one is personal — my mission
+/// statement, my team bios, my budget line items — captured once and
+/// re-applied to the next SBIR/foundation/state grant that shows up.
+model UserApplicationTemplate {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String
+  description     String?
+
+  /// Serialized apply-wizard formData. JSON string to match
+  /// Application.responses storage style and dodge JSON-column driver quirks.
+  templateData    String
+
+  /// Optional similarity scope — when set, surfaces this template as a
+  /// suggestion on matching grants. Null means "any grant".
+  grantCategory   String?
+  grantType       String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  usageCount      Int      @default(0)
+  lastUsedAt      DateTime?
+
+  @@index([userId])
+  @@index([userId, grantCategory, grantType])
+}
+
 model ApplicationTemplate {
   id              String   @id @default(cuid())
 

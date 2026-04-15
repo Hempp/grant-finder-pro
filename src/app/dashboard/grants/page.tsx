@@ -741,7 +741,7 @@ export default function GrantsPage() {
                         const tierLabel = tier === "strong" ? "Strong match" : tier === "moderate" ? "Moderate match" : "Weak match";
                         return (
                           <div
-                            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold motion-reduce:animate-none ${
+                            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold animate-match-climb motion-reduce:animate-none ${
                               tier === "strong"
                                 ? "bg-emerald-500/20 text-emerald-400 ring-2 ring-emerald-500/50 animate-pulse-glow"
                                 : tier === "moderate"

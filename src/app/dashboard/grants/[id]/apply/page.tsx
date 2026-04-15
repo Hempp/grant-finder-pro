@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,6 +19,8 @@ import {
   AlertCircle,
   CloudOff,
   Cloud,
+  BookmarkPlus,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
@@ -47,6 +49,8 @@ interface Grant {
   description: string;
   eligibility: string | string[] | null;
   requirements: string | string[] | null;
+  category?: string | null;
+  type?: string | null;
 }
 
 function formatCurrency(amount: number): string {
@@ -61,7 +65,14 @@ function formatCurrency(amount: number): string {
 export default function ApplyPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const templateIdParam = searchParams.get("templateId");
   const { isPro, canUseFeature, canStartTrial } = useSubscription();
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [templateToast, setTemplateToast] = useState<string | null>(null);
   const [grant, setGrant] = useState<Grant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -151,6 +162,72 @@ export default function ApplyPage() {
       fetchGrant();
     }
   }, [params.id]);
+
+  // When arriving with ?templateId=X, hydrate formData from the template
+  // BEFORE the grant-scoped restore runs (templates are intentional user
+  // choice; local draft is ambient recovery).
+  useEffect(() => {
+    if (!templateIdParam || !params.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/templates/${templateIdParam}/apply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ grantId: params.id }),
+        });
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (data.prefilledData && typeof data.prefilledData === "object") {
+          setFormData((prev) => ({ ...prev, ...data.prefilledData }));
+          setTemplateToast(
+            `Template "${data.template?.name || "applied"}" loaded. Review and tweak — Smart Fill still runs on top.`
+          );
+          setTimeout(() => setTemplateToast(null), 6000);
+        }
+      } catch (err) {
+        console.error("Failed to apply template:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateIdParam, params.id]);
+
+  const handleSaveAsTemplate = async () => {
+    const trimmedName = templateName.trim();
+    if (!trimmedName || !grant) return;
+    setSavingTemplate(true);
+    try {
+      const res = await fetch("/api/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: trimmedName,
+          description: templateDescription.trim() || undefined,
+          templateData: formData,
+          grantCategory: grant?.category || undefined,
+          grantType: grant?.type || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setTemplateToast(data.error || "Couldn't save template. Try a shorter name or retry.");
+        return;
+      }
+      setShowSaveTemplate(false);
+      setTemplateName("");
+      setTemplateDescription("");
+      setTemplateToast("Template saved. Reuse it on similar grants.");
+      setTimeout(() => setTemplateToast(null), 5000);
+    } catch (err) {
+      console.error("Template save failed:", err);
+      setTemplateToast("Template save failed. Try again.");
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
 
   const updateField = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -848,6 +925,27 @@ ${formData.budgetJustification}
                   You&apos;ll still be able to make edits before final submission to the grant portal.
                 </p>
               </div>
+
+              <div className="flex items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                <div>
+                  <p className="text-sm text-white font-medium">Reusing this across similar grants?</p>
+                  <p className="text-xs text-slate-500">
+                    Save this application as a template so future {grant.category || "similar"} grants come pre-filled.
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    setTemplateName("");
+                    setTemplateDescription("");
+                    setShowSaveTemplate(true);
+                  }}
+                >
+                  <BookmarkPlus className="h-4 w-4 mr-1.5" aria-hidden="true" />
+                  Save as template
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
@@ -889,6 +987,115 @@ ${formData.budgetJustification}
           router.push("/dashboard/applications");
         }}
       />
+
+      {/* Save-as-template modal */}
+      {showSaveTemplate && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="save-template-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4"
+          onClick={(e) => e.target === e.currentTarget && setShowSaveTemplate(false)}
+          onKeyDown={(e) => e.key === "Escape" && setShowSaveTemplate(false)}
+        >
+          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 id="save-template-title" className="text-lg font-bold text-white">
+                  Save this as a template
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Reuse these answers the next time you apply to a {grant?.category || "similar"} grant.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSaveTemplate(false)}
+                aria-label="Close"
+                className="text-slate-500 hover:text-white"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-name">
+                  Template name
+                </label>
+                <input
+                  id="template-name"
+                  type="text"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  placeholder="e.g. SBIR Phase I — core narrative"
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  maxLength={120}
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-desc">
+                  Description <span className="text-slate-600">(optional)</span>
+                </label>
+                <textarea
+                  id="template-desc"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                  rows={2}
+                  placeholder="When you'd reuse this"
+                  value={templateDescription}
+                  onChange={(e) => setTemplateDescription(e.target.value)}
+                  maxLength={280}
+                />
+              </div>
+              {(grant?.category || grant?.type) && (
+                <p className="text-xs text-slate-500">
+                  We&apos;ll suggest this template on grants tagged{" "}
+                  {grant?.category && <span className="text-slate-300">{grant.category}</span>}
+                  {grant?.category && grant?.type && " · "}
+                  {grant?.type && <span className="text-slate-300">{grant.type}</span>}.
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="flex-1"
+                onClick={() => setShowSaveTemplate(false)}
+                disabled={savingTemplate}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                className="flex-1"
+                onClick={handleSaveAsTemplate}
+                disabled={savingTemplate || !templateName.trim()}
+              >
+                {savingTemplate ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <>
+                    <BookmarkPlus className="h-4 w-4 mr-1.5" aria-hidden="true" />
+                    Save template
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {templateToast && (
+        <div
+          role="status"
+          className="fixed bottom-6 right-6 z-40 max-w-sm rounded-xl border border-emerald-500/30 bg-slate-900/95 backdrop-blur-sm p-4 shadow-xl animate-fade-in-up"
+        >
+          <p className="text-sm text-emerald-300">{templateToast}</p>
+        </div>
+      )}
     </div>
   );
 }
