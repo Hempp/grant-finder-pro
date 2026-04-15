@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { calculateMatchScore } from "@/lib/grant-matcher";
+import { getAccessibleUserIds } from "@/lib/org-context";
 
 interface BulkGrant {
   title: string;
@@ -152,8 +153,15 @@ export async function GET() {
       ],
     };
 
+    // Phase 2a shared reads: a member of an org sees the owner's
+    // grants AND sibling members' grants, not just their own. Solo
+    // users get a single-element array, identical to Phase 1 behavior.
+    const accessibleIds = session?.user?.id
+      ? await getAccessibleUserIds(session.user.id)
+      : [];
+
     const whereClause = session?.user?.id
-      ? { AND: [baseFilter, { OR: [{ userId: session.user.id }, { userId: null }] }] }
+      ? { AND: [baseFilter, { OR: [{ userId: { in: accessibleIds } }, { userId: null }] }] }
       : { AND: [baseFilter, { userId: null }] };
 
     // Fetch only open grants (not expired)
@@ -165,11 +173,14 @@ export async function GET() {
       ],
     });
 
-    // If user is logged in, calculate personalized match scores
+    // If user is logged in, calculate personalized match scores.
+    // Members fall back to the OWNER's organization profile (via the
+    // first accessible id that has an org) — matching is against the
+    // org, not the individual, so scores are consistent across the team.
     let organization = null;
     if (session?.user?.id) {
-      organization = await prisma.organization.findUnique({
-        where: { userId: session.user.id },
+      organization = await prisma.organization.findFirst({
+        where: { userId: { in: accessibleIds }, profileComplete: true },
       });
     }
 

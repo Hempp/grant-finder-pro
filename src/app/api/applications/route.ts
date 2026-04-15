@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { requireAuth } from "@/lib/api-helpers";
 import { logError } from "@/lib/telemetry";
+import { getAccessibleUserIds } from "@/lib/org-context";
 
 // GET - Fetch applications for current user
 export async function GET(request: NextRequest) {
@@ -11,9 +12,13 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
-    const userId = session.user.id;
 
-    const where: Record<string, unknown> = { userId };
+    // Phase 2a: return applications authored by anyone in the same org
+    // (owner + members), not just the caller. Writes below still attach
+    // to session.user.id so authorship is preserved.
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
+
+    const where: Record<string, unknown> = { userId: { in: accessibleIds } };
     if (status && status !== "all") {
       if (status === "active") {
         where.status = { in: ["draft", "in_progress", "ready_for_review"] };

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, requireOwnership } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 import { logError } from "@/lib/telemetry";
 
 interface RouteParams {
@@ -14,10 +15,12 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
   const { id } = await params;
 
+  const accessibleUserIds = await getAccessibleUserIds(session.user.id);
   const owned = await requireOwnership({
     userId: session.user.id,
     resourceId: id,
     model: "application",
+    accessibleUserIds,
   });
   if (owned instanceof NextResponse) return owned;
 

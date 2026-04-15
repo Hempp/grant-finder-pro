@@ -96,8 +96,15 @@ export async function requireOwnership(params: {
     | "studentApplication"
     | "userApplicationTemplate"
     | "contentBlock";
+  /**
+   * Phase 2a: an extra pool of userIds that should also be treated as
+   * owners for read/mutation purposes (org co-members). Pass the result
+   * of getAccessibleUserIds() here to let an org teammate open the
+   * owner's application. Omit for strict single-user ownership (default).
+   */
+  accessibleUserIds?: string[];
 }): Promise<{ ok: true } | NextResponse> {
-  const { userId, resourceId, model } = params;
+  const { userId, resourceId, model, accessibleUserIds } = params;
 
   // Prisma delegates are typed individually; a dynamic lookup is the
   // simplest escape that keeps this helper generic.
@@ -124,7 +131,13 @@ export async function requireOwnership(params: {
   if (!row) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (!row.userId || row.userId !== userId) {
+  // Accept either strict ownership (row.userId === caller) OR membership
+  // in the same org (row.userId appears in accessibleUserIds). Both paths
+  // end in the same 200/404 outcome so we don't leak cross-tenant existence.
+  const pool = accessibleUserIds && accessibleUserIds.length > 0
+    ? accessibleUserIds
+    : [userId];
+  if (!row.userId || !pool.includes(row.userId)) {
     // Use 404 rather than 403 to avoid leaking existence of other users'
     // resources. (Fair compromise — 403 would tell an attacker that the
     // ID exists and belongs to someone else, a soft enumeration vector.)

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getAccessibleUserIds } from "@/lib/org-context";
 import {
   calculateReadinessScore,
   type OrganizationData,
@@ -16,8 +17,13 @@ export async function GET() {
     }
     const userId = session.user.id;
 
-    const org = await prisma.organization.findUnique({
-      where: { userId },
+    // Phase 2a: members see the OWNER's readiness — there's one
+    // organization per team, not per user. findFirst across all
+    // accessible userIds picks up the owner's org if the caller is
+    // a member, else the caller's own org.
+    const accessibleIds = await getAccessibleUserIds(userId);
+    const org = await prisma.organization.findFirst({
+      where: { userId: { in: accessibleIds } },
     });
 
     if (!org) {
@@ -38,9 +44,11 @@ export async function GET() {
       return NextResponse.json(emptyResult);
     }
 
-    // Fetch documents summary
+    // Fetch documents summary across the whole org pool so a member's
+    // uploaded financials count toward the owner's readiness (and vice
+    // versa). Solo users are unaffected — accessibleIds is [userId].
     const documents = await prisma.document.findMany({
-      where: { userId },
+      where: { userId: { in: accessibleIds } },
       select: { type: true },
     });
 
@@ -52,10 +60,14 @@ export async function GET() {
       totalDocuments: documents.length,
     };
 
-    // Fetch application stats
+    // Fetch application stats across the org pool — same rationale as
+    // documents above (a member's awarded grant counts toward the
+    // team track record).
     const [totalApps, awardedApps] = await Promise.all([
-      prisma.application.count({ where: { userId } }),
-      prisma.application.count({ where: { userId, status: "awarded" } }),
+      prisma.application.count({ where: { userId: { in: accessibleIds } } }),
+      prisma.application.count({
+        where: { userId: { in: accessibleIds }, status: "awarded" },
+      }),
     ]);
 
     const orgData: OrganizationData = {
@@ -77,9 +89,11 @@ export async function GET() {
       awarded: awardedApps,
     });
 
-    // Cache the result on the Organization model
+    // Cache the result on the Organization row we actually fetched
+    // (may belong to the owner, not the session user). Using org.id
+    // keeps the update unambiguous when a member recalculates.
     await prisma.organization.update({
-      where: { userId },
+      where: { id: org.id },
       data: {
         readinessScore: result.score,
         readinessDetails: JSON.stringify(result.breakdown),

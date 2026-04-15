@@ -149,37 +149,30 @@ export default function TeamPage() {
         </p>
       </header>
 
-      {/* Honest disclosure: phase 1 ships the invite + audit loop.
-          Shared-workspace queries (grants + applications visible across
-          members) roll out in phase 2. Users deserve to know what
-          they're actually getting before they send invites. */}
+      {/* Honest disclosure — kept up-to-date with what each phase
+          actually delivers. Phase 2a just shipped shared reads for
+          the grant pipeline, applications, and readiness score. */}
       <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 flex items-start gap-3">
         <Info className="h-5 w-5 text-sky-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
         <div className="text-sm">
-          <p className="text-sky-200 font-medium">
-            What team membership gives your invitees today (phase 1):
-          </p>
+          <p className="text-sky-200 font-medium">What team membership unlocks today:</p>
           <ul className="mt-2 text-sky-200/80 space-y-1 list-disc list-inside pl-1">
+            <li>Linked account + role on record (admin / editor / viewer).</li>
             <li>
-              An account linked to your organization with a role on record
-              (admin / editor / viewer).
+              Shared read access to the organization&apos;s grant pipeline,
+              applications, documents, and readiness score.
             </li>
-            <li>
-              Audit-log attribution when they act in the system.
-            </li>
+            <li>Audit-log attribution for every action members take.</li>
           </ul>
-          <p className="mt-2 text-sky-200 font-medium">
-            What phase 2 adds (shipping next):
-          </p>
+          <p className="mt-2 text-sky-200 font-medium">Still in progress (phase 2b):</p>
           <ul className="mt-1 text-sky-200/80 space-y-1 list-disc list-inside pl-1">
-            <li>Members see and edit your grant pipeline and applications.</li>
-            <li>Shared content library + co-authoring on applications.</li>
+            <li>Co-authoring with real-time presence on individual applications.</li>
+            <li>Shared Content Library edits across the team.</li>
           </ul>
           <p className="mt-3 text-sky-200/70 text-xs">
-            We&apos;d rather ship the loop honestly than claim shared workspaces
-            are live before the backend is there. Invites you send today are
-            real and will upgrade in place when phase 2 lands — no re-invite
-            required.
+            Writes still attach to each member&apos;s own account so authorship
+            is preserved. An invite you send today works as soon as your
+            teammate accepts — no re-invite when phase 2b lands.
           </p>
         </div>
       </div>
