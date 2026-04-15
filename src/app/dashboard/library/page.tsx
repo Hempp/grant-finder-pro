@@ -90,11 +90,16 @@ export default function LibraryPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-            Content Library
-            <BookOpen className="h-6 w-6 text-emerald-400" />
+            Your story, once and for all
+            <BookOpen className="h-6 w-6 text-emerald-400" aria-hidden="true" />
           </h1>
-          <p className="text-slate-400 mt-1 text-sm">
-            {loading ? "Loading..." : stats ? `${stats.total} blocks | ${stats.avgConfidence}% avg confidence` : "Your company knowledge base"}
+          <p className="text-slate-400 mt-1 text-sm max-w-2xl">
+            Write the truth about your work in here — mission, team, impact, numbers. Smart Fill draws from this every time you apply, so each grant gets your real voice instead of a fresh template.
+            {!loading && stats && (
+              <span className="block text-xs text-slate-500 mt-1">
+                {stats.total} {stats.total === 1 ? "block" : "blocks"} · {stats.avgConfidence}% avg confidence
+              </span>
+            )}
           </p>
         </div>
         <Button variant="outline" onClick={handleImportUrl} disabled={importing}>
@@ -107,9 +112,9 @@ export default function LibraryPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <BookOpen className="h-12 w-12 text-slate-700 mx-auto mb-4" />
-            <h2 className="text-lg font-bold text-white mb-2">Your Content Library is empty</h2>
+            <h2 className="text-lg font-bold text-white mb-2">Nothing here yet — let&apos;s fix that</h2>
             <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-              Add your company information here. The AI uses it to fill grant applications automatically.
+              Drop in your mission statement, team bios, impact metrics, or just paste your About page. Every block you save is one less thing to write the next time you apply.
             </p>
             <div className="flex gap-3 justify-center">
               <Button variant="outline" onClick={handleImportUrl} disabled={importing}>

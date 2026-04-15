@@ -735,18 +735,29 @@ export default function GrantsPage() {
                   <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     {/* Match Score - hidden on mobile, shown inline in header */}
                     <div className="hidden sm:block flex-shrink-0 text-center">
-                      <div
-                        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold ${
-                          (grant.matchScore || 0) >= 80
-                            ? "bg-emerald-500/20 text-emerald-400 ring-2 ring-emerald-500/50"
-                            : (grant.matchScore || 0) >= 60
-                            ? "bg-amber-500/20 text-amber-400"
-                            : "bg-slate-700 text-slate-400"
-                        }`}
-                      >
-                        {grant.matchScore || 0}%
-                      </div>
-                      <p className="text-slate-500 text-xs mt-1">Match</p>
+                      {(() => {
+                        const score = grant.matchScore || 0;
+                        const tier = score >= 80 ? "strong" : score >= 60 ? "moderate" : "weak";
+                        const tierLabel = tier === "strong" ? "Strong match" : tier === "moderate" ? "Moderate match" : "Weak match";
+                        return (
+                          <div
+                            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-lg sm:text-xl font-bold motion-reduce:animate-none ${
+                              tier === "strong"
+                                ? "bg-emerald-500/20 text-emerald-400 ring-2 ring-emerald-500/50 animate-pulse-glow"
+                                : tier === "moderate"
+                                ? "bg-amber-500/20 text-amber-400"
+                                : "bg-slate-700 text-slate-400"
+                            }`}
+                            role="img"
+                            aria-label={`${tierLabel}: ${score} percent`}
+                          >
+                            {score}%
+                          </div>
+                        );
+                      })()}
+                      <p className="text-slate-500 text-xs mt-1" aria-hidden="true">
+                        {(grant.matchScore || 0) >= 80 ? "Strong" : (grant.matchScore || 0) >= 60 ? "Moderate" : "Weak"} match
+                      </p>
                       {(() => {
                         const ri = getGrantReadiness(
                           { type: grant.type ?? undefined, eligibility: grant.eligibility ?? undefined, state: grant.state ?? undefined },
@@ -815,7 +826,9 @@ export default function GrantsPage() {
                         </div>
                         <button
                           onClick={() => toggleSave(grant.id, grant.status)}
-                          className={`p-2 rounded-lg transition flex-shrink-0 ${
+                          aria-label={grant.status === "saved" ? `Unsave ${grant.title}` : `Save ${grant.title}`}
+                          aria-pressed={grant.status === "saved"}
+                          className={`p-2 rounded-lg transition flex-shrink-0 focus-ring ${
                             grant.status === "saved"
                               ? "bg-amber-500/20 text-amber-400"
                               : "bg-slate-800 text-slate-500 hover:text-white"
@@ -933,11 +946,19 @@ export default function GrantsPage() {
 
       {/* Grant Detail Modal */}
       {selectedGrant && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="grant-detail-title"
+          onClick={(e) => e.target === e.currentTarget && setSelectedGrant(null)}
+          onKeyDown={(e) => e.key === "Escape" && setSelectedGrant(null)}
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4"
+          tabIndex={-1}
+        >
           <Card className="max-w-3xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             <CardHeader className="flex flex-row items-start justify-between p-4 sm:p-6 border-b border-slate-700">
               <div className="flex-1 min-w-0 pr-3">
-                <h2 className="text-lg sm:text-2xl font-bold text-white line-clamp-2">{selectedGrant.title}</h2>
+                <h2 id="grant-detail-title" className="text-lg sm:text-2xl font-bold text-white line-clamp-2">{selectedGrant.title}</h2>
                 <div className="flex items-center gap-2 mt-2">
                   <Badge
                     variant={
@@ -965,9 +986,10 @@ export default function GrantsPage() {
               </div>
               <button
                 onClick={() => setSelectedGrant(null)}
-                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+                aria-label="Close grant details"
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition focus-ring"
               >
-                <X className="h-5 w-5" />
+                <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">

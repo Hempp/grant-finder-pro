@@ -54,50 +54,69 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No grants provided" }, { status: 400 });
     }
 
-    let created = 0;
+    // Two-query bulk dedup instead of N findFirst calls. For 94 grants the
+    // old loop was 188 round-trips; this is at most 3 (title-funder lookup,
+    // oppNumber-URL lookup, batch create).
+    const titleFunderPairs = grants.map((g) => ({ title: g.title, funder: g.funder }));
+    const oppNumbers = grants.map((g) => g.oppNumber).filter((n): n is string => !!n);
+
+    const [existingByPair, existingByUrl] = await Promise.all([
+      prisma.grant.findMany({
+        where: { OR: titleFunderPairs },
+        select: { title: true, funder: true },
+      }),
+      oppNumbers.length
+        ? prisma.grant.findMany({
+            where: { OR: oppNumbers.map((n) => ({ url: { contains: n } })) },
+            select: { url: true },
+          })
+        : Promise.resolve([] as { url: string | null }[]),
+    ]);
+
+    const seenPair = new Set(existingByPair.map((g) => `${g.title}\u0000${g.funder}`));
+    const seenUrlContains = (oppNumber: string) =>
+      existingByUrl.some((e) => !!e.url && e.url.includes(oppNumber));
+
+    const toCreate: BulkGrant[] = [];
     let skipped = 0;
-
     for (const grant of grants) {
-      try {
-        // Check for existing grant by title + funder or oppNumber
-        const existing = await prisma.grant.findFirst({
-          where: {
-            OR: [
-              { title: grant.title, funder: grant.funder },
-              ...(grant.oppNumber ? [{ url: { contains: grant.oppNumber } }] : []),
-            ],
-          },
-        });
-
-        if (!existing) {
-          await prisma.grant.create({
-            data: {
-              title: grant.title,
-              funder: grant.funder,
-              description: grant.description || grant.title,
-              amount: grant.amount || "Varies",
-              amountMin: grant.amountMin,
-              amountMax: grant.amountMax,
-              deadline: grant.deadline ? new Date(grant.deadline) : null,
-              url: grant.url || "",
-              type: grant.type || "federal",
-              category: grant.category || "Research",
-              eligibility: grant.eligibility || "See grant details",
-              state: grant.state || "ALL",
-              tags: JSON.stringify(grant.tags || []),
-              source: grant.source || "api",
-              agencyName: grant.agencyName,
-              status: "discovered",
-              scrapedAt: new Date(),
-            },
-          });
-          created++;
-        } else {
-          skipped++;
-        }
-      } catch {
+      const pairKey = `${grant.title}\u0000${grant.funder}`;
+      const dupByPair = seenPair.has(pairKey);
+      const dupByOpp = grant.oppNumber ? seenUrlContains(grant.oppNumber) : false;
+      if (dupByPair || dupByOpp) {
         skipped++;
+        continue;
       }
+      // Track within this batch to handle intra-payload duplicates too.
+      seenPair.add(pairKey);
+      toCreate.push(grant);
+    }
+
+    let created = 0;
+    if (toCreate.length) {
+      const result = await prisma.grant.createMany({
+        data: toCreate.map((grant) => ({
+          title: grant.title,
+          funder: grant.funder,
+          description: grant.description || grant.title,
+          amount: grant.amount || "Varies",
+          amountMin: grant.amountMin ?? null,
+          amountMax: grant.amountMax ?? null,
+          deadline: grant.deadline ? new Date(grant.deadline) : null,
+          url: grant.url || "",
+          type: grant.type || "federal",
+          category: grant.category || "Research",
+          eligibility: grant.eligibility || "See grant details",
+          state: grant.state || "ALL",
+          tags: JSON.stringify(grant.tags || []),
+          source: grant.source || "api",
+          agencyName: grant.agencyName ?? null,
+          status: "discovered",
+          scrapedAt: new Date(),
+        })),
+        skipDuplicates: true,
+      });
+      created = result.count;
     }
 
     return NextResponse.json({

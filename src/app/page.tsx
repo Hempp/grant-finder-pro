@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Script from "next/script";
 import {
   ArrowRight,
@@ -28,6 +29,8 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://grantpilot.ai";
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -35,7 +38,7 @@ const jsonLd = {
   applicationCategory: "BusinessApplication",
   description:
     "AI-powered platform that finds grants and scholarships, drafts applications and essays, and predicts your score. For organizations and students.",
-  url: "https://grantpilot.ai",
+  url: SITE_URL,
   operatingSystem: "Web",
   offers: [
     { "@type": "Offer", name: "Free", price: "0", priceCurrency: "USD" },
@@ -135,7 +138,7 @@ export default async function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <nav aria-label="Main navigation" className="flex items-center justify-between py-5 animate-fade-in-down motion-reduce:animate-none">
             <Link href="/" className="flex items-center gap-2.5 group focus-ring rounded-xl">
-              <img src="/logo.svg" alt="GrantPilot logo" width={36} height={36} className="group-hover:scale-105 transition-transform" />
+              <Image src="/logo.svg" alt="GrantPilot logo" width={36} height={36} className="group-hover:scale-105 transition-transform" priority />
               <span className="text-xl font-bold text-white">
                 Grant<span className="text-emerald-400">Pilot</span>
               </span>
@@ -265,12 +268,51 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ═══════ THE PROBLEM — names the pain before the solution ═══════ */}
+      <section className="container mx-auto px-4 sm:px-6 py-20 sm:py-28 border-b border-slate-800/40">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-emerald-400 text-sm font-semibold uppercase tracking-widest mb-4">
+            The honest truth about grant writing
+          </p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
+            Most grants are won by orgs with <span className="text-slate-500 line-through">better ideas</span>{" "}
+            <span className="bg-gradient-to-r from-emerald-300 to-teal-300 text-transparent bg-clip-text">more time</span>.
+          </h2>
+          <p className="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto mb-12">
+            A typical federal application is 30+ pages, 12+ rubric criteria, and 40+ hours of writing.
+            The org with the best mission rarely wins. The org that can <em>show up to enough deadlines with rubric-aligned narratives</em> does.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-10">
+            {[
+              {
+                pain: "Time you don't have",
+                detail: "Most nonprofits and small teams can't dedicate 40+ hours per application — so they apply to two grants a year and miss the rest.",
+              },
+              {
+                pain: "Rubric you can't see",
+                detail: "Funders score on specific criteria buried in the RFP. Without a checklist, you write generically and lose points you didn't know existed.",
+              },
+              {
+                pain: "Paywalled by consultants",
+                detail: "Grant writers charge $5K–$15K per application. Affordable for established orgs, impossible for the ones that need funding most.",
+              },
+            ].map((item) => (
+              <div key={item.pain} className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 text-left">
+                <h3 className="text-white font-semibold text-base mb-2">{item.pain}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ═══════ HOW IT WORKS ═══════ */}
       <section id="how-it-works" className="container mx-auto px-4 sm:px-6 py-20 sm:py-28">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-2 mb-6 text-emerald-400 text-sm font-medium">
-            <Zap className="h-4 w-4" />
-            Simple 3-Step Process
+            <Zap className="h-4 w-4" aria-hidden="true" />
+            Here&apos;s how we change that
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             From profile to funded
@@ -703,7 +745,7 @@ export default async function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2 focus-ring rounded-xl">
-                <img src="/logo.svg" alt="GrantPilot logo" width={32} height={32} />
+                <Image src="/logo.svg" alt="GrantPilot logo" width={32} height={32} />
                 <span className="font-bold text-white">
                   Grant<span className="text-emerald-400">Pilot</span>
                 </span>

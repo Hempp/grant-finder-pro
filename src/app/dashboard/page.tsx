@@ -224,10 +224,24 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-            Dashboard
-            <Sparkles className="h-6 w-6 text-emerald-400 animate-breathe" />
+            {(() => {
+              const hour = new Date().getHours();
+              if (hour < 12) return "Good morning";
+              if (hour < 17) return "Good afternoon";
+              if (hour < 21) return "Good evening";
+              return "Burning the midnight oil";
+            })()}
+            <Sparkles className="h-6 w-6 text-emerald-400 animate-breathe" aria-hidden="true" />
           </h1>
-          <p className="text-slate-500 mt-1 text-sm sm:text-base">Welcome back! Here&apos;s your grant overview.</p>
+          <p className="text-slate-400 mt-1 text-sm sm:text-base">
+            {loading
+              ? "Loading your latest matches..."
+              : stats.applicationsCount > 0
+              ? `${stats.inProgressCount} ${stats.inProgressCount === 1 ? "application" : "applications"} in flight. ${stats.grantsFound} new ${stats.grantsFound === 1 ? "match is" : "matches are"} waiting.`
+              : stats.grantsFound > 0
+              ? `${stats.grantsFound} ${stats.grantsFound === 1 ? "grant matches" : "grants match"} your profile. Pick one to start drafting — we'll do the heavy lifting.`
+              : "Add a few details about your work and we'll start matching grants you actually qualify for."}
+          </p>
         </div>
         <div className="flex gap-3">
           <Link href="/dashboard/grants">
@@ -271,8 +285,13 @@ export default function DashboardPage() {
           <StatsCard
             title="Match Score"
             value={`${stats.avgMatchScore}%`}
-            description={stats.avgMatchScore >= 70 ? "Above average" : "Build your profile"}
-            trend={stats.avgMatchScore >= 70 ? { value: 12, isPositive: true, label: "vs last month" } : undefined}
+            description={
+              stats.avgMatchScore >= 80
+                ? "Strong fit across your matches"
+                : stats.avgMatchScore >= 60
+                ? "Solid match — sharpen your profile to climb"
+                : "Add profile detail to unlock better matches"
+            }
             icon={<Target className="h-6 w-6" />}
           />
         </div>
