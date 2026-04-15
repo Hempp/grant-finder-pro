@@ -14,7 +14,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Root error:", error);
+    import("@/lib/telemetry").then(({ logError }) => {
+      logError(error, { boundary: "root", digest: error.digest });
+    });
   }, [error]);
 
   return (

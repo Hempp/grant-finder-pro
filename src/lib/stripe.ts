@@ -207,7 +207,10 @@ export function calculateSuccessFee(
   const percent = getSuccessFeePercent(plan);
   const threshold = getSuccessFeeThreshold(plan);
 
-  if (percent === 0 || grantAmount < threshold) {
+  // applies=false when: no plan fee, below threshold, or no award yet.
+  // Zero/negative award → no fee. Defensive for direct callers that
+  // skip the outer guard.
+  if (percent === 0 || grantAmount <= 0 || grantAmount < threshold) {
     return { feePercent: 0, feeAmount: 0, applies: false };
   }
 

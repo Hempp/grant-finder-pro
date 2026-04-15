@@ -13,7 +13,9 @@ export default function StudentError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Student segment error:", error);
+    import("@/lib/telemetry").then(({ logError }) => {
+      logError(error, { boundary: "student", digest: error.digest });
+    });
   }, [error]);
 
   const isAuth = error.message?.toLowerCase().includes("unauth");

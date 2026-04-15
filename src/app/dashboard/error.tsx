@@ -20,9 +20,12 @@ export default function DashboardError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface to whatever observability we have. Replace with Sentry/Datadog
-    // when those are wired.
-    console.error("Dashboard segment error:", error);
+    // Surface to whatever observability we have. Upgrade to Sentry/Datadog
+    // by editing `src/lib/telemetry.ts` — all call sites pick up the
+    // new sink without route changes.
+    import("@/lib/telemetry").then(({ logError }) => {
+      logError(error, { boundary: "dashboard", digest: error.digest });
+    });
   }, [error]);
 
   const isAuth = error.message?.toLowerCase().includes("unauth");

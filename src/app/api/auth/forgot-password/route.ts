@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 import crypto from "crypto";
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth bucket = 5/min. Without this, forgot-password's timing and
+    // logging differences are a goldmine for email enumeration.
+    const rl = await rateLimit("auth");
+    if (!rl.success && rl.response) return rl.response;
+
     const { email } = await request.json();
 
     if (!email || typeof email !== "string") {

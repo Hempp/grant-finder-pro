@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { extractFromWebsite } from "@/lib/content-library/extract-website";
 import { createBlocks, detectConflicts } from "@/lib/content-library/content-manager";
+import { assertPublicHttpUrl, SafeUrlError } from "@/lib/safe-url";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -28,6 +29,17 @@ export async function POST(request: NextRequest) {
   }
 
   if (!url.startsWith("http")) url = `https://${url}`;
+
+  // SSRF guard: block localhost, 169.254.169.254, private networks, file://,
+  // and other protocol smuggling. Done BEFORE the network egress.
+  try {
+    assertPublicHttpUrl(url);
+  } catch (err) {
+    if (err instanceof SafeUrlError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
+  }
 
   try {
     const result = await extractFromWebsite(url);

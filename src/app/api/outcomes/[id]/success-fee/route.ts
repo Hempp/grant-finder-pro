@@ -28,6 +28,15 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Outcome not found" }, { status: 404 });
   }
 
+  // OWNERSHIP CHECK: only the outcome owner can trigger a success-fee
+  // invoice. Without this, a signed-in attacker could POST to another
+  // user's outcome id — and while the invoice would land on the attacker's
+  // own Stripe customer, they could flip the victim's outcome to
+  // "invoiced" and block the victim from ever being properly charged.
+  if (!outcome.userId || outcome.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   if (outcome.result !== "awarded") {
     return NextResponse.json({ error: "Success fee only applies to awarded grants" }, { status: 400 });
   }
@@ -125,6 +134,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   const outcome = await prisma.grantOutcome.findUnique({
     where: { id: outcomeId },
     select: {
+      userId: true,
       successFeePercent: true,
       successFeeAmount: true,
       successFeeStatus: true,
@@ -136,6 +146,11 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   if (!outcome) {
     return NextResponse.json({ error: "Outcome not found" }, { status: 404 });
   }
+  if (!outcome.userId || outcome.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
-  return NextResponse.json(outcome);
+  const { userId: _userId, ...publicFields } = outcome;
+  void _userId;
+  return NextResponse.json(publicFields);
 }

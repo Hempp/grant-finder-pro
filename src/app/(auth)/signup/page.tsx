@@ -192,6 +192,7 @@ function SignupForm() {
             <Input
               id="name"
               type="text"
+              autoComplete="name"
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -209,6 +210,7 @@ function SignupForm() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -226,24 +228,31 @@ function SignupForm() {
             <Input
               id="password"
               type="password"
+              autoComplete="new-password"
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="pl-10 glass-input text-white placeholder:text-slate-500"
               required
               aria-required="true"
+              aria-describedby="password-requirements"
             />
           </div>
           {password && (
-            <div className="space-y-1 mt-2">
+            <div
+              id="password-requirements"
+              aria-live="polite"
+              aria-label="Password requirements"
+              className="space-y-1 mt-2"
+            >
               {passwordRequirements.map((req, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs">
                   {req.met ? (
-                    <CheckCircle className="h-3 w-3 text-emerald-400" />
+                    <CheckCircle className="h-3 w-3 text-emerald-400" aria-hidden="true" />
                   ) : (
-                    <div className="h-3 w-3 rounded-full border border-slate-600" />
+                    <div className="h-3 w-3 rounded-full border border-slate-600" aria-hidden="true" />
                   )}
-                  <span className={req.met ? "text-emerald-400" : "text-slate-500"}>
+                  <span className={req.met ? "text-emerald-400" : "text-slate-400"}>
                     {req.text}
                   </span>
                 </div>
@@ -259,6 +268,7 @@ function SignupForm() {
             <Input
               id="confirmPassword"
               type="password"
+              autoComplete="new-password"
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
