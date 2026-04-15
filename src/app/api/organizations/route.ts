@@ -5,18 +5,16 @@ import {
   calculateReadinessScore,
   type DocumentSummary,
 } from "@/lib/readiness-score";
+import { requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 // GET - Fetch organization for current user
 export async function GET() {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const userId = session.user.id;
-
     const organization = await prisma.organization.findUnique({
-      where: { userId },
+      where: { userId: session.user.id },
     });
 
     if (!organization) {
@@ -24,8 +22,8 @@ export async function GET() {
     }
 
     return NextResponse.json(organization);
-  } catch (error) {
-    console.error("Failed to fetch organization:", error);
+  } catch (err) {
+    logError(err, { endpoint: "/api/organizations", method: "GET" });
     return NextResponse.json(
       { error: "Failed to fetch organization" },
       { status: 500 }

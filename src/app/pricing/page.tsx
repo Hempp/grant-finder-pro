@@ -25,6 +25,7 @@ import {
   Award,
 } from "lucide-react";
 import { Button, Badge } from "@/components/ui";
+import { Dialog } from "@/components/ui/Dialog";
 import { useSubscription } from "@/hooks/useSubscription";
 
 /* ─── Plan data ─── */
@@ -715,26 +716,16 @@ function PricingContent() {
         </div>
       </main>
 
-      {/* ═══ Success Fee Disclosure Modal ═══ */}
-      {pendingPlan && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="fee-disclosure-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
-          onClick={() => setPendingPlan(null)}
-        >
-          <div
-            className="relative max-w-md w-full rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 id="fee-disclosure-title" className="text-xl font-bold text-white mb-1">
-              Confirm your {pendingPlan.name} subscription
-            </h3>
-            <p className="text-sm text-slate-400 mb-5">
-              Before we send you to Stripe, here&apos;s exactly what you&apos;re agreeing to:
-            </p>
-
+      {/* ═══ Success Fee Disclosure Modal — Radix-backed focus trap ═══ */}
+      <Dialog
+        open={!!pendingPlan}
+        onOpenChange={(open) => !open && setPendingPlan(null)}
+        title={pendingPlan ? `Confirm your ${pendingPlan.name} subscription` : ""}
+        description="Before we send you to Stripe, here's exactly what you're agreeing to:"
+        size="sm"
+      >
+        {pendingPlan && (
+          <>
             <dl className="space-y-3 mb-6 text-sm">
               <div className="flex justify-between p-3 rounded-lg bg-slate-800/50">
                 <dt className="text-slate-400">Subscription</dt>
@@ -742,7 +733,7 @@ function PricingContent() {
                   ${billingInterval === "monthly" ? pendingPlan.price : Math.round(pendingPlan.priceAnnual / 12)}
                   /month
                   {billingInterval === "annual" && (
-                    <span className="text-xs text-slate-500 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
+                    <span className="text-xs text-slate-400 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
                   )}
                 </dd>
               </div>
@@ -768,7 +759,7 @@ function PricingContent() {
               </div>
             </dl>
 
-            <div className="text-xs text-slate-500 mb-5 leading-relaxed">
+            <div className="text-xs text-slate-400 mb-5 leading-relaxed">
               No setup fees. No cancellation fees. No per-application charges. Payments are securely processed by Stripe — your card details never touch GrantPilot servers.
             </div>
 
@@ -796,9 +787,9 @@ function PricingContent() {
                 )}
               </Button>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Dialog>
 
       {/* Footer */}
       <footer className="border-t border-slate-800/60 py-8 mt-8">

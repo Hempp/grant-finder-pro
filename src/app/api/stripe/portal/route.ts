@@ -1,14 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -28,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ url: portalSession.url });
   } catch (error) {
-    console.error("Portal error:", error);
+    logError(error, { endpoint: "/api/stripe/portal" });
     return NextResponse.json(
       { error: "Failed to create portal session" },
       { status: 500 }

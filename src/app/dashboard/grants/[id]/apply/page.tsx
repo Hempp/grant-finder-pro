@@ -578,27 +578,26 @@ ${formData.budgetJustification}
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-      {/* Upgrade Prompt Modal */}
-      {showUpgradePrompt && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-          <div className="max-w-md w-full">
-            <UpgradePrompt
-              feature="AI-Powered Generation"
-              description={canStartTrial
-                ? "Start your 14-day free trial to unlock Auto-Apply and AI-powered content generation."
-                : "Upgrade to Pro to unlock Auto-Apply and AI-powered content generation."
-              }
-              variant="card"
-            />
-            <button
-              onClick={() => setShowUpgradePrompt(false)}
-              className="w-full mt-3 text-slate-400 hover:text-white text-sm py-2"
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Upgrade Prompt Modal — Radix Dialog handles backdrop + focus trap */}
+      <Dialog
+        open={showUpgradePrompt}
+        onOpenChange={setShowUpgradePrompt}
+        title="Unlock Smart Fill"
+        description={
+          canStartTrial
+            ? "Start your 14-day free trial to unlock Auto-Apply and AI-powered content generation."
+            : "Upgrade to Pro to unlock Auto-Apply and AI-powered content generation."
+        }
+        size="sm"
+      >
+        <UpgradePrompt feature="AI-Powered Generation" description="" variant="card" />
+        <button
+          onClick={() => setShowUpgradePrompt(false)}
+          className="w-full mt-3 text-slate-400 hover:text-white text-sm py-2"
+        >
+          Maybe later
+        </button>
+      </Dialog>
 
       {/* Back Button */}
       <Link
