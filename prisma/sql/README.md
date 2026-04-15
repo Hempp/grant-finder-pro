@@ -36,3 +36,17 @@ clicks something new.
 All files are written to be idempotent (`CREATE TABLE IF NOT EXISTS`,
 `DO $$ ... IF NOT EXISTS ... $$` for constraints) so re-running them is
 safe.
+
+## Runtime behavior pre-migration
+
+Every API route that touches an un-migrated table is wrapped in a
+`isMissingTableError` guard from `src/lib/api-helpers.ts`. Instead of
+returning 500s, those routes return `503 { code: "migration_pending" }`
+and the affected UI surfaces a friendly "rolling out" banner. That
+means a deploy-before-migrate window is a visible-but-non-breaking
+state — users see the feature is temporarily unavailable rather than
+a generic error.
+
+The org-context helper (`src/lib/org-context.ts`) silently falls back
+to "just the caller's own id" when the member/invitation tables don't
+exist, so shared reads degrade gracefully to Phase 1 behavior.
