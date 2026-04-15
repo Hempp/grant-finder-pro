@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { sendApplicationConfirmationEmail } from "@/lib/email";
+import { Notify } from "@/lib/notifications";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -67,6 +68,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           },
         },
       },
+    });
+
+    // Fire in-app notification so the bell shows a fresh unread entry.
+    // Non-blocking: if this insert fails, the submit still succeeds.
+    Notify.applicationSubmitted({
+      userId: session.user.id,
+      grantTitle: updated.grant.title,
+      grantId: updated.grant.id,
     });
 
     // Send confirmation email (non-blocking)

@@ -75,9 +75,9 @@ const plans = [
     cta: "Start Growing",
     popular: false,
     icon: TrendingUp,
-    gradient: "from-blue-600 to-cyan-500",
-    ring: "ring-blue-500/30",
-    iconBg: "bg-blue-500/10",
+    gradient: "from-emerald-400 to-cyan-500",
+    ring: "ring-cyan-500/30",
+    iconBg: "bg-cyan-500/10",
   },
   {
     id: "pro",
@@ -125,9 +125,9 @@ const plans = [
     cta: "Get Organization",
     popular: false,
     icon: Building2,
-    gradient: "from-purple-500 to-indigo-500",
-    ring: "ring-purple-500/30",
-    iconBg: "bg-purple-500/10",
+    gradient: "from-teal-500 to-emerald-600",
+    ring: "ring-teal-500/30",
+    iconBg: "bg-teal-500/10",
   },
 ];
 
@@ -378,7 +378,7 @@ function PricingContent() {
                             : plan.id === "growth"
                             ? "#22d3ee"
                             : plan.id === "organization"
-                            ? "#a78bfa"
+                            ? "#14b8a6"
                             : "#94a3b8",
                         }}
                         aria-hidden="true"

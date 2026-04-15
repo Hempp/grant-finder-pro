@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { calculateSuccessFee, getStripe, PlanType } from "@/lib/stripe";
+import { Notify } from "@/lib/notifications";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -156,6 +157,26 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           : null,
       },
     });
+
+    // Fire in-app notifications so the bell surfaces the celebration.
+    // Non-blocking — outcome reporting must succeed even if the bell fails.
+    if (result === "awarded" && awardAmount) {
+      Notify.grantAwarded({
+        userId: session.user.id,
+        grantTitle: application.grant.title,
+        grantId: application.grantId,
+        awardAmount,
+      });
+      if (applies && feeAmount) {
+        Notify.feeInvoiced({
+          userId: session.user.id,
+          grantTitle: application.grant.title,
+          grantId: application.grantId,
+          feeAmount,
+          feePercent,
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,
