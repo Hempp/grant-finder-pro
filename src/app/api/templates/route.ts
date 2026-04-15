@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseJson, requireAuth } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 
 /**
  * User application templates.
@@ -33,9 +34,12 @@ export async function GET(request: NextRequest) {
     and.push({ OR: [{ grantType }, { grantType: null }] });
   }
 
+  // Phase 2a: pool across org so a teammate's saved templates show up
+  // in everyone's "Apply with template" menu.
+  const accessibleIds = await getAccessibleUserIds(session.user.id);
   const templates = await prisma.userApplicationTemplate.findMany({
     where: {
-      userId: session.user.id,
+      userId: { in: accessibleIds },
       ...(and.length ? { AND: and } : {}),
     },
     orderBy: [{ lastUsedAt: "desc" }, { updatedAt: "desc" }],

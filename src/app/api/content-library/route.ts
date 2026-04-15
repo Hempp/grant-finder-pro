@@ -2,13 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getLibrary, createBlock } from "@/lib/content-library/content-manager";
 import { ContentBlockInput } from "@/lib/content-library/types";
 import { parseJson, requireAuth } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 import { logError } from "@/lib/telemetry";
 
 export async function GET() {
   const session = await requireAuth();
   if (session instanceof NextResponse) return session;
   try {
-    const { blocks, stats } = await getLibrary(session.user.id);
+    // Phase 2a: pool-aware read so teammates' blocks populate the whole
+    // team's library view. Writes still scoped to the caller.
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
+    const { blocks, stats } = await getLibrary(accessibleIds);
     return NextResponse.json({ blocks, stats });
   } catch (err) {
     logError(err, { endpoint: "/api/content-library", method: "GET" });

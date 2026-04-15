@@ -8,12 +8,24 @@ import {
   SOURCE_CONFIDENCE,
 } from "./types";
 
-export async function getLibrary(userId: string): Promise<{
+/**
+ * Fetch the content library for a single user OR the org pool.
+ *
+ * Phase 2a: the route handler passes `getAccessibleUserIds(...)` here so
+ * org teammates see each other's Content Library entries as one shared
+ * workspace. Writes remain scoped to the caller (see `createBlock` etc.)
+ * so each block still has a clear author.
+ */
+export async function getLibrary(userIdOrIds: string | string[]): Promise<{
   blocks: ContentBlockWithId[];
   stats: LibraryStats;
 }> {
+  const where =
+    typeof userIdOrIds === "string"
+      ? { userId: userIdOrIds }
+      : { userId: { in: userIdOrIds } };
   const blocks = await prisma.contentBlock.findMany({
-    where: { userId },
+    where,
     orderBy: [{ category: "asc" }, { confidence: "desc" }],
   });
 
@@ -36,11 +48,15 @@ export async function getLibrary(userId: string): Promise<{
 }
 
 export async function getBlocksByCategory(
-  userId: string,
+  userIdOrIds: string | string[],
   categories: ContentCategory[]
 ): Promise<ContentBlockWithId[]> {
+  const userFilter =
+    typeof userIdOrIds === "string"
+      ? { userId: userIdOrIds }
+      : { userId: { in: userIdOrIds } };
   const blocks = await prisma.contentBlock.findMany({
-    where: { userId, category: { in: categories } },
+    where: { ...userFilter, category: { in: categories } },
     orderBy: { confidence: "desc" },
   });
   return blocks as ContentBlockWithId[];

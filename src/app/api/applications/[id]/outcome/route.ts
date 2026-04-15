@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { calculateSuccessFee, getStripe, PlanType } from "@/lib/stripe";
 import { Notify } from "@/lib/notifications";
+import { getAccessibleUserIds } from "@/lib/org-context";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -210,8 +211,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
+    // Phase 2a: org teammates can check outcome status for each other's
+    // apps so the pipeline feels shared.
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
     const application = await prisma.application.findFirst({
-      where: { id, userId: session.user.id },
+      where: { id, userId: { in: accessibleIds } },
       include: { grant: true },
     });
 

@@ -5,15 +5,17 @@ import { parseDocumentContent } from "@/lib/content-library/parse-document";
 import { extractBlocksFromDocument } from "@/lib/content-library/extract-documents";
 import { createBlocks } from "@/lib/content-library/content-manager";
 import { requireAuth } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 import { logError } from "@/lib/telemetry";
 
-// GET - Fetch documents for current user
+// GET - Fetch documents for caller + any org teammates (phase 2a).
 export async function GET() {
   const session = await requireAuth();
   if (session instanceof NextResponse) return session;
   try {
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
     const documents = await prisma.document.findMany({
-      where: { userId: session.user.id },
+      where: { userId: { in: accessibleIds } },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(documents);

@@ -11,6 +11,10 @@ import {
   RotateCcw,
   UserMinus,
   Info,
+  Crown,
+  Shield,
+  Eye,
+  Pencil,
 } from "lucide-react";
 import { useToast } from "@/components/ui";
 
@@ -22,6 +26,26 @@ interface Invitation {
   acceptedAt: string | null;
   revokedAt: string | null;
   createdAt: string;
+}
+
+type MemberRole = "owner" | "admin" | "editor" | "viewer";
+
+interface Member {
+  id: string;
+  role: MemberRole;
+  joinedAt: string | null;
+  user: {
+    id: string;
+    email: string | null;
+    name: string | null;
+    image: string | null;
+  };
+}
+
+interface MembersResponse {
+  organization: { id: string; name: string } | null;
+  isOwner: boolean;
+  members: Member[];
 }
 
 type Status = "pending" | "accepted" | "expired" | "revoked";
@@ -36,6 +60,8 @@ function invitationStatus(inv: Invitation): Status {
 export default function TeamPage() {
   const toast = useToast();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
   const [migrationPending, setMigrationPending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -47,23 +73,61 @@ export default function TeamPage() {
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch("/api/org/invitations");
-      if (res.status === 503) {
-        const body = await res.json().catch(() => ({}));
-        if (body?.code === "migration_pending") {
-          setMigrationPending(true);
-          setInvitations([]);
-          return;
+      // Parallel fetch — members + invitations live independently; no
+      // reason to serialize.
+      const [invRes, memRes] = await Promise.all([
+        fetch("/api/org/invitations"),
+        fetch("/api/org/members"),
+      ]);
+
+      // Either endpoint can signal migration_pending; one hit is enough
+      // to flip the banner.
+      for (const res of [invRes, memRes]) {
+        if (res.status === 503) {
+          const body = await res.clone().json().catch(() => ({}));
+          if (body?.code === "migration_pending") {
+            setMigrationPending(true);
+            setInvitations([]);
+            setMembers([]);
+            return;
+          }
         }
       }
-      if (!res.ok) throw new Error("Failed to load invitations");
-      const data = await res.json();
-      setInvitations(data.invitations ?? []);
+
+      if (invRes.ok) {
+        const data = await invRes.json();
+        setInvitations(data.invitations ?? []);
+      }
+      if (memRes.ok) {
+        const data: MembersResponse = await memRes.json();
+        setMembers(data.members ?? []);
+        setIsOwner(!!data.isOwner);
+      }
     } catch (err) {
       console.error(err);
-      toast.error("Couldn't load invitations");
+      toast.error("Couldn't load team");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRemoveMember(id: string, email: string | null) {
+    if (!isOwner) return;
+    const label = email ?? "this member";
+    if (!confirm(`Remove ${label} from the team? They'll lose access to the shared pipeline.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/org/members/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        toast.error("Couldn't remove member", body?.error ?? "Please try again.");
+        return;
+      }
+      toast.success("Member removed");
+      await load();
+    } catch {
+      toast.error("Network error");
     }
   }
 
@@ -255,6 +319,59 @@ export default function TeamPage() {
         </p>
       </section>
 
+      <section aria-labelledby="members-heading">
+        <h2 id="members-heading" className="text-lg font-semibold text-white mb-3">
+          Members
+          <span className="text-slate-500 font-normal text-sm ml-2">
+            {members.length}
+          </span>
+        </h2>
+        {loading ? (
+          <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 flex items-center gap-3 text-slate-400">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Loading…
+          </div>
+        ) : members.length === 0 ? (
+          <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 text-slate-400 text-sm">
+            No members yet. Invite someone to get started.
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {members.map((m) => (
+              <li
+                key={m.id}
+                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/60 p-4"
+              >
+                <div className="min-w-0 flex items-center gap-3">
+                  <RoleBadge role={m.role} />
+                  <div className="min-w-0">
+                    <p className="text-white font-medium truncate">
+                      {m.user.name ?? m.user.email ?? "Unknown user"}
+                    </p>
+                    {m.user.name && m.user.email && (
+                      <p className="text-slate-500 text-xs mt-0.5 truncate">
+                        {m.user.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {isOwner && m.role !== "owner" && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMember(m.id, m.user.email)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    aria-label={`Remove ${m.user.email ?? "member"} from the team`}
+                  >
+                    <UserMinus className="h-4 w-4" aria-hidden="true" />
+                    Remove
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section aria-labelledby="pending-heading">
         <h2 id="pending-heading" className="text-lg font-semibold text-white mb-3">
           Pending invitations
@@ -332,6 +449,41 @@ export default function TeamPage() {
         </section>
       )}
     </div>
+  );
+}
+
+function RoleBadge({ role }: { role: MemberRole }) {
+  const config: Record<MemberRole, { Icon: typeof Crown; label: string; className: string }> = {
+    owner: {
+      Icon: Crown,
+      label: "Owner",
+      className: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    },
+    admin: {
+      Icon: Shield,
+      label: "Admin",
+      className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    },
+    editor: {
+      Icon: Pencil,
+      label: "Editor",
+      className: "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    },
+    viewer: {
+      Icon: Eye,
+      label: "Viewer",
+      className: "bg-slate-500/10 text-slate-300 border-slate-500/30",
+    },
+  };
+  const { Icon, label, className } = config[role];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border text-xs font-medium ${className}`}
+      aria-label={`${label} role`}
+    >
+      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+      {label}
+    </span>
   );
 }
 
