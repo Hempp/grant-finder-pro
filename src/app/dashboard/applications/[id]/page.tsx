@@ -28,6 +28,7 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input, Textarea } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Dialog } from "@/components/ui/Dialog";
 import { useSubscription } from "@/hooks/useSubscription";
 
 // Fee schedule mirrors src/lib/stripe.ts SUBSCRIPTION_PLANS — kept in sync so
@@ -778,30 +779,29 @@ ${formData.budgetJustification}
           </div>
         )}
 
-        {/* Celebration Modal */}
-        {showCelebration && celebrationData && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="celebration-title"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          >
-            <div className="w-full max-w-md rounded-2xl border border-emerald-500/40 bg-slate-800 p-6 shadow-2xl text-center">
-              <div className="text-5xl mb-4" aria-hidden="true">🎉</div>
-              <h2 id="celebration-title" className="text-2xl font-bold text-white mb-1">
-                Congratulations!
-              </h2>
-              <p className="text-slate-400 text-sm mb-5">
-                You were awarded the <span className="text-white font-medium">{celebrationData.grantTitle}</span> grant.
-              </p>
-
-              {/* Award Amount — cash register roll for the dollar amount, subtle shake for the $ */}
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4 mb-4">
+        {/* Celebration Modal — Radix Dialog handles focus restoration so
+            the user lands back on the "Report Outcome" button when they
+            dismiss. Body content stays the same. */}
+        <Dialog
+          open={showCelebration && !!celebrationData}
+          onOpenChange={(open) => !open && setShowCelebration(false)}
+          title={celebrationData ? "🎉 Congratulations!" : ""}
+          description={
+            celebrationData
+              ? `You were awarded the ${celebrationData.grantTitle} grant.`
+              : undefined
+          }
+          size="sm"
+        >
+          {celebrationData && (
+            <>
+              {/* Award Amount — cash register roll on the dollar amount */}
+              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-4 mb-4 text-center">
                 <p className="text-slate-400 text-xs mb-1">Award Amount</p>
                 <p className="text-3xl font-bold text-emerald-400">
                   <span className="animate-cash-shake">$</span>
                   <span className="animate-cash-roll inline-block">
-                    {celebrationData.awardAmount.toLocaleString()}
+                    {celebrationData.awardAmount.toLocaleString("en-US")}
                   </span>
                 </p>
               </div>
@@ -812,12 +812,12 @@ ${formData.budgetJustification}
                   <p className="text-slate-300 text-sm font-medium mb-2">GrantPilot Success Fee</p>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Fee ({celebrationData.feePercent}%)</span>
-                    <span className="text-white font-medium">${celebrationData.feeAmount.toLocaleString()}</span>
+                    <span className="text-white font-medium">${celebrationData.feeAmount.toLocaleString("en-US")}</span>
                   </div>
                   <div className="flex justify-between text-sm border-t border-slate-600 pt-2 mt-1">
                     <span className="text-slate-400">You net</span>
                     <span className="text-emerald-400 font-bold">
-                      ${(celebrationData.awardAmount - celebrationData.feeAmount).toLocaleString()}
+                      ${(celebrationData.awardAmount - celebrationData.feeAmount).toLocaleString("en-US")}
                     </span>
                   </div>
 
@@ -849,9 +849,9 @@ ${formData.budgetJustification}
               >
                 Awesome, let&apos;s keep going!
               </Button>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </Dialog>
 
         {/* Application Details */}
         <div className="space-y-6">

@@ -4,9 +4,20 @@ import { prisma } from "@/lib/db";
 import { generateReferralCode, REFERRAL_CONFIG } from "@/lib/referral";
 import { rateLimit, getIdentifier } from "@/lib/rate-limit";
 import { audit } from "@/lib/audit-log";
+import { isEnabled } from "@/lib/feature-flags";
 
 export async function POST(request: NextRequest) {
   try {
+    // Kill-switch for the "we got on Hacker News and are melting" scenario.
+    // Flip FLAG_SIGNUP_ENABLED=false in Vercel to refuse new accounts
+    // immediately without a redeploy.
+    if (!isEnabled("signup.enabled")) {
+      return NextResponse.json(
+        { error: "Signups are temporarily paused. Please try again in a few minutes." },
+        { status: 503 }
+      );
+    }
+
     // Rate limit: 5 requests per minute for auth endpoints
     const identifier = await getIdentifier();
     const rateLimitResult = await rateLimit("auth", identifier);

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { logError, logEvent, logWarning, timer } from "@/lib/telemetry";
 import { withCircuitBreaker } from "@/lib/circuit-breaker";
+import { isEnabled } from "@/lib/feature-flags";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -40,12 +41,16 @@ export async function POST(request: NextRequest) {
     logEvent("ai.generate.started", { field, userId: session.user.id });
     const stop = timer("ai.generate");
 
-    // If API key available, use Claude — wrapped in circuit breaker so
-    // a downed Anthropic endpoint or quota exhaustion flips us into
-    // template mode instead of hammering the API for every request.
-    // After 3 failures, the circuit opens for 5 minutes; every request
-    // during that window short-circuits to the template fallback.
-    if (ANTHROPIC_API_KEY) {
+    // Three gates open the Claude path: API key configured, the
+    // ai.generation feature flag is on, and the circuit breaker isn't
+    // tripped. Each falls back to template generation independently.
+    // The flag is the 3am kill-switch: ops can flip
+    // FLAG_AI_GENERATION=false in Vercel env without a redeploy.
+    const aiFlagOn = isEnabled("ai.generation");
+    if (!aiFlagOn) {
+      logEvent("ai.generate.flag_disabled", { field });
+    }
+    if (ANTHROPIC_API_KEY && aiFlagOn) {
       const fallbackSentinel = Symbol("circuit-open");
       const { result, fromFallback, circuitState } = await withCircuitBreaker(
         "anthropic.messages",

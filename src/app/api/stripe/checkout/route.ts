@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getStripe, PLANS, PlanType } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import { isEnabled } from "@/lib/feature-flags";
 
 export async function POST(request: NextRequest) {
   try {
+    // Kill-switch for billing incidents — pause new subscriptions
+    // without halting existing-customer access (settings/portal still work).
+    if (!isEnabled("billing.checkout.enabled")) {
+      return NextResponse.json(
+        { error: "Checkout is temporarily paused. Existing subscriptions are unaffected." },
+        { status: 503 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
