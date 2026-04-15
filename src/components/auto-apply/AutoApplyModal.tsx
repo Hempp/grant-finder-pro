@@ -245,7 +245,7 @@ export default function AutoApplyModal({
                     <span className="text-emerald-400 font-medium">{grant.amount}</span>
                   )}
                   {grant.deadline && (
-                    <span className="text-slate-500 flex items-center gap-1">
+                    <span className="text-slate-400 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(grant.deadline).toLocaleDateString()}
                     </span>
@@ -265,13 +265,13 @@ export default function AutoApplyModal({
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm">Organization Profile</p>
-                    <p className="text-slate-500 text-xs truncate">
+                    <p className="text-slate-400 text-xs truncate">
                       {hasProfile
                         ? "Profile complete - ready to use"
                         : "Complete your profile for better results"}
                     </p>
                   </div>
-                  <Building2 className="h-4 w-4 text-slate-500 flex-shrink-0" />
+                  <Building2 className="h-4 w-4 text-slate-400 flex-shrink-0" />
                 </div>
 
                 <div className="flex items-center gap-3 p-3 bg-slate-900/30 rounded-lg">
@@ -282,13 +282,13 @@ export default function AutoApplyModal({
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm">Supporting Documents</p>
-                    <p className="text-slate-500 text-xs truncate">
+                    <p className="text-slate-400 text-xs truncate">
                       {hasDocuments
                         ? "Documents available for context"
                         : "Upload documents for richer content"}
                     </p>
                   </div>
-                  <FileText className="h-4 w-4 text-slate-500 flex-shrink-0" />
+                  <FileText className="h-4 w-4 text-slate-400 flex-shrink-0" />
                 </div>
               </div>
 
@@ -333,10 +333,10 @@ export default function AutoApplyModal({
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="text-slate-500 text-sm mt-2">{progress}% complete</p>
+              <p className="text-slate-400 text-sm mt-2">{progress}% complete</p>
             </div>
 
-            <p className="text-slate-500 text-sm mt-8">
+            <p className="text-slate-400 text-sm mt-8">
               This may take a minute. Please don&apos;t close this window.
             </p>
           </ModalContent>
@@ -390,7 +390,7 @@ export default function AutoApplyModal({
               <p className="text-slate-400 mb-4">
                 {error || "Something went wrong while generating your application."}
               </p>
-              <p className="text-slate-500 text-sm">
+              <p className="text-slate-400 text-sm">
                 Please try again or contact support if the issue persists.
               </p>
             </ModalContent>

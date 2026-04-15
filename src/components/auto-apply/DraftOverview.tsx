@@ -44,7 +44,7 @@ export default function DraftOverview({
   const getStatusIcon = (sectionId: string) => {
     const response = responses[sectionId];
     if (!response || !response.content) {
-      return <AlertCircle className="h-5 w-5 text-slate-500" />;
+      return <AlertCircle className="h-5 w-5 text-slate-400" />;
     }
     if (response.needsUserInput) {
       return <AlertTriangle className="h-5 w-5 text-amber-400" />;
@@ -209,9 +209,9 @@ export default function DraftOverview({
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-sm">
-                        <span className="text-slate-500 capitalize">{section.type}</span>
+                        <span className="text-slate-400 capitalize">{section.type}</span>
                         {section.wordLimit && (
-                          <span className="text-slate-500">
+                          <span className="text-slate-400">
                             {response?.wordCount || 0}/{section.wordLimit} words
                           </span>
                         )}
@@ -267,7 +267,7 @@ export default function DraftOverview({
                       {/* Source References */}
                       {response?.sourceReferences && response.sourceReferences.length > 0 && (
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-slate-500 text-xs">Sources:</span>
+                          <span className="text-slate-400 text-xs">Sources:</span>
                           {response.sourceReferences.map((ref) => (
                             <Badge key={ref} variant="default" className="text-xs">
                               {ref}

@@ -302,14 +302,17 @@ export default function StudentOnboardingPage() {
                 <DollarSign className="h-8 w-8 text-emerald-400" />
               </div>
               <h1 className="text-2xl font-bold text-white mb-2">
-                $212,000+ in scholarships are waiting for you
+                This is the kind of money you&apos;re missing
               </h1>
               <p className="text-slate-400">
-                Here&apos;s a preview of what GrantPilot can match you with. Complete your profile to unlock personalized matches.
+                Examples below total over $212,000 in awards. Build your profile and we&apos;ll tell you which ones you actually qualify for — and draft the essays for you.
               </p>
             </div>
 
-            {/* Preview scholarship cards */}
+            {/* Preview scholarship cards — example opportunities GrantPilot
+                tracks. We deliberately do NOT show a "match" badge here
+                because we haven't scored this user yet; showing "High
+                match" on a pre-profile screen would be dishonest. */}
             <div className="space-y-3">
               {PREVIEW_SCHOLARSHIPS.map((s) => (
                 <div key={s.title} className="flex items-center gap-4 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl">
@@ -318,16 +321,11 @@ export default function StudentOnboardingPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium text-sm truncate">{s.title}</p>
-                    <p className="text-slate-500 text-xs">{s.provider}</p>
+                    <p className="text-slate-400 text-xs">{s.provider}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="text-xs text-slate-500 flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> {s.deadline}
-                    </span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      s.match === "High" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
-                    }`}>
-                      {s.match}
+                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                      <Clock className="h-3 w-3" aria-hidden="true" /> {s.deadline}
                     </span>
                   </div>
                 </div>
@@ -342,8 +340,11 @@ export default function StudentOnboardingPage() {
             </div>
 
             <Button onClick={() => setStep(1)} className="w-full" size="lg">
-              Build My Profile <ArrowRight className="h-4 w-4" />
+              See my scholarship matches <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
+            <p className="text-xs text-slate-500 text-center">
+              Takes ~2 minutes. No credit card. You only pay a small success fee if you win.
+            </p>
           </CardContent>
         </Card>
       )}

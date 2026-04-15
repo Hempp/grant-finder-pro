@@ -152,7 +152,7 @@ export default function SectionEditor({
             {section.evaluationCriteria && section.evaluationCriteria.length > 0 && (
               <div className="mt-3">
                 <h5 className="text-xs font-medium text-slate-400 mb-1">Evaluation Criteria:</h5>
-                <ul className="list-disc list-inside text-xs text-slate-500 space-y-0.5">
+                <ul className="list-disc list-inside text-xs text-slate-400 space-y-0.5">
                   {section.evaluationCriteria.map((criterion, idx) => (
                     <li key={idx}>{criterion}</li>
                   ))}
@@ -199,7 +199,7 @@ export default function SectionEditor({
           {/* Source References */}
           {response.sourceReferences && response.sourceReferences.length > 0 && (
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span className="text-slate-500 text-xs">Content based on:</span>
+              <span className="text-slate-400 text-xs">Content based on:</span>
               {response.sourceReferences.map((ref) => (
                 <Badge key={ref} variant="default" className="text-xs">
                   {ref}

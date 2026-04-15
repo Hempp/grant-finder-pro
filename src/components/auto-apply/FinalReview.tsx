@@ -228,7 +228,7 @@ export default function FinalReview({
                         <span className="text-xs text-red-400">Required</span>
                       )}
                       {response && (
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-slate-400">
                           {response.wordCount} words
                         </span>
                       )}
@@ -256,7 +256,7 @@ export default function FinalReview({
                     </p>
                   </div>
                 ) : (
-                  <p className="text-slate-500 italic text-sm">No content provided</p>
+                  <p className="text-slate-400 italic text-sm">No content provided</p>
                 )}
               </div>
             );
