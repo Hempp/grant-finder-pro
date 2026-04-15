@@ -5,6 +5,26 @@ import { prisma } from "@/lib/db";
 import { sendPaymentFailedEmail, sendSubscriptionCanceledEmail } from "@/lib/email";
 import Stripe from "stripe";
 
+// Stripe SDK types lag behind the live API for `current_period_end` and
+// `Invoice.subscription`. Define narrow typed views so we never reach for `any`.
+type SubscriptionWithPeriod = Stripe.Subscription & {
+  current_period_end?: number;
+};
+type InvoiceWithSubscription = Stripe.Invoice & {
+  subscription?: string | Stripe.Subscription | null;
+};
+
+function periodEndDate(sub: Stripe.Subscription): Date | null {
+  const ts = (sub as SubscriptionWithPeriod).current_period_end;
+  return typeof ts === "number" ? new Date(ts * 1000) : null;
+}
+
+function invoiceSubscriptionId(inv: Stripe.Invoice): string | null {
+  const ref = (inv as InvoiceWithSubscription).subscription;
+  if (!ref) return null;
+  return typeof ref === "string" ? ref : ref.id;
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const headersList = await headers();
@@ -46,8 +66,6 @@ export async function POST(request: NextRequest) {
 
           const priceId = subscription.items.data[0]?.price.id;
           const plan = getPlanByPriceId(priceId) || "pro";
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const periodEnd = (subscription as any).current_period_end as number | undefined;
 
           await prisma.user.update({
             where: { id: userId },
@@ -55,7 +73,7 @@ export async function POST(request: NextRequest) {
               plan: plan,
               stripeSubscriptionId: subscription.id,
               stripePriceId: priceId,
-              stripeCurrentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
+              stripeCurrentPeriodEnd: periodEndDate(subscription),
             },
           });
 
@@ -78,15 +96,13 @@ export async function POST(request: NextRequest) {
 
         const priceId = subscription.items.data[0]?.price.id;
         const plan = getPlanByPriceId(priceId) || "pro";
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const periodEnd = (subscription as any).current_period_end as number | undefined;
 
         await prisma.user.update({
           where: { id: user.id },
           data: {
             plan: subscription.status === "active" ? plan : "free",
             stripePriceId: priceId,
-            stripeCurrentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
+            stripeCurrentPeriodEnd: periodEndDate(subscription),
           },
         });
 
@@ -132,8 +148,7 @@ export async function POST(request: NextRequest) {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const subscriptionId = (invoice as any).subscription as string | null;
+        const subscriptionId = invoiceSubscriptionId(invoice);
 
         if (subscriptionId) {
           const user = await prisma.user.findFirst({
@@ -159,8 +174,7 @@ export async function POST(request: NextRequest) {
 
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const failedSubscriptionId = (invoice as any).subscription as string | null;
+        const failedSubscriptionId = invoiceSubscriptionId(invoice);
 
         if (failedSubscriptionId) {
           const user = await prisma.user.findFirst({

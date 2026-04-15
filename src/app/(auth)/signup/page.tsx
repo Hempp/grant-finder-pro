@@ -106,14 +106,14 @@ function SignupForm() {
         <div className="mb-4 sm:mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 animate-fade-in-down">
           <Gift className="h-5 w-5 text-emerald-400 flex-shrink-0" />
           <p className="text-sm text-emerald-300">
-            You were referred! Sign up to get <span className="font-semibold">5 bonus grant matches</span>
+            You were referred! <span className="font-semibold">5 bonus grant matches</span> are added to your account on signup — they expire 30 days from today.
           </p>
         </div>
       )}
 
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Start winning grants today</h1>
-        <p className="text-slate-400 text-sm">Join 2,400+ organizations and students using AI to find and win funding.</p>
+        <p className="text-slate-400 text-sm">Free to start. No credit card. AI-powered matching and drafting from your first session.</p>
       </div>
 
       {/* User Type Selector */}

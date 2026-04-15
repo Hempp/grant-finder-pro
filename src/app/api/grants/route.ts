@@ -22,16 +22,23 @@ interface BulkGrant {
   oppNumber?: string;
 }
 
-// POST - Bulk save grants (requires authentication)
+// POST - Bulk save grants to the shared catalog (admin-only)
 export async function POST(request: NextRequest) {
   try {
-    // SECURITY: Require authentication for bulk grant operations
+    // SECURITY: Bulk catalog writes are admin-only. The grant table is a
+    // shared discovery catalog — letting any authenticated user push rows
+    // into it would let attackers inject phishing links or spam.
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const adminEmails = (process.env.ADMIN_EMAILS || "")
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
+    const userEmail = session.user.email?.toLowerCase();
+    if (!userEmail || !adminEmails.includes(userEmail)) {
+      return NextResponse.json({ error: "Forbidden — admin only" }, { status: 403 });
     }
 
     let body;
@@ -218,16 +225,19 @@ export async function GET() {
     // Sort by personalized match score
     grantsWithScores.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
 
-    // Stale-while-revalidate: serve cached response for 60s,
-    // revalidate in background for up to 5 minutes
     const response = NextResponse.json({
       grants: grantsWithScores,
       hasProfile: !!organization?.profileComplete,
     });
-    response.headers.set(
-      "Cache-Control",
-      "public, s-maxage=60, stale-while-revalidate=300"
-    );
+    // Cache discipline: anonymous responses are safe to share at the edge.
+    // Authenticated responses are personalized (match scores, organization
+    // boosts) and MUST NOT be cached publicly — a CDN could otherwise serve
+    // one user's match data to another.
+    if (session?.user?.id) {
+      response.headers.set("Cache-Control", "private, no-store");
+    } else {
+      response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+    }
     return response;
   } catch (error) {
     console.error("Failed to fetch grants:", error);

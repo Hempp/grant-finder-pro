@@ -51,12 +51,6 @@ const jsonLd = {
     "Federal, state, and foundation grants for organizations",
     "Success fee pricing — pay only when you win",
   ],
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    ratingCount: "312",
-    bestRating: "5",
-  },
 };
 
 /* ─── FAQ Data ─── */
@@ -141,7 +135,7 @@ export default async function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <nav aria-label="Main navigation" className="flex items-center justify-between py-5 animate-fade-in-down motion-reduce:animate-none">
             <Link href="/" className="flex items-center gap-2.5 group focus-ring rounded-xl">
-              <img src="/logo.svg" alt="" width={36} height={36} className="group-hover:scale-105 transition-transform" />
+              <img src="/logo.svg" alt="GrantPilot logo" width={36} height={36} className="group-hover:scale-105 transition-transform" />
               <span className="text-xl font-bold text-white">
                 Grant<span className="text-emerald-400">Pilot</span>
               </span>
@@ -177,22 +171,15 @@ export default async function LandingPage() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative container mx-auto px-4 sm:px-6 pt-16 pb-20 sm:pt-24 sm:pb-32 lg:pt-32 lg:pb-40">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Trust badge */}
+          {/* Trust badge — honest early-access framing, no fake star rating */}
           <div className="animate-fade-in-up motion-reduce:animate-none" style={{ animationDelay: "0.05s" }}>
-            <div className="inline-flex items-center gap-3 bg-slate-900/80 border border-slate-800 rounded-full px-5 py-2.5 mb-8 backdrop-blur-sm">
-              <div className="flex -space-x-2">
-                {["bg-emerald-500", "bg-blue-500", "bg-amber-500", "bg-purple-500"].map((bg, i) => (
-                  <div key={i} className={`w-7 h-7 rounded-full ${bg} ring-2 ring-slate-950 flex items-center justify-center text-[10px] font-bold text-white`}>
-                    {["S", "M", "E", "J"][i]}
-                  </div>
-                ))}
-              </div>
+            <div className="inline-flex items-center gap-2 bg-slate-900/80 border border-emerald-500/30 rounded-full px-5 py-2.5 mb-8 backdrop-blur-sm">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
               <span className="text-slate-300 text-sm">
-                <span className="font-semibold text-white">Early Access</span> — now open
+                <span className="font-semibold text-emerald-400">Early Access</span>
+                <span className="text-slate-500 mx-2">·</span>
+                <span className="text-slate-400">No credit card required</span>
               </span>
-              <div className="flex items-center gap-0.5">
-                {[1,2,3,4,5].map(s => <Star key={s} className="h-3 w-3 text-amber-400 fill-amber-400" />)}
-              </div>
             </div>
           </div>
 
@@ -208,13 +195,13 @@ export default async function LandingPage() {
             </span>
           </h1>
 
-          {/* Subhead */}
+          {/* Subhead — outcome-led, one promise at a time */}
           <p
             className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up motion-reduce:animate-none"
             style={{ animationDelay: "0.25s" }}
           >
-            GrantPilot finds grants and scholarships matched to your profile, writes your application with AI, and predicts your score before you submit.
-            <span className="text-slate-300 font-medium"> You only pay when you win.</span>
+            Tell us about your work once. We surface grants you actually qualify for, draft each section against the funder&apos;s rubric, and show you a score before you submit.
+            <span className="block mt-3 text-slate-200 font-medium">No upfront cost. We earn a small percentage only when you win.</span>
           </p>
 
           {/* CTAs */}
@@ -243,10 +230,10 @@ export default async function LandingPage() {
             style={{ animationDelay: "0.45s" }}
           >
             {[
-              { value: "2,000+", label: "Grants Indexed", icon: TrendingUp },
+              { value: "2,000+", label: "Grants indexed", icon: TrendingUp },
               { value: "141+", label: "Scholarships", icon: Target },
-              { value: "12", label: "Live Data Sources", icon: Globe },
-              { value: "<30min", label: "Per Application", icon: Clock },
+              { value: "12", label: "Live data sources", icon: Globe },
+              { value: "0%", label: "Cost until you win", icon: Award },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -716,7 +703,7 @@ export default async function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center gap-2 focus-ring rounded-xl">
-                <img src="/logo.svg" alt="" width={32} height={32} />
+                <img src="/logo.svg" alt="GrantPilot logo" width={32} height={32} />
                 <span className="font-bold text-white">
                   Grant<span className="text-emerald-400">Pilot</span>
                 </span>

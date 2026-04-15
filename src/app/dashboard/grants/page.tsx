@@ -202,7 +202,10 @@ export default function GrantsPage() {
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [amountFilter, setAmountFilter] = useState("");
+  const [focusFilter, setFocusFilter] = useState("");
   const [sortBy, setSortBy] = useState("match");
+  const PAGE_SIZE = 30;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [showFilters, setShowFilters] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
@@ -311,6 +314,27 @@ export default function GrantsPage() {
             return false;
           }
         }
+        // Focus filter — checks tag namespace `focus:*` (e.g. focus:bipoc-led).
+        // Falls back to description scan so legacy/untagged grants still surface.
+        if (focusFilter) {
+          const tagsLower = (g.tags || "").toLowerCase();
+          const descLower = (g.description || "").toLowerCase();
+          const tag = `focus:${focusFilter}`;
+          const fallbackTerms: Record<string, string[]> = {
+            "bipoc-led": ["bipoc", "minority-owned", "minority owned", "people of color", "underrepresented"],
+            "women-led": ["women-owned", "women owned", "women-led", "women led", "female founder", "wbe"],
+            "veteran-led": ["veteran-owned", "veteran owned", "veteran-led", "veteran led", "vosb", "sdvosb"],
+            "disability-led": ["disability", "disabled-owned", "accessibility", "ada"],
+            "rural": ["rural", "appalachian", "tribal"],
+            "lgbtq": ["lgbtq", "lgbt", "queer", "trans-led"],
+          };
+          if (!tagsLower.includes(tag)) {
+            const terms = fallbackTerms[focusFilter] || [];
+            if (!terms.some((t) => tagsLower.includes(t) || descLower.includes(t))) {
+              return false;
+            }
+          }
+        }
         return true;
       })
       .sort((a, b) => {
@@ -323,7 +347,18 @@ export default function GrantsPage() {
         if (sortBy === "amount") return (b.amountMax || 0) - (a.amountMax || 0);
         return 0;
       });
-  }, [grants, searchQuery, stateFilter, typeFilter, categoryFilter, amountFilter, sortBy]);
+  }, [grants, searchQuery, stateFilter, typeFilter, categoryFilter, amountFilter, focusFilter, sortBy]);
+
+  // Reset pagination whenever the user changes any filter — otherwise a deep
+  // scroll into "Load more" survives across new filter selections and confuses.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [searchQuery, stateFilter, typeFilter, categoryFilter, amountFilter, focusFilter, sortBy]);
+
+  const visibleGrants = useMemo(
+    () => filteredGrants.slice(0, visibleCount),
+    [filteredGrants, visibleCount]
+  );
 
   const handleScan = async () => {
     setScanning(true);
@@ -569,7 +604,7 @@ export default function GrantsPage() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-4 pt-4 border-t border-slate-700">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mt-4 pt-4 border-t border-slate-700">
               <Select
                 label="State"
                 options={US_STATES}
@@ -595,6 +630,20 @@ export default function GrantsPage() {
                 onChange={(e) => setAmountFilter(e.target.value)}
               />
               <Select
+                label="Focus"
+                options={[
+                  { value: "", label: "All grants" },
+                  { value: "bipoc-led", label: "BIPOC-owned / led" },
+                  { value: "women-led", label: "Women-owned / led" },
+                  { value: "veteran-led", label: "Veteran-owned / led" },
+                  { value: "disability-led", label: "Disability-owned / led" },
+                  { value: "lgbtq", label: "LGBTQ+ focused" },
+                  { value: "rural", label: "Rural / underserved" },
+                ]}
+                value={focusFilter}
+                onChange={(e) => setFocusFilter(e.target.value)}
+              />
+              <Select
                 label="Sort By"
                 options={sortOptions}
                 value={sortBy}
@@ -604,13 +653,13 @@ export default function GrantsPage() {
           )}
 
           {/* Active Filters */}
-          {(stateFilter || typeFilter || categoryFilter || amountFilter) && (
+          {(stateFilter || typeFilter || categoryFilter || amountFilter || focusFilter) && (
             <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-700">
               <span className="text-slate-400 text-xs sm:text-sm">Active filters:</span>
               {stateFilter && (
                 <Badge variant="info" className="flex items-center gap-1">
                   {getStateName(stateFilter)}
-                  <button onClick={() => setStateFilter("")}>
+                  <button onClick={() => setStateFilter("")} aria-label="Remove state filter">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -618,7 +667,7 @@ export default function GrantsPage() {
               {typeFilter && (
                 <Badge variant="success" className="flex items-center gap-1">
                   {typeFilter}
-                  <button onClick={() => setTypeFilter("")}>
+                  <button onClick={() => setTypeFilter("")} aria-label="Remove type filter">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -626,7 +675,7 @@ export default function GrantsPage() {
               {categoryFilter && (
                 <Badge variant="warning" className="flex items-center gap-1">
                   {categoryFilter}
-                  <button onClick={() => setCategoryFilter("")}>
+                  <button onClick={() => setCategoryFilter("")} aria-label="Remove category filter">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -634,7 +683,15 @@ export default function GrantsPage() {
               {amountFilter && (
                 <Badge variant="default" className="flex items-center gap-1">
                   {amountRanges.find((a) => a.value === amountFilter)?.label}
-                  <button onClick={() => setAmountFilter("")}>
+                  <button onClick={() => setAmountFilter("")} aria-label="Remove amount filter">
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )}
+              {focusFilter && (
+                <Badge variant="info" className="flex items-center gap-1">
+                  Focus: {focusFilter.replace(/-/g, " ")}
+                  <button onClick={() => setFocusFilter("")} aria-label="Remove focus filter">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -645,6 +702,7 @@ export default function GrantsPage() {
                   setTypeFilter("");
                   setCategoryFilter("");
                   setAmountFilter("");
+                  setFocusFilter("");
                 }}
                 className="text-slate-400 hover:text-white text-sm ml-2"
               >
@@ -666,7 +724,7 @@ export default function GrantsPage() {
       {/* Grants List */}
       {!loading && (
         <div className="space-y-4">
-          {filteredGrants.map((grant) => {
+          {visibleGrants.map((grant) => {
             const daysUntil = getDaysUntilDeadline(grant.deadline);
             const isUrgent = daysUntil !== null && daysUntil <= 14 && daysUntil > 0;
             const isPast = daysUntil !== null && daysUntil <= 0;
@@ -845,6 +903,21 @@ export default function GrantsPage() {
               </Card>
             );
           })}
+
+          {filteredGrants.length > visibleCount && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <p className="text-sm text-slate-500">
+                Showing {visibleGrants.length} of {filteredGrants.length} matches
+              </p>
+              <Button
+                variant="secondary"
+                onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                className="text-sm"
+              >
+                Load {Math.min(PAGE_SIZE, filteredGrants.length - visibleCount)} more
+              </Button>
+            </div>
+          )}
         </div>
       )}
 

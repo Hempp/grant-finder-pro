@@ -28,6 +28,29 @@ import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input, Textarea } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { useSubscription } from "@/hooks/useSubscription";
+
+// Fee schedule mirrors src/lib/stripe.ts SUBSCRIPTION_PLANS — kept in sync so
+// the user sees the exact fee they'll be invoiced before they submit a win.
+const FEE_SCHEDULE: Record<string, { percent: number; threshold: number }> = {
+  free: { percent: 0, threshold: 0 },
+  growth: { percent: 5, threshold: 10000 },
+  pro: { percent: 3, threshold: 0 },
+  organization: { percent: 2, threshold: 0 },
+  student_pro: { percent: 3, threshold: 0 },
+};
+
+function previewFee(plan: string | undefined, awardDollars: number): {
+  percent: number;
+  feeAmount: number;
+  net: number;
+  applies: boolean;
+} {
+  const config = FEE_SCHEDULE[plan || "free"] ?? FEE_SCHEDULE.free;
+  const applies = awardDollars > 0 && awardDollars >= config.threshold && config.percent > 0;
+  const feeAmount = applies ? Math.round((awardDollars * config.percent) / 100) : 0;
+  return { percent: config.percent, feeAmount, net: awardDollars - feeAmount, applies };
+}
 
 const steps = [
   { id: 1, name: "Project Summary", icon: FileText },
@@ -125,6 +148,7 @@ export default function ApplicationDetailPage() {
 
   // Outcome modal state
   const [showOutcomeModal, setShowOutcomeModal] = useState(false);
+  const { subscription } = useSubscription();
   const [outcomeResult, setOutcomeResult] = useState<"awarded" | "rejected" | "no_response" | null>(null);
   const [outcomeNotes, setOutcomeNotes] = useState("");
   const [outcomeFeedback, setOutcomeFeedback] = useState("");
@@ -656,12 +680,46 @@ ${formData.budgetJustification}
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
                     <input
                       type="text"
+                      inputMode="numeric"
                       className="w-full rounded-lg border border-slate-600 bg-slate-700 pl-7 pr-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                       placeholder="50,000"
                       value={outcomeAwardAmount}
                       onChange={(e) => setOutcomeAwardAmount(e.target.value)}
                     />
                   </div>
+                  {(() => {
+                    const parsed = outcomeAwardAmount
+                      ? parseInt(outcomeAwardAmount.replace(/[^0-9]/g, ""), 10) || 0
+                      : 0;
+                    if (parsed <= 0) return null;
+                    const fee = previewFee(subscription?.plan, parsed);
+                    if (!fee.applies) {
+                      return (
+                        <p className="mt-2 text-xs text-emerald-400">
+                          ✓ No success fee applies on your plan for this award amount.
+                        </p>
+                      );
+                    }
+                    return (
+                      <div className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs space-y-1">
+                        <div className="flex justify-between text-slate-300">
+                          <span>Award</span>
+                          <span className="font-medium text-white">${parsed.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between text-amber-300">
+                          <span>Success fee ({fee.percent}%)</span>
+                          <span className="font-medium">−${fee.feeAmount.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-amber-500/20 pt-1 mt-1 text-emerald-300">
+                          <span>You net</span>
+                          <span className="font-bold">${fee.net.toLocaleString()}</span>
+                        </div>
+                        <p className="text-amber-400/70 pt-1">
+                          Invoice sent within 24 hours of submission. Refundable if the award is later reduced.
+                        </p>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 

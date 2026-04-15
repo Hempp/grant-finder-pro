@@ -4,12 +4,12 @@ import { useState, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Check,
   X,
   Sparkles,
   Zap,
-  Users,
   ArrowRight,
   Loader2,
   AlertCircle,
@@ -86,16 +86,16 @@ const plans = [
     price: 79,
     priceAnnual: 708,
     successFee: "3% on grants won",
-    highlight: "21-day free trial included",
+    highlight: null as string | null,
     features: [
       { text: "200 grant matches per month", included: true },
       { text: "50 Smart Fills per month", included: true },
       { text: "Content Library (500 blocks)", included: true },
       { text: "Auto-optimize to 100/100", included: true },
       { text: "Scoring + diff transparency", included: true },
-      { text: "21-day free trial, cancel anytime", included: true },
       { text: "Up to 3 team members", included: true },
       { text: "Priority support", included: true },
+      { text: "Cancel anytime, prorated refunds", included: true },
     ],
     cta: "Go Pro",
     popular: true,
@@ -122,7 +122,7 @@ const plans = [
       { text: "Custom AI tone & templates", included: true },
       { text: "Dedicated success manager", included: true },
     ],
-    cta: "Contact Sales",
+    cta: "Get Organization",
     popular: false,
     icon: Building2,
     gradient: "from-purple-500 to-indigo-500",
@@ -168,7 +168,15 @@ const faqs = [
   },
   {
     q: "Can I change plans later?",
-    a: "Yes! Upgrade or downgrade at any time. Changes take effect immediately with prorated billing. You can also cancel anytime — no contracts.",
+    a: "Yes. Upgrade or downgrade at any time. Changes take effect immediately with prorated billing. You can also cancel anytime — no contracts.",
+  },
+  {
+    q: "What happens to my annual plan if I cancel mid-year?",
+    a: "Annual plans renew yearly. If you cancel before the renewal date, you keep access through the end of the period you've already paid for, and we issue a prorated refund for any remaining unused full months. Refund requests go to support@grantpilot.ai.",
+  },
+  {
+    q: "When does the success fee get charged?",
+    a: "Only when you self-report a grant as awarded. We send you an itemized invoice within 24 hours of your win-report — showing the awarded amount, the fee percentage, the fee dollar amount, and your net. Nothing is auto-charged from a guess. If a funder later reduces or rescinds the award, contact support and we'll prorate the fee.",
   },
   {
     q: "What's included in the student plan?",
@@ -189,6 +197,7 @@ function PricingContent() {
   const [trialStarted, setTrialStarted] = useState(false);
   const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [pendingPlan, setPendingPlan] = useState<typeof plans[number] | null>(null);
 
   const canceled = searchParams.get("canceled");
 
@@ -205,9 +214,17 @@ function PricingContent() {
     }
   };
 
-  const handleSubscribe = async (planId: string) => {
+  const handleSubscribe = (planId: string) => {
     if (!session) { router.push("/login?redirect=/pricing"); return; }
     if (planId === "free") return;
+    const plan = plans.find((p) => p.id === planId);
+    if (!plan) return;
+    setPendingPlan(plan);
+  };
+
+  const confirmCheckout = async () => {
+    if (!pendingPlan) return;
+    const planId = pendingPlan.id;
     setLoading(planId);
     try {
       const res = await fetch("/api/stripe/checkout", {
@@ -221,7 +238,6 @@ function PricingContent() {
     } catch (error) {
       console.error("Checkout error:", error);
       alert("Failed to start checkout. Please try again.");
-    } finally {
       setLoading(null);
     }
   };
@@ -241,7 +257,7 @@ function PricingContent() {
       <header className="relative border-b border-slate-800/60 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <img src="/logo.svg" alt="" width={32} height={32} className="group-hover:scale-105 transition-transform" />
+            <Image src="/logo.svg" alt="GrantPilot" width={32} height={32} className="group-hover:scale-105 transition-transform" priority />
             <span className="font-bold text-white text-lg">
               Grant<span className="text-emerald-400">Pilot</span>
             </span>
@@ -301,6 +317,7 @@ function PricingContent() {
                   ? "bg-slate-700 text-white shadow-lg"
                   : "text-slate-400 hover:text-white"
               }`}
+              aria-pressed={billingInterval === "monthly"}
             >
               Monthly
             </button>
@@ -311,13 +328,17 @@ function PricingContent() {
                   ? "bg-slate-700 text-white shadow-lg"
                   : "text-slate-400 hover:text-white"
               }`}
+              aria-pressed={billingInterval === "annual"}
             >
               Annual
               <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
-                Save 20%
+                Save up to 34%
               </span>
             </button>
           </div>
+          <p className="mt-3 text-xs text-slate-500">
+            Annual plans renew yearly. Cancel any time for a prorated refund of unused months.
+          </p>
         </div>
 
         {/* ═══ Organization Plans ═══ */}
@@ -349,7 +370,19 @@ function PricingContent() {
                   {/* Plan header */}
                   <div className="flex items-center gap-3 mb-4">
                     <div className={`p-2.5 rounded-xl ${plan.iconBg}`}>
-                      <plan.icon className={`h-5 w-5 bg-gradient-to-br ${plan.gradient} bg-clip-text text-transparent`} style={{ color: plan.popular ? '#34d399' : undefined }} />
+                      <plan.icon
+                        className="h-5 w-5"
+                        style={{
+                          color: plan.popular
+                            ? "#34d399"
+                            : plan.id === "growth"
+                            ? "#22d3ee"
+                            : plan.id === "organization"
+                            ? "#a78bfa"
+                            : "#94a3b8",
+                        }}
+                        aria-hidden="true"
+                      />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">{plan.name}</h3>
@@ -419,19 +452,26 @@ function PricingContent() {
                         className="w-full"
                         variant={plan.popular ? "primary" : "secondary"}
                         size="lg"
-                        disabled={plan.id === "free" || loading !== null || isCurrentPlan}
-                        onClick={() => handleSubscribe(plan.id)}
+                        disabled={loading !== null || isCurrentPlan}
+                        onClick={() => {
+                          if (plan.id === "free") {
+                            if (!session) router.push("/signup");
+                            return;
+                          }
+                          handleSubscribe(plan.id);
+                        }}
+                        aria-label={`${plan.cta} — ${plan.name} plan`}
                       >
                         {loading === plan.id ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : isCurrentPlan ? (
                           isOnTrial ? "Trial Active" : "Current Plan"
-                        ) : plan.id === "free" ? (
-                          session ? (subscription?.plan === "free" ? "Current Plan" : "Downgrade") : (
-                            <>{plan.cta} <ArrowRight className="h-4 w-4" /></>
-                          )
+                        ) : plan.id === "free" && session && subscription?.plan !== "free" ? (
+                          "Downgrade to Starter"
                         ) : (
-                          <>{plan.cta} <ArrowRight className="h-4 w-4" /></>
+                          <>
+                            {plan.cta} <ArrowRight className="h-4 w-4" />
+                          </>
                         )}
                       </Button>
                     </div>
@@ -523,9 +563,9 @@ function PricingContent() {
             </div>
 
             {/* Student Pro */}
-            <div className="rounded-2xl border border-purple-500/40 bg-gradient-to-b from-purple-500/[0.08] via-slate-900/80 to-slate-900/60 p-6 shadow-lg shadow-purple-500/5">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 hidden">
-                <Badge variant="success">Best Value</Badge>
+            <div className="relative rounded-2xl border border-purple-500/40 bg-gradient-to-b from-purple-500/[0.08] via-slate-900/80 to-slate-900/60 p-6 shadow-lg shadow-purple-500/5">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                <Badge variant="success">Best for students</Badge>
               </div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-purple-500/10">
@@ -584,19 +624,23 @@ function PricingContent() {
           </div>
         </div>
 
-        {/* ═══ Social Proof Bar ═══ */}
+        {/* ═══ How GrantPilot pays for itself ═══ */}
         <div className="mb-20">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">How GrantPilot pays for itself</h2>
+            <p className="text-slate-400 text-sm">A single funded grant covers years of subscription. You only owe the success fee when you actually win.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {[
-              { value: "$2.4M+", label: "Funding won", icon: TrendingUp },
-              { value: "1,200+", label: "Applications submitted", icon: Award },
-              { value: "60%", label: "Average win rate on Pro", icon: Star },
-              { value: "< 30min", label: "Per application with Smart Fill", icon: Clock },
+              { value: "Win → 3%", label: "Pro success fee on funded grants", icon: TrendingUp, sub: "vs. $5K–$15K consultants charge per application" },
+              { value: "Auto → 100", label: "Smart Fill optimizes to top score", icon: Award, sub: "Up to 3 rounds, with diff transparency" },
+              { value: "21 days", label: "Free trial, no card required", icon: Clock, sub: "Cancel anytime — keep what you draft" },
             ].map((stat, i) => (
-              <div key={i} className="text-center p-4 rounded-xl bg-slate-900/40 border border-slate-800/50">
-                <stat.icon className="h-5 w-5 text-emerald-400 mx-auto mb-2" />
+              <div key={i} className="p-5 rounded-xl bg-slate-900/40 border border-slate-800/50">
+                <stat.icon className="h-5 w-5 text-emerald-400 mb-3" />
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-slate-500 mt-1">{stat.label}</p>
+                <p className="text-sm text-slate-300 mt-1">{stat.label}</p>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">{stat.sub}</p>
               </div>
             ))}
           </div>
@@ -652,7 +696,7 @@ function PricingContent() {
             Ready to win more funding?
           </h2>
           <p className="text-slate-400 mb-8 max-w-md mx-auto">
-            Join thousands of organizations and students using GrantPilot to find and win grants.
+            Start free in 30 seconds. Upgrade only when GrantPilot has earned you funding.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link href="/signup">
@@ -670,6 +714,91 @@ function PricingContent() {
           </div>
         </div>
       </main>
+
+      {/* ═══ Success Fee Disclosure Modal ═══ */}
+      {pendingPlan && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="fee-disclosure-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+          onClick={() => setPendingPlan(null)}
+        >
+          <div
+            className="relative max-w-md w-full rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="fee-disclosure-title" className="text-xl font-bold text-white mb-1">
+              Confirm your {pendingPlan.name} subscription
+            </h3>
+            <p className="text-sm text-slate-400 mb-5">
+              Before we send you to Stripe, here&apos;s exactly what you&apos;re agreeing to:
+            </p>
+
+            <dl className="space-y-3 mb-6 text-sm">
+              <div className="flex justify-between p-3 rounded-lg bg-slate-800/50">
+                <dt className="text-slate-400">Subscription</dt>
+                <dd className="text-white font-medium">
+                  ${billingInterval === "monthly" ? pendingPlan.price : Math.round(pendingPlan.priceAnnual / 12)}
+                  /month
+                  {billingInterval === "annual" && (
+                    <span className="text-xs text-slate-500 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
+                  )}
+                </dd>
+              </div>
+              {pendingPlan.successFee && (
+                <div className="flex justify-between p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                  <dt className="text-amber-300">Success fee</dt>
+                  <dd className="text-amber-200 font-medium text-right">
+                    {pendingPlan.successFee}
+                    <div className="text-xs text-amber-400/70 mt-0.5">
+                      Charged only after a grant is awarded
+                    </div>
+                  </dd>
+                </div>
+              )}
+              <div className="flex justify-between p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                <dt className="text-emerald-300">Trial &amp; cancellation</dt>
+                <dd className="text-emerald-200 font-medium text-right">
+                  21-day trial
+                  <div className="text-xs text-emerald-400/70 mt-0.5">
+                    Cancel anytime, prorated refund
+                  </div>
+                </dd>
+              </div>
+            </dl>
+
+            <div className="text-xs text-slate-500 mb-5 leading-relaxed">
+              No setup fees. No cancellation fees. No per-application charges. Payments are securely processed by Stripe — your card details never touch GrantPilot servers.
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="lg"
+                className="flex-1"
+                onClick={() => setPendingPlan(null)}
+                disabled={loading !== null}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                className="flex-1"
+                onClick={confirmCheckout}
+                disabled={loading !== null}
+              >
+                {loading === pendingPlan.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>Continue to Stripe <ArrowRight className="h-4 w-4" /></>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-slate-800/60 py-8 mt-8">

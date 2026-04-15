@@ -100,6 +100,11 @@ export default function ApplyPage() {
     budgetJustification: "",
   });
 
+  // Derived: is the grant deadline in the past?
+  const isExpired = grant?.deadline
+    ? new Date(grant.deadline).getTime() < Date.now()
+    : false;
+
   // Fetch grant data
   useEffect(() => {
     async function fetchGrant() {
@@ -110,10 +115,27 @@ export default function ApplyPage() {
 
         if (foundGrant) {
           setGrant(foundGrant);
-          setFormData(prev => ({
-            ...prev,
-            totalBudget: String(foundGrant.amountMax || foundGrant.amountMin || ""),
-          }));
+          // Restore any locally-stashed draft from a prior session-expiry
+          // before falling back to the budget seed.
+          let restored = false;
+          try {
+            const stash = localStorage.getItem(`grantpilot:apply:${foundGrant.id}:draft`);
+            if (stash) {
+              const parsed = JSON.parse(stash);
+              if (parsed?.formData && typeof parsed.formData === "object") {
+                setFormData((prev) => ({ ...prev, ...parsed.formData }));
+                restored = true;
+              }
+            }
+          } catch {
+            // Ignore corrupted stash
+          }
+          if (!restored) {
+            setFormData((prev) => ({
+              ...prev,
+              totalBudget: String(foundGrant.amountMax || foundGrant.amountMin || ""),
+            }));
+          }
         } else {
           setError("Grant not found");
         }
@@ -164,18 +186,24 @@ export default function ApplyPage() {
   const generateWithAI = async (field: string, prompt: string) => {
     if (!grant) return;
 
-    // Check if user can use Auto-Apply feature
     if (!canUseFeature("autoApply")) {
       setShowUpgradePrompt(true);
       return;
     }
 
     setGenerating(true);
+    setError(null);
+
+    // 60s timeout — Claude usually returns in 5-20s; anything beyond a minute
+    // is almost certainly a hung connection rather than slow generation.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60_000);
 
     try {
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           field,
           context: formData,
@@ -189,13 +217,33 @@ export default function ApplyPage() {
         }),
       });
 
+      if (res.status === 401) {
+        setError("Your session expired. Sign in again — your draft is saved locally.");
+        return;
+      }
+      if (res.status === 429) {
+        setError("Rate limit reached. Wait 60 seconds and try again, or upgrade your plan for higher limits.");
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(`AI generation failed (HTTP ${res.status})`);
+      }
+
       const data = await res.json();
       if (data.content) {
         updateField(field, data.content);
+      } else if (data.error) {
+        setError(data.error);
       }
     } catch (err) {
-      console.error("AI generation failed:", err);
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("Generation took too long. Try again, or write this section yourself — your other answers are saved.");
+      } else {
+        console.error("AI generation failed:", err);
+        setError("AI generation failed. You can retry, or fill this section in manually.");
+      }
     } finally {
+      clearTimeout(timeoutId);
       setGenerating(false);
     }
   };
@@ -284,6 +332,21 @@ ${formData.budgetJustification}
         }),
       });
 
+      if (res.status === 401) {
+        // Session expired mid-draft. Stash the work locally so nothing is
+        // lost when the user re-authenticates.
+        try {
+          localStorage.setItem(
+            `grantpilot:apply:${grant.id}:draft`,
+            JSON.stringify({ formData, savedAt: new Date().toISOString() })
+          );
+        } catch {
+          // localStorage may be unavailable (private mode); fall through to error UI.
+        }
+        setError("Your session expired. Sign in again — your draft has been saved in this browser and will be restored.");
+        return false;
+      }
+
       if (!res.ok) {
         throw new Error("Failed to save application");
       }
@@ -291,6 +354,13 @@ ${formData.budgetJustification}
       const data = await res.json();
       if (!applicationId && data.id) {
         setApplicationId(data.id);
+      }
+
+      // Clear any session-expiry stash now that the server has the latest copy.
+      try {
+        localStorage.removeItem(`grantpilot:apply:${grant.id}:draft`);
+      } catch {
+        // localStorage unavailable — server is authoritative anyway.
       }
 
       return true;
@@ -365,6 +435,37 @@ ${formData.budgetJustification}
               <Button>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Grants
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isExpired) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <Card>
+          <CardContent className="p-4 sm:p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-amber-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">This grant&apos;s deadline has passed</h2>
+            <p className="text-slate-400 mb-2">
+              <span className="font-medium text-white">{grant.title}</span> closed on{" "}
+              {new Date(grant.deadline).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+              .
+            </p>
+            <p className="text-slate-500 text-sm mb-6">
+              We don&apos;t want you to invest hours drafting an application that can&apos;t be submitted. Browse open grants below.
+            </p>
+            <Link href="/dashboard/grants">
+              <Button>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Find open grants
               </Button>
             </Link>
           </CardContent>

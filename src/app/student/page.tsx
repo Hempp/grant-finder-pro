@@ -213,7 +213,9 @@ export default function StudentDashboardPage() {
             )}
           </h1>
           <p className="text-slate-500 mt-1 text-sm sm:text-base">
-            Here&apos;s your scholarship overview.
+            {stats.totalAwarded > 0
+              ? `You've earned ${formatCurrency(stats.totalAwarded)} in scholarships so far. Keep going.`
+              : "Funding is your right, not a privilege. Let's find what you've earned."}
           </p>
         </div>
         <div className="flex gap-3">
