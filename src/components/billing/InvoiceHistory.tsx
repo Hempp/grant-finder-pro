@@ -23,10 +23,15 @@ function formatAmount(cents: number, currency: string): string {
 }
 
 function formatDate(unixSeconds: number): string {
-  return new Date(unixSeconds * 1000).toLocaleDateString(undefined, {
+  // Include time so users can correlate with a bank statement line item
+  // ("that charge on the 14th at 2:34 PM was this one"). Bookkeeping pain
+  // prevention >> a slightly denser table.
+  return new Date(unixSeconds * 1000).toLocaleString(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
   });
 }
 
@@ -116,8 +121,9 @@ export function InvoiceHistory() {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-slate-500 text-xs uppercase tracking-wider">
+          <tr className="text-left text-slate-400 text-xs uppercase tracking-wider">
             <th className="py-2 font-medium">Date</th>
+            <th className="py-2 font-medium">Invoice #</th>
             <th className="py-2 font-medium">Description</th>
             <th className="py-2 font-medium">Amount</th>
             <th className="py-2 font-medium">Status</th>
@@ -128,6 +134,9 @@ export function InvoiceHistory() {
           {invoices.map((inv) => (
             <tr key={inv.id} className="border-t border-slate-800">
               <td className="py-3 text-slate-300 whitespace-nowrap">{formatDate(inv.created)}</td>
+              <td className="py-3 text-slate-400 font-mono text-xs whitespace-nowrap">
+                {inv.number || "—"}
+              </td>
               <td className="py-3 text-slate-300">{inv.description}</td>
               <td className="py-3 text-white font-medium whitespace-nowrap">
                 {formatAmount(inv.amountPaid || inv.amountDue, inv.currency)}

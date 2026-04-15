@@ -327,11 +327,12 @@ export default function DashboardPage() {
                       className="text-slate-700"
                     />
                     <circle
-                      cx="18" cy="18" r="15.5"
+                      cx="18" cy="18" r="15.9155"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="3"
-                      strokeDasharray={`${readiness.score * 0.974} 97.4`}
+                      strokeDasharray={`${readiness.score} 100`}
+                      pathLength={100}
                       strokeLinecap="round"
                       className={
                         readiness.score >= 70
@@ -479,7 +480,7 @@ export default function DashboardPage() {
                     <div className="text-center ml-3 sm:ml-4 flex-shrink-0">
                       <div className="relative">
                         <svg className="w-12 h-12 sm:w-16 sm:h-16 transform -rotate-90" role="img" aria-label={`Match score: ${grant.matchScore || 0}%`}>
-                          <circle cx="50%" cy="50%" r="40%" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" />
+                          <circle cx="50%" cy="50%" r="40%" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" pathLength={100} />
                           <circle
                             cx="50%"
                             cy="50%"
@@ -487,7 +488,8 @@ export default function DashboardPage() {
                             stroke="currentColor"
                             strokeWidth="4"
                             fill="none"
-                            strokeDasharray={`${(grant.matchScore || 0) * 1.76} 176`}
+                            strokeDasharray={`${grant.matchScore || 0} 100`}
+                            pathLength={100}
                             className="text-emerald-400"
                           />
                         </svg>

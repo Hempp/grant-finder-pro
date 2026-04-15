@@ -29,10 +29,21 @@ export default auth((req) => {
   ) {
     const origin = req.headers.get("origin");
     const referer = req.headers.get("referer");
-    const host = req.headers.get("host");
+    const host = req.headers.get("host")?.toLowerCase() || null;
 
-    const originHost = origin ? new URL(origin).host : null;
-    const refererHost = referer ? new URL(referer).host : null;
+    // Defensive parsing — malformed Origin/Referer headers from broken
+    // proxies or hostile clients must not crash the entire middleware.
+    const safeParseHost = (value: string | null): string | null => {
+      if (!value) return null;
+      try {
+        return new URL(value).host.toLowerCase();
+      } catch {
+        return null;
+      }
+    };
+
+    const originHost = safeParseHost(origin);
+    const refererHost = safeParseHost(referer);
     const sameOrigin =
       (originHost && host && originHost === host) ||
       (refererHost && host && refererHost === host) ||
