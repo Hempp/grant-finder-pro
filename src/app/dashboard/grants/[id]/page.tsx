@@ -32,6 +32,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
 import { AutoApplyModal } from "@/components/auto-apply";
+import { TemplateMatchPicker } from "@/components/dashboard/TemplateMatchPicker";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Grant {
@@ -683,6 +684,15 @@ export default function GrantDetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Saved-template shortcut — renders nothing when the user has
+              no matching templates, so it doesn't fight the Apply CTA
+              for first-time users. */}
+          <TemplateMatchPicker
+            grantId={grant.id}
+            grantCategory={grant.category}
+            grantType={grant.type}
+          />
 
           {/* Match Analysis */}
           {grant.matchReasons && grant.matchReasons.length > 0 && (
