@@ -472,6 +472,11 @@ model GrantOutcome {
   @@index([result])
   @@index([orgType])
   @@index([successFeeStatus])
+  // Composite for "outcomes this user reported, filtered by result/freshness" —
+  // used by the outcome-gating job and dashboard views.
+  @@index([userId, result, appliedAt])
+  // Composite for billing reconciliation sweeps that find unpaid fees.
+  @@index([userId, successFeeStatus, feePaidAt])
 }
 
 model Application {

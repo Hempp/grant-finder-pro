@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requireAuth, requireOwnership } from "@/lib/api-helpers";
 
 /**
  * GET /api/templates/:id
@@ -11,16 +11,22 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   const { id } = await params;
 
-  const template = await prisma.userApplicationTemplate.findFirst({
-    where: { id, userId: session.user.id },
+  const owned = await requireOwnership({
+    userId: session.user.id,
+    resourceId: id,
+    model: "userApplicationTemplate",
   });
+  if (owned instanceof NextResponse) return owned;
 
+  const template = await prisma.userApplicationTemplate.findUnique({
+    where: { id },
+  });
+  // requireOwnership already confirmed existence; the null check is belt-
+  // and-suspenders in case of a race condition between the check and the fetch.
   if (!template) {
     return NextResponse.json({ error: "Template not found" }, { status: 404 });
   }
@@ -37,19 +43,17 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   const { id } = await params;
 
-  const result = await prisma.userApplicationTemplate.deleteMany({
-    where: { id, userId: session.user.id },
+  const owned = await requireOwnership({
+    userId: session.user.id,
+    resourceId: id,
+    model: "userApplicationTemplate",
   });
+  if (owned instanceof NextResponse) return owned;
 
-  if (result.count === 0) {
-    return NextResponse.json({ error: "Template not found" }, { status: 404 });
-  }
-
+  await prisma.userApplicationTemplate.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }

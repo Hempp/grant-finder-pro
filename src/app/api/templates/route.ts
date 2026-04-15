@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { parseJson, requireAuth } from "@/lib/api-helpers";
 
 /**
  * User application templates.
@@ -15,10 +15,8 @@ import { prisma } from "@/lib/db";
 // similarity metadata; grants list & apply wizard use the filtered call
 // to surface "Apply with template X" suggestions only for the right grants.
 export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
   const url = new URL(request.url);
   const grantCategory = url.searchParams.get("grantCategory") || undefined;
@@ -61,23 +59,17 @@ export async function GET(request: NextRequest) {
 // Body: { name, description?, templateData (JSON object or string), grantCategory?, grantType? }
 // Creates a new template scoped to the caller.
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
-  let body: {
+  const body = await parseJson<{
     name?: string;
     description?: string;
     templateData?: unknown;
     grantCategory?: string;
     grantType?: string;
-  };
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
+  }>(request);
+  if (body instanceof NextResponse) return body;
 
   const name = body.name?.trim();
   if (!name) {

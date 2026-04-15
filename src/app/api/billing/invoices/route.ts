@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/api-helpers";
 
 /**
  * List invoices for the authenticated user's Stripe customer.
@@ -15,10 +15,8 @@ import { prisma } from "@/lib/db";
  */
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const session = await requireAuth();
+    if (session instanceof NextResponse) return session;
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
