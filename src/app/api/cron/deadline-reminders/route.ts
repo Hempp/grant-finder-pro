@@ -41,41 +41,42 @@ export async function GET(request: NextRequest) {
     let emailsSent = 0;
     let errors = 0;
 
-    // Calculate date ranges for 7-day and 3-day reminders
     const now = new Date();
     const sevenDaysFromNow = new Date(now);
     sevenDaysFromNow.setDate(now.getDate() + 7);
-    const threeDaysFromNow = new Date(now);
-    threeDaysFromNow.setDate(now.getDate() + 3);
+
+    // CLOUD-ARCHITECT / DATABASE-SAGE batch fix: one findMany across
+    // all reminder-enabled users instead of one per user. At 50 users
+    // this drops 50 round-trips → 1. In-memory groupBy after the fetch.
+    const userIds = users.filter((u) => u.email).map((u) => u.id);
+    const allApplications = userIds.length
+      ? await prisma.application.findMany({
+          where: {
+            userId: { in: userIds },
+            status: { in: ["draft", "in_progress"] },
+            grant: {
+              deadline: { gte: now, lte: sevenDaysFromNow },
+            },
+          },
+          include: { grant: true },
+          orderBy: { grant: { deadline: "asc" } },
+        })
+      : [];
+
+    // Group by userId — callers loop over groups, not DB.
+    const appsByUser = new Map<string, typeof allApplications>();
+    for (const app of allApplications) {
+      const list = appsByUser.get(app.userId) ?? [];
+      list.push(app);
+      appsByUser.set(app.userId, list);
+    }
 
     for (const user of users) {
       if (!user.email) continue;
+      const applications = appsByUser.get(user.id);
+      if (!applications || applications.length === 0) continue;
 
       try {
-        // Get applications with upcoming deadlines (within 7 days)
-        const applications = await prisma.application.findMany({
-          where: {
-            userId: user.id,
-            status: { in: ["draft", "in_progress"] },
-            grant: {
-              deadline: {
-                gte: now,
-                lte: sevenDaysFromNow,
-              },
-            },
-          },
-          include: {
-            grant: true,
-          },
-          orderBy: {
-            grant: {
-              deadline: "asc",
-            },
-          },
-        });
-
-        if (applications.length === 0) continue;
-
         // Format grants for email
         const grants = applications.map((app) => ({
           id: app.grant.id,

@@ -724,15 +724,38 @@ ${formData.budgetJustification}
                 </div>
               )}
 
+              {/* Rejection / no-response acknowledgement — EMOTION-SAGE's
+                  Sage voice. Validates the loss, reframes it as input,
+                  points to the next action. Fires ONLY on rejection or
+                  no-response so "awarded" keeps its own celebration flow. */}
+              {(outcomeResult === "rejected" || outcomeResult === "no_response") && (
+                <div className="mb-4 rounded-lg border border-slate-700 bg-slate-800/50 p-3 text-sm">
+                  <p className="text-slate-200 font-medium mb-1">
+                    {outcomeResult === "rejected" ? "Not this time." : "Still waiting."}
+                  </p>
+                  <p className="text-slate-400 text-xs leading-relaxed">
+                    That happens to strong applications too — it&apos;s part of the process,
+                    not a verdict on your work. Save any feedback the funder shared below,
+                    then we&apos;ll surface your next best matches.
+                  </p>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="mb-3">
                 <label className="block text-sm font-medium text-slate-300 mb-1">
-                  Notes (optional)
+                  Notes <span className="text-slate-500 font-normal">(optional)</span>
                 </label>
                 <textarea
                   className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   rows={3}
-                  placeholder="Any notes about the outcome..."
+                  placeholder={
+                    outcomeResult === "rejected"
+                      ? "What worked? What didn't? Anything you'd do differently next time?"
+                      : outcomeResult === "no_response"
+                      ? "When did you last hear from them? Any follow-up planned?"
+                      : "Any notes about the outcome..."
+                  }
                   value={outcomeNotes}
                   onChange={(e) => setOutcomeNotes(e.target.value)}
                 />
@@ -741,12 +764,16 @@ ${formData.budgetJustification}
               {/* Feedback */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-slate-300 mb-1">
-                  Feedback received (optional)
+                  Feedback received <span className="text-slate-500 font-normal">(optional)</span>
                 </label>
                 <textarea
                   className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
                   rows={3}
-                  placeholder="Any feedback from the funder..."
+                  placeholder={
+                    outcomeResult === "rejected"
+                      ? "Paste reviewer comments or scoring notes here — we'll help you apply them next time."
+                      : "Any feedback from the funder..."
+                  }
                   value={outcomeFeedback}
                   onChange={(e) => setOutcomeFeedback(e.target.value)}
                 />
