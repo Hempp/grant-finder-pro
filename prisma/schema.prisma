@@ -74,6 +74,12 @@ model User {
   applicationTemplates UserApplicationTemplate[]
   auditLogs            AuditLog[]
 
+  // Seat invitations — additive to the existing 1-1 Organization.userId
+  // "owner" relation; members let a single org host multiple collaborators
+  // without disturbing the owner code path.
+  memberships       OrganizationMember[]
+  invitationsSent   OrganizationInvitation[] @relation("InvitationsSent")
+
   // Performance indexes
   @@index([plan])
   @@index([alertsEnabled, alertFrequency])
@@ -154,10 +160,67 @@ model Organization {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  members     OrganizationMember[]
+  invitations OrganizationInvitation[]
+
   // Performance indexes
   @@index([userId])
   @@index([type])
   @@index([profileComplete])
+}
+
+/// Maps a user to an organization they've been invited into as a
+/// collaborator. The organization owner remains Organization.userId
+/// (1-1); this model is purely additive for non-owner seats.
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Role within the org: "admin" (manage members + all content),
+  /// "editor" (create/edit applications + content), "viewer" (read-only).
+  /// Owner is implied by Organization.userId — not a member row.
+  role           String   @default("editor")
+
+  invitedById    String?
+  joinedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@index([organizationId, role])
+}
+
+/// Pending seat invitation. Token is stored hashed; the raw value is
+/// surfaced only in the email link. Expiry enforced at accept time.
+model OrganizationInvitation {
+  id             String   @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  email          String
+  role           String   @default("editor")
+
+  /// SHA-256 hash of the opaque token sent to the invitee. Lookup by
+  /// hash so a database leak doesn't hand attackers live invite links.
+  tokenHash      String   @unique
+
+  invitedById    String?
+  invitedBy      User?    @relation("InvitationsSent", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  /// Set when the inviter explicitly revokes a pending invitation.
+  revokedAt      DateTime?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId, acceptedAt, revokedAt])
+  @@index([email])
+  @@index([expiresAt])
 }
 
 model StudentProfile {

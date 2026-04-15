@@ -1160,3 +1160,94 @@ export async function getOverdueStudentOutcomes(): Promise<
       };
     });
 }
+
+export async function sendOrganizationInvitationEmail({
+  to,
+  inviterName,
+  organizationName,
+  role,
+  acceptUrl,
+  expiresAt,
+}: {
+  to: string;
+  inviterName: string | null;
+  organizationName: string;
+  role: string;
+  acceptUrl: string;
+  expiresAt: Date;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not configured, skipping invitation email");
+    return null;
+  }
+
+  const inviter = inviterName ? inviterName : "A teammate";
+  const expiresOn = expiresAt.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); padding: 32px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px;">You've been invited to ${escapeInvitationHtml(organizationName)}</h1>
+        </div>
+        <div style="padding: 32px;">
+          <p style="color: #374151; font-size: 16px; margin-top: 0;">
+            ${escapeInvitationHtml(inviter)} invited you to join <strong>${escapeInvitationHtml(organizationName)}</strong>
+            on GrantPilot as a <strong>${escapeInvitationHtml(role)}</strong>.
+          </p>
+          <p style="color: #6b7280; font-size: 14px;">
+            GrantPilot helps teams find and apply for grants. Accepting this invitation gives you
+            collaborator access to this organization's grant pipeline, applications, and content
+            library.
+          </p>
+          <div style="text-align: center; margin-top: 28px; margin-bottom: 28px;">
+            <a href="${acceptUrl}"
+               style="display: inline-block; background-color: #10b981; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+              Accept invitation
+            </a>
+          </div>
+          <p style="color: #9ca3af; font-size: 12px;">
+            This invitation expires on <strong>${expiresOn}</strong>. If you didn't expect this
+            email you can safely ignore it &mdash; no account will be created until you accept.
+          </p>
+          <p style="color: #9ca3af; font-size: 12px; word-break: break-all;">
+            If the button doesn't work, paste this link into your browser:<br>
+            <span style="color: #10b981;">${acceptUrl}</span>
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    const client = getResendClient();
+    if (!client) return null;
+    return await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "GrantPilot <grants@resend.dev>",
+      to,
+      subject: `You've been invited to ${organizationName} on GrantPilot`,
+      html,
+    });
+  } catch (err) {
+    console.error("Failed to send invitation email:", err);
+    return null;
+  }
+}
+
+function escapeInvitationHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+

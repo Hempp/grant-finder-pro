@@ -42,6 +42,11 @@ export type AuditAction =
   | "outcome.fee.invoiced"
   | "outcome.fee.charged"
   | "outcome.fee.failed"
+  // Organization membership + invitations
+  | "org.invitation.created"
+  | "org.invitation.revoked"
+  | "org.invitation.accepted"
+  | "org.member.removed"
   // Authorization failures (useful for brute-force and probe detection)
   | "authz.denied";
 
