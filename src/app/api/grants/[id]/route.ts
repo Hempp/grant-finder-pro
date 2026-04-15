@@ -1,32 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { parseJson, requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    
+
     const grant = await prisma.grant.findUnique({
       where: { id },
     });
 
     if (!grant) {
-      return NextResponse.json(
-        { error: "Grant not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Grant not found" }, { status: 404 });
     }
 
     return NextResponse.json({ grant });
-  } catch (error) {
-    console.error("Failed to fetch grant:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch grant" },
-      { status: 500 }
-    );
+  } catch (err) {
+    logError(err, { endpoint: "/api/grants/[id]", method: "GET" });
+    return NextResponse.json({ error: "Failed to fetch grant" }, { status: 500 });
   }
 }
 
@@ -34,23 +29,14 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
 
+  try {
     const { id } = await params;
 
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-    }
+    const body = await parseJson<{ status?: string }>(request);
+    if (body instanceof NextResponse) return body;
 
     const { status } = body;
 
@@ -86,11 +72,8 @@ export async function PATCH(
     });
 
     return NextResponse.json({ grant });
-  } catch (error) {
-    console.error("Failed to update grant:", error);
-    return NextResponse.json(
-      { error: "Failed to update grant" },
-      { status: 500 }
-    );
+  } catch (err) {
+    logError(err, { endpoint: "/api/grants/[id]", method: "PATCH" });
+    return NextResponse.json({ error: "Failed to update grant" }, { status: 500 });
   }
 }

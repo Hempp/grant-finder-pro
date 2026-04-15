@@ -48,42 +48,60 @@ export async function GET(request: NextRequest) {
     const twoWeeksFromNow = new Date();
     twoWeeksFromNow.setDate(now.getDate() + 14);
 
+    // CLOUD-ARCHITECT batch fix: three queries × N users → 3 queries total.
+    // Grants are sorted/scored in memory after the single fetch because
+    // Prisma's take+orderBy doesn't compose across users in one query.
+    const userIds = users.filter((u) => u.email).map((u) => u.id);
+    const [allNewGrants, inProgressCounts, upcomingCounts] = userIds.length
+      ? await Promise.all([
+          prisma.grant.findMany({
+            where: {
+              userId: { in: userIds },
+              createdAt: { gte: oneWeekAgo },
+              matchScore: { not: null },
+            },
+            orderBy: { matchScore: "desc" },
+          }),
+          prisma.application.groupBy({
+            by: ["userId"],
+            where: {
+              userId: { in: userIds },
+              status: { in: ["draft", "in_progress"] },
+            },
+            _count: { _all: true },
+          }),
+          prisma.application.groupBy({
+            by: ["userId"],
+            where: {
+              userId: { in: userIds },
+              status: { in: ["draft", "in_progress"] },
+              grant: { deadline: { gte: now, lte: twoWeeksFromNow } },
+            },
+            _count: { _all: true },
+          }),
+        ])
+      : [[], [], []];
+
+    const grantsByUser = new Map<string, typeof allNewGrants>();
+    for (const g of allNewGrants) {
+      const list = grantsByUser.get(g.userId!) ?? [];
+      if (list.length < 10) list.push(g);
+      grantsByUser.set(g.userId!, list);
+    }
+    const inProgressByUser = new Map<string, number>(
+      inProgressCounts.map((c) => [c.userId, c._count._all])
+    );
+    const upcomingByUser = new Map<string, number>(
+      upcomingCounts.map((c) => [c.userId, c._count._all])
+    );
+
     for (const user of users) {
       if (!user.email) continue;
 
       try {
-        // Get new grants from last week with match scores
-        const newGrants = await prisma.grant.findMany({
-          where: {
-            userId: user.id,
-            createdAt: { gte: oneWeekAgo },
-            matchScore: { not: null },
-          },
-          orderBy: { matchScore: "desc" },
-          take: 10,
-        });
-
-        // Get user's applications in progress
-        const applicationsInProgress = await prisma.application.count({
-          where: {
-            userId: user.id,
-            status: { in: ["draft", "in_progress"] },
-          },
-        });
-
-        // Get count of upcoming deadlines (within 2 weeks)
-        const upcomingDeadlines = await prisma.application.count({
-          where: {
-            userId: user.id,
-            status: { in: ["draft", "in_progress"] },
-            grant: {
-              deadline: {
-                gte: now,
-                lte: twoWeeksFromNow,
-              },
-            },
-          },
-        });
+        const newGrants = grantsByUser.get(user.id) ?? [];
+        const applicationsInProgress = inProgressByUser.get(user.id) ?? 0;
+        const upcomingDeadlines = upcomingByUser.get(user.id) ?? 0;
 
         // Format grants for email
         const formattedGrants = newGrants.map((grant) => ({
