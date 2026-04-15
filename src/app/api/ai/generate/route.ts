@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logError, logEvent, logWarning, timer } from "@/lib/telemetry";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -35,23 +36,34 @@ export async function POST(request: NextRequest) {
     const body: GenerateRequest = await request.json();
     const { field, context, grantInfo, organizationInfo } = body;
 
+    logEvent("ai.generate.started", { field, userId: session.user.id });
+    const stop = timer("ai.generate");
+
     // If API key available, use Claude
     if (ANTHROPIC_API_KEY) {
       try {
         const content = await generateWithClaude(field, context, grantInfo, organizationInfo);
+        stop({ source: "claude", field, chars: content.length });
+        logEvent("ai.generate.succeeded", { source: "claude", field });
         return NextResponse.json({ content, source: "claude" });
       } catch (claudeError) {
-        console.error("Claude API error, falling back to templates:", claudeError);
+        logWarning("ai.generate.claude_fallback", {
+          field,
+          message: claudeError instanceof Error ? claudeError.message : String(claudeError),
+        });
         const content = generateContent(field, context, grantInfo, organizationInfo);
+        stop({ source: "template", field, reason: "claude_error" });
         return NextResponse.json({ content, source: "template", error: String(claudeError) });
       }
     }
 
     // Fallback to templates if no API key
     const content = generateContent(field, context, grantInfo, organizationInfo);
+    stop({ source: "template", field, reason: "no_api_key" });
+    logEvent("ai.generate.succeeded", { source: "template", field, reason: "no_api_key" });
     return NextResponse.json({ content, source: "template", reason: "no_api_key" });
   } catch (error) {
-    console.error("Failed to generate content:", error);
+    logError(error, { endpoint: "/api/ai/generate" });
     return NextResponse.json(
       { error: "Failed to generate content" },
       { status: 500 }

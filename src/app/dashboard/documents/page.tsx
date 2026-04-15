@@ -286,8 +286,8 @@ export default function DocumentsPage() {
           {documents.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
               <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 text-sm sm:text-base">No documents uploaded yet</p>
-              <p className="text-slate-500 text-xs sm:text-sm">Upload your first document to get started</p>
+              <p className="text-slate-400 text-sm sm:text-base">Upload your first document to get started</p>
+              <p className="text-slate-400 text-xs sm:text-sm">We extract your mission, team, and impact so Smart Fill draws from real content, not templates.</p>
             </div>
           ) : (
             <div className="space-y-3">

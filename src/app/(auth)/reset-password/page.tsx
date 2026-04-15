@@ -87,7 +87,7 @@ function ResetPasswordForm() {
         <div className="space-y-4">
           <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
             <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-            <p className="text-emerald-300 text-sm">Password reset successfully! Redirecting to sign in...</p>
+            <p className="text-emerald-300 text-sm">Password reset. Redirecting you to sign in.</p>
           </div>
         </div>
       ) : (

@@ -131,7 +131,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <>
             <Spinner className={spinnerSizes[size]} />
-            <span>{loadingText || "Loading..."}</span>
+            <span>{loadingText || "Working..."}</span>
           </>
         ) : (
           <>

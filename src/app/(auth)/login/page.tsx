@@ -47,7 +47,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("Email or password doesn't match. Try again, or reset your password below.");
         setLoading(false);
         return;
       }

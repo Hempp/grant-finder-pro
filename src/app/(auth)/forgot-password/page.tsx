@@ -108,7 +108,7 @@ export default function ForgotPasswordPage() {
                 Sending...
               </>
             ) : (
-              "Send Reset Link"
+              "Email me a reset link"
             )}
           </Button>
 

@@ -186,13 +186,13 @@ export const StatsCard = forwardRef<HTMLDivElement, StatsCardProps>(
             <p className="text-xs sm:text-sm font-medium text-slate-400">{title}</p>
             <p className="text-xl sm:text-3xl font-bold text-white">{value}</p>
             {description && (
-              <p className="text-xs sm:text-sm text-slate-500">{description}</p>
+              <p className="text-xs sm:text-sm text-slate-400">{description}</p>
             )}
             {trend && (
               <div className={`flex items-center gap-1 text-xs sm:text-sm ${trend.isPositive ? "text-emerald-400" : "text-red-400"}`}>
                 <span>{trend.isPositive ? "↑" : "↓"}</span>
                 <span>{Math.abs(trend.value)}%</span>
-                {trend.label && <span className="text-slate-500 hidden sm:inline">{trend.label}</span>}
+                {trend.label && <span className="text-slate-400 hidden sm:inline">{trend.label}</span>}
               </div>
             )}
           </div>

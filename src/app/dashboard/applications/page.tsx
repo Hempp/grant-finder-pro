@@ -277,8 +277,8 @@ export default function ApplicationsPage() {
           {filteredApplications.length === 0 ? (
             <div className="p-8 sm:p-12 text-center">
               <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-white font-medium mb-2 text-sm sm:text-base">No applications found</p>
-              <p className="text-slate-400 mb-4 text-sm">Start a new application from the grants page</p>
+              <p className="text-white font-medium mb-2 text-sm sm:text-base">No applications yet</p>
+              <p className="text-slate-400 mb-4 text-sm">Find a grant match and start your first application — we&apos;ll draft the bulk of it for you.</p>
               <Link href="/dashboard/grants">
                 <Button>Find Grants</Button>
               </Link>

@@ -448,7 +448,7 @@ export default function DashboardPage() {
                   <Search className="h-8 w-8 text-slate-600" />
                 </div>
                 <p className="text-slate-400 mb-2">No grants found yet</p>
-                <p className="text-slate-500 text-sm mb-4">Complete your profile to get personalized matches.</p>
+                <p className="text-slate-400 text-sm mb-4">Complete your profile to get personalized matches.</p>
                 <Link href="/dashboard/organization">
                   <Button variant="outline" size="sm">
                     Complete Profile
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                   <FileText className="h-8 w-8 text-slate-600" />
                 </div>
                 <p className="text-slate-400 mb-2">No applications yet</p>
-                <p className="text-slate-500 text-sm mb-4">Start by applying to a matching grant!</p>
+                <p className="text-slate-400 text-sm mb-4">Browse your grant matches and start your first application — Smart Fill does most of the writing.</p>
                 <Link href="/dashboard/grants">
                   <Button variant="outline" size="sm">
                     Browse Grants

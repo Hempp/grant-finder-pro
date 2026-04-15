@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getStripe, getPlanByPriceId } from "@/lib/stripe";
 import { prisma } from "@/lib/db";
 import { sendPaymentFailedEmail, sendSubscriptionCanceledEmail } from "@/lib/email";
+import { logError, logEvent, logWarning } from "@/lib/telemetry";
 import Stripe from "stripe";
 
 // Stripe SDK types lag behind the live API for `current_period_end` and
@@ -43,9 +44,11 @@ export async function POST(request: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error) {
-    console.error("Webhook signature verification failed:", error);
+    logError(error, { step: "stripe.webhook.signature_verification" });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
+
+  logEvent("stripe.webhook.verified", { eventType: event.type, eventId: event.id });
 
   try {
     switch (event.type) {
@@ -90,7 +93,12 @@ export async function POST(request: NextRequest) {
         });
 
         if (!user) {
-          console.error("No user found for subscription:", subscription.id);
+          // Orphan event: webhook references a subscription we don't have a
+          // user mapping for. This is a data-integrity bug worth paging on.
+          logWarning("stripe.webhook.orphan", {
+            eventType: event.type,
+            subscriptionId: subscription.id,
+          });
           break;
         }
 
@@ -106,7 +114,12 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        console.info(`Subscription updated for user ${user.id}: ${plan}`);
+        logEvent("stripe.webhook.processed", {
+          eventType: event.type,
+          userId: user.id,
+          plan,
+          subscriptionStatus: subscription.status,
+        });
         break;
       }
 
@@ -118,7 +131,10 @@ export async function POST(request: NextRequest) {
         });
 
         if (!user) {
-          console.error("No user found for subscription:", subscription.id);
+          logWarning("stripe.webhook.orphan", {
+            eventType: event.type,
+            subscriptionId: subscription.id,
+          });
           break;
         }
 
@@ -200,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Webhook handler error:", error);
+    logError(error, { endpoint: "/api/stripe/webhook", eventType: event.type });
     return NextResponse.json(
       { error: "Webhook handler failed" },
       { status: 500 }
