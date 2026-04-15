@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
 import { SuccessModal } from "@/components/dashboard/SuccessModal";
+import { Dialog } from "@/components/ui/Dialog";
 
 const steps = [
   { id: 1, name: "Project Summary", icon: FileText },
@@ -1012,105 +1013,83 @@ ${formData.budgetJustification}
         }}
       />
 
-      {/* Save-as-template modal */}
-      {showSaveTemplate && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="save-template-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4"
-          onClick={(e) => e.target === e.currentTarget && setShowSaveTemplate(false)}
-          onKeyDown={(e) => e.key === "Escape" && setShowSaveTemplate(false)}
-        >
-          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 id="save-template-title" className="text-lg font-bold text-white">
-                  Save this as a template
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Reuse these answers the next time you apply to a {grant?.category || "similar"} grant.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowSaveTemplate(false)}
-                aria-label="Close"
-                className="text-slate-500 hover:text-white"
-              >
-                <X className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </div>
-
-            <div className="space-y-3 mb-5">
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-name">
-                  Template name
-                </label>
-                <input
-                  id="template-name"
-                  type="text"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
-                  placeholder="e.g. SBIR Phase I — core narrative"
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
-                  maxLength={120}
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-desc">
-                  Description <span className="text-slate-600">(optional)</span>
-                </label>
-                <textarea
-                  id="template-desc"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
-                  rows={2}
-                  placeholder="When you'd reuse this"
-                  value={templateDescription}
-                  onChange={(e) => setTemplateDescription(e.target.value)}
-                  maxLength={280}
-                />
-              </div>
-              {(grant?.category || grant?.type) && (
-                <p className="text-xs text-slate-500">
-                  We&apos;ll suggest this template on grants tagged{" "}
-                  {grant?.category && <span className="text-slate-300">{grant.category}</span>}
-                  {grant?.category && grant?.type && " · "}
-                  {grant?.type && <span className="text-slate-300">{grant.type}</span>}.
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="flex-1"
-                onClick={() => setShowSaveTemplate(false)}
-                disabled={savingTemplate}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="lg"
-                className="flex-1"
-                onClick={handleSaveAsTemplate}
-                disabled={savingTemplate || !templateName.trim()}
-              >
-                {savingTemplate ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                ) : (
-                  <>
-                    <BookmarkPlus className="h-4 w-4 mr-1.5" aria-hidden="true" />
-                    Save template
-                  </>
-                )}
-              </Button>
-            </div>
+      {/* Save-as-template modal — Radix Dialog wrapper handles backdrop,
+          focus trap, focus restoration, ARIA, ESC/click-outside. */}
+      <Dialog
+        open={showSaveTemplate}
+        onOpenChange={setShowSaveTemplate}
+        title="Save this as a template"
+        description={`Reuse these answers the next time you apply to a ${grant?.category || "similar"} grant.`}
+        size="sm"
+      >
+        <div className="space-y-3 mb-5">
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-name">
+              Template name
+            </label>
+            <input
+              id="template-name"
+              type="text"
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              placeholder="e.g. SBIR Phase I — core narrative"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              maxLength={120}
+              autoFocus
+            />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-400 mb-1" htmlFor="template-desc">
+              Description <span className="text-slate-600">(optional)</span>
+            </label>
+            <textarea
+              id="template-desc"
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              rows={2}
+              placeholder="When you'd reuse this"
+              value={templateDescription}
+              onChange={(e) => setTemplateDescription(e.target.value)}
+              maxLength={280}
+            />
+          </div>
+          {(grant?.category || grant?.type) && (
+            <p className="text-xs text-slate-400">
+              We&apos;ll suggest this template on grants tagged{" "}
+              {grant?.category && <span className="text-slate-300">{grant.category}</span>}
+              {grant?.category && grant?.type && " · "}
+              {grant?.type && <span className="text-slate-300">{grant.type}</span>}.
+            </p>
+          )}
         </div>
-      )}
+
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="flex-1"
+            onClick={() => setShowSaveTemplate(false)}
+            disabled={savingTemplate}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="lg"
+            className="flex-1"
+            onClick={handleSaveAsTemplate}
+            disabled={savingTemplate || !templateName.trim()}
+          >
+            {savingTemplate ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <>
+                <BookmarkPlus className="h-4 w-4 mr-1.5" aria-hidden="true" />
+                Save template
+              </>
+            )}
+          </Button>
+        </div>
+      </Dialog>
 
       {templateToast && (
         <div

@@ -6,6 +6,7 @@ import GitHub from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 import { prisma } from "./db";
 import { authConfig } from "./auth.config";
+import { audit } from "./audit-log";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -28,15 +29,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        const email = credentials?.email as string | undefined;
+
+        if (!email || !credentials?.password) {
+          // Audit as failure with no user — helps spot credential-stuffing
+          // probes that send malformed payloads.
+          audit({
+            action: "auth.login.failure",
+            result: "failure",
+            metadata: { reason: "missing_credentials" },
+          });
           return null;
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         });
 
         if (!user || !user.password) {
+          audit({
+            action: "auth.login.failure",
+            result: "failure",
+            metadata: { reason: "user_not_found", emailTried: email },
+          });
           return null;
         }
 
@@ -46,8 +61,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!passwordMatch) {
+          audit({
+            action: "auth.login.failure",
+            userId: user.id,
+            result: "failure",
+            metadata: { reason: "bad_password" },
+          });
           return null;
         }
+
+        audit({
+          action: "auth.login.success",
+          userId: user.id,
+        });
 
         return {
           id: user.id,
@@ -58,4 +84,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  events: {
+    async signOut(message) {
+      // NextAuth's SignOut event passes either a token (JWT strategy) or
+      // a session (database strategy). Both may omit the user id on
+      // session-expiry, which is why we narrow defensively.
+      let userId: string | undefined;
+      if ("token" in message && message.token && "sub" in message.token) {
+        userId = message.token.sub as string | undefined;
+      } else if ("session" in message && message.session && "userId" in message.session) {
+        userId = message.session.userId as string | undefined;
+      }
+      audit({ action: "auth.logout", userId: userId ?? null });
+    },
+  },
 });

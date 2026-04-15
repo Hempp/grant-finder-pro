@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 // GET - Fetch applications for current user
 export async function GET(request: NextRequest) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const userId = session.user.id;
@@ -33,8 +33,8 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(applications);
-  } catch (error) {
-    console.error("Failed to fetch applications:", error);
+  } catch (err) {
+    logError(err, { endpoint: "/api/applications", method: "GET" });
     return NextResponse.json(
       { error: "Failed to fetch applications" },
       { status: 500 }
@@ -44,13 +44,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new application
 export async function POST(request: NextRequest) {
+  const postSession = await requireAuth();
+  if (postSession instanceof NextResponse) return postSession;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     const body = await request.json();
-    const userId = session.user.id;
+    const userId = postSession.user.id;
 
     const application = await prisma.application.create({
       data: {
@@ -68,8 +66,8 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(application);
-  } catch (error) {
-    console.error("Failed to create application:", error);
+  } catch (err) {
+    logError(err, { endpoint: "/api/applications", method: "POST" });
     return NextResponse.json(
       { error: "Failed to create application" },
       { status: 500 }
