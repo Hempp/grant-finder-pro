@@ -16,6 +16,7 @@ import {
   INVITATION_ROLES,
 } from "@/lib/invitation-token";
 import { sendOrganizationInvitationEmail } from "@/lib/email";
+import { getPlanLimits, PlanType } from "@/lib/stripe";
 
 /**
  * Team seat invitations. Only the organization owner (Organization.userId)
@@ -102,6 +103,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Complete your organization profile before inviting teammates." },
         { status: 400 }
+      );
+    }
+
+    // Plan-based seat cap. `teamMembers` in the plan config counts the
+    // owner seat (free/growth=1 → 0 invites possible; pro=3 → 2 invites;
+    // organization=10 → 9 invites). Pending-but-not-accepted invitations
+    // count against the cap too, so an owner can't blast 50 invites on a
+    // free plan hoping they all ghost.
+    const ownerUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    });
+    const planKey = (ownerUser?.plan ?? "free") as PlanType;
+    const seatCap = getPlanLimits(planKey).teamMembers ?? 1;
+    const inviteCap = Math.max(0, seatCap - 1); // minus 1 for the owner seat
+
+    const [activeMemberCount, pendingInviteCount] = await Promise.all([
+      prisma.organizationMember.count({
+        where: { organizationId: organization.id },
+      }),
+      prisma.organizationInvitation.count({
+        where: {
+          organizationId: organization.id,
+          acceptedAt: null,
+          revokedAt: null,
+          expiresAt: { gt: new Date() },
+        },
+      }),
+    ]);
+
+    if (activeMemberCount + pendingInviteCount >= inviteCap) {
+      return NextResponse.json(
+        {
+          error:
+            inviteCap === 0
+              ? "Your plan doesn't include team seats. Upgrade to Pro or Organization to invite teammates."
+              : `You've reached your plan's seat limit (${inviteCap} teammate${inviteCap === 1 ? "" : "s"}). Revoke a pending invite or upgrade to add more.`,
+          code: "seat_limit_reached",
+          plan: planKey,
+          inviteCap,
+          used: activeMemberCount + pendingInviteCount,
+        },
+        { status: 402 }
       );
     }
 

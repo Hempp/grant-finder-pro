@@ -93,6 +93,13 @@ export default function TeamPage() {
         );
         return;
       }
+      if (res.status === 402 && body?.code === "seat_limit_reached") {
+        toast.warning(
+          body.inviteCap === 0 ? "Team seats not included" : "Seat limit reached",
+          body.error
+        );
+        return;
+      }
       if (!res.ok) {
         toast.error("Invitation not sent", body?.error ?? "Please try again.");
         return;
@@ -133,12 +140,49 @@ export default function TeamPage() {
             <Users className="h-5 w-5" aria-hidden="true" />
           </div>
           <h1 className="text-2xl font-bold text-white">Team</h1>
+          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 text-[10px] font-semibold uppercase tracking-wider border border-amber-500/30">
+            Phase 1
+          </span>
         </div>
         <p className="text-slate-400 text-sm max-w-2xl">
-          Invite collaborators to this organization. They&apos;ll see the same
-          grant pipeline, applications, and content library you do.
+          Invite collaborators to link them to this organization.
         </p>
       </header>
+
+      {/* Honest disclosure: phase 1 ships the invite + audit loop.
+          Shared-workspace queries (grants + applications visible across
+          members) roll out in phase 2. Users deserve to know what
+          they're actually getting before they send invites. */}
+      <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 flex items-start gap-3">
+        <Info className="h-5 w-5 text-sky-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+        <div className="text-sm">
+          <p className="text-sky-200 font-medium">
+            What team membership gives your invitees today (phase 1):
+          </p>
+          <ul className="mt-2 text-sky-200/80 space-y-1 list-disc list-inside pl-1">
+            <li>
+              An account linked to your organization with a role on record
+              (admin / editor / viewer).
+            </li>
+            <li>
+              Audit-log attribution when they act in the system.
+            </li>
+          </ul>
+          <p className="mt-2 text-sky-200 font-medium">
+            What phase 2 adds (shipping next):
+          </p>
+          <ul className="mt-1 text-sky-200/80 space-y-1 list-disc list-inside pl-1">
+            <li>Members see and edit your grant pipeline and applications.</li>
+            <li>Shared content library + co-authoring on applications.</li>
+          </ul>
+          <p className="mt-3 text-sky-200/70 text-xs">
+            We&apos;d rather ship the loop honestly than claim shared workspaces
+            are live before the backend is there. Invites you send today are
+            real and will upgrade in place when phase 2 lands — no re-invite
+            required.
+          </p>
+        </div>
+      </div>
 
       {migrationPending && (
         <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">

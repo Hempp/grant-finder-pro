@@ -462,6 +462,19 @@ export async function sendDeadlineReminderEmail(
   }
 }
 
+/** Shared HTML escaper for email bodies. User-controlled strings
+ *  (grant titles, org names, funders) must pass through this before
+ *  being interpolated into an HTML template to prevent DOM injection
+ *  when a mail client (or browser preview) renders them. */
+function escapeDigestHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Weekly digest email
 interface DigestGrant {
   id: string;
@@ -476,11 +489,33 @@ interface DigestStats {
   upcomingDeadlines: number;
 }
 
+/** Named in-flight applications for the "keep momentum" section of the
+ *  digest. Pre-round-26 the digest only reported a count; counts don't
+ *  trigger action the way a named application does. */
+interface DigestInFlightApp {
+  applicationId: string;
+  grantTitle: string;
+  funder: string;
+  status: string;
+  deadline: Date | null;
+  daysUntilDeadline: number | null;
+}
+
+/** Applications awarded in the last 7 days — celebration + outcome nudge. */
+interface DigestRecentWin {
+  applicationId: string;
+  grantTitle: string;
+  awardAmount: number | null;
+  awardedAt: Date;
+}
+
 export async function sendWeeklyDigestEmail(
   to: string,
   userName: string | undefined,
   newGrants: DigestGrant[],
-  stats: DigestStats
+  stats: DigestStats,
+  inFlightApps: DigestInFlightApp[] = [],
+  recentWins: DigestRecentWin[] = []
 ) {
   if (!process.env.RESEND_API_KEY) {
     console.warn("RESEND_API_KEY not configured, skipping email");
@@ -548,15 +583,47 @@ export async function sendWeeklyDigestEmail(
             </tr>
           </table>
 
+          ${recentWins.length > 0 ? `
+          <h2 style="color: #e2e8f0; font-size: 18px; margin: 0 0 16px;">🎉 Recent wins</h2>
+          ${recentWins.slice(0, 3).map((w) => `
+            <div style="background-color: #042f2e; border: 1px solid #065f46; border-radius: 8px; padding: 16px; margin-bottom: 8px;">
+              <p style="color: #d1fae5; margin: 0; font-size: 15px; font-weight: 600;">${escapeDigestHtml(w.grantTitle)}</p>
+              ${w.awardAmount ? `<p style="color: #6ee7b7; margin: 4px 0 0; font-size: 14px;">Awarded $${w.awardAmount.toLocaleString()}</p>` : ""}
+              <a href="${APP_URL}/dashboard/applications/${w.applicationId}" style="display: inline-block; margin-top: 8px; color: #34d399; text-decoration: none; font-size: 13px;">Report outcome &amp; next steps &rarr;</a>
+            </div>
+          `).join("")}
+          ` : ""}
+
+          ${inFlightApps.length > 0 ? `
+          <h2 style="color: #e2e8f0; font-size: 18px; margin: 24px 0 16px;">Applications in flight</h2>
+          ${inFlightApps.slice(0, 5).map((a) => {
+            const deadlineBadge = a.daysUntilDeadline !== null && a.daysUntilDeadline <= 14
+              ? `<span style="display: inline-block; background-color: ${a.daysUntilDeadline <= 3 ? "#7f1d1d" : "#78350f"}; color: ${a.daysUntilDeadline <= 3 ? "#fecaca" : "#fde68a"}; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px;">${a.daysUntilDeadline <= 0 ? "overdue" : `${a.daysUntilDeadline}d left`}</span>`
+              : "";
+            return `
+            <div style="background-color: #0f172a; border-radius: 8px; padding: 16px; margin-bottom: 8px;">
+              <p style="color: #e2e8f0; margin: 0; font-size: 14px; font-weight: 500;">
+                ${escapeDigestHtml(a.grantTitle)}${deadlineBadge}
+              </p>
+              <p style="color: #64748b; margin: 4px 0 0; font-size: 12px;">
+                ${escapeDigestHtml(a.funder)} &middot; ${escapeDigestHtml(a.status.replace(/_/g, " "))}
+              </p>
+              <a href="${APP_URL}/dashboard/applications/${a.applicationId}" style="display: inline-block; margin-top: 8px; color: #10b981; text-decoration: none; font-size: 13px;">Open application &rarr;</a>
+            </div>
+          `;
+          }).join("")}
+          ${inFlightApps.length > 5 ? `<p style="color: #64748b; font-size: 13px; text-align: center;">&hellip; and ${inFlightApps.length - 5} more in flight.</p>` : ""}
+          ` : ""}
+
           ${newGrants.length > 0 ? `
-          <h2 style="color: #e2e8f0; font-size: 18px; margin: 0 0 16px;">Top Matching Grants</h2>
+          <h2 style="color: #e2e8f0; font-size: 18px; margin: 24px 0 16px;">Top matching grants</h2>
           ${grantListHtml}
           ${newGrants.length > 5 ? `<p style="color: #64748b; font-size: 14px; text-align: center;">...and ${newGrants.length - 5} more grants</p>` : ''}
-          ` : `
+          ` : recentWins.length === 0 && inFlightApps.length === 0 ? `
           <div style="background-color: #0f172a; border-radius: 8px; padding: 24px; text-align: center;">
             <p style="color: #94a3b8; margin: 0;">No new grants this week. We'll keep searching!</p>
           </div>
-          `}
+          ` : ""}
 
           <a href="${APP_URL}/dashboard/grants" style="display: block; margin-top: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; font-size: 16px; text-align: center;">
             Find More Grants
