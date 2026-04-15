@@ -1,40 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireAuth, requireOwnership } from "@/lib/api-helpers";
+import { logError } from "@/lib/telemetry";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 // GET - Fetch single application by ID
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
+
+  const { id } = await params;
+
+  const owned = await requireOwnership({
+    userId: session.user.id,
+    resourceId: id,
+    model: "application",
+  });
+  if (owned instanceof NextResponse) return owned;
+
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = await params;
-
     const application = await prisma.application.findUnique({
       where: { id },
-      include: {
-        grant: true,
-      },
+      include: { grant: true },
     });
-
+    // Ownership already verified — belt-and-suspenders for the race where
+    // the row is deleted between the ownership check and the fetch.
     if (!application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-
-    // Verify ownership
-    if (application.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     return NextResponse.json(application);
-  } catch (error) {
-    console.error("Failed to fetch application:", error);
+  } catch (err) {
+    logError(err, { endpoint: "/api/applications/[id]", method: "GET" });
     return NextResponse.json(
       { error: "Failed to fetch application" },
       { status: 500 }
@@ -43,36 +42,24 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE - Delete application by ID
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  const session = await requireAuth();
+  if (session instanceof NextResponse) return session;
+
+  const { id } = await params;
+
+  const owned = await requireOwnership({
+    userId: session.user.id,
+    resourceId: id,
+    model: "application",
+  });
+  if (owned instanceof NextResponse) return owned;
+
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { id } = await params;
-
-    // Verify the application exists and belongs to the user
-    const application = await prisma.application.findUnique({
-      where: { id },
-      select: { userId: true },
-    });
-
-    if (!application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
-    }
-
-    if (application.userId !== session.user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    await prisma.application.delete({
-      where: { id },
-    });
-
+    await prisma.application.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Failed to delete application:", error);
+  } catch (err) {
+    logError(err, { endpoint: "/api/applications/[id]", method: "DELETE" });
     return NextResponse.json(
       { error: "Failed to delete application" },
       { status: 500 }

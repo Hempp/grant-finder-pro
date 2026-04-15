@@ -198,6 +198,7 @@ export default function GrantsPage() {
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false);
   const [stateFilter, setStateFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -348,6 +349,73 @@ export default function GrantsPage() {
         return 0;
       });
   }, [grants, searchQuery, stateFilter, typeFilter, categoryFilter, amountFilter, focusFilter, sortBy]);
+
+  // SEARCH-UX's "10x" feature — type-ahead filter suggestions. The
+  // biggest search UX problem today is users don't know what filter
+  // values exist. Typing "solar" should surface a "Clean Energy"
+  // category chip they can click instead of hunting in a dropdown.
+  // Keeps search input primary; suggestions are additive.
+  const searchSuggestions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (q.length < 2) return [];
+    type Suggestion = {
+      label: string;
+      kind: "category" | "type" | "state" | "focus";
+      onApply: () => void;
+    };
+    const out: Suggestion[] = [];
+
+    for (const opt of grantCategories) {
+      if (!opt.value || out.length >= 5) break;
+      if (opt.label.toLowerCase().includes(q)) {
+        out.push({
+          label: opt.label,
+          kind: "category",
+          onApply: () => setCategoryFilter(opt.value),
+        });
+      }
+    }
+    for (const opt of grantTypes) {
+      if (!opt.value || out.length >= 5) break;
+      if (opt.label.toLowerCase().includes(q)) {
+        out.push({
+          label: opt.label,
+          kind: "type",
+          onApply: () => setTypeFilter(opt.value),
+        });
+      }
+    }
+    for (const opt of US_STATES) {
+      if (!opt.value || out.length >= 5) break;
+      if (opt.label.toLowerCase().includes(q)) {
+        out.push({
+          label: opt.label,
+          kind: "state",
+          onApply: () => setStateFilter(opt.value),
+        });
+      }
+    }
+    // Focus filters live inline (not in a shared array)
+    const focusOpts = [
+      { value: "bipoc-led", label: "BIPOC-owned / led" },
+      { value: "women-led", label: "Women-owned / led" },
+      { value: "veteran-led", label: "Veteran-owned / led" },
+      { value: "disability-led", label: "Disability-owned / led" },
+      { value: "lgbtq", label: "LGBTQ+ focused" },
+      { value: "rural", label: "Rural / underserved" },
+    ];
+    for (const opt of focusOpts) {
+      if (out.length >= 5) break;
+      if (opt.label.toLowerCase().includes(q)) {
+        out.push({
+          label: opt.label,
+          kind: "focus",
+          onApply: () => setFocusFilter(opt.value),
+        });
+      }
+    }
+    return out;
+  }, [searchQuery]);
 
   // Reset pagination whenever the user changes any filter — otherwise a deep
   // scroll into "Load more" survives across new filter selections and confuses.
@@ -583,14 +651,51 @@ export default function GrantsPage() {
         <CardContent className="p-3 sm:p-4">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-slate-500" aria-hidden="true" />
               <input
                 type="text"
-                placeholder="Search grants..."
+                placeholder="Search grants, or try 'solar', 'women-led', 'federal'..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchSuggestionsOpen(true)}
+                onBlur={() => {
+                  // Delay close so a click on a suggestion registers before blur.
+                  setTimeout(() => setSearchSuggestionsOpen(false), 150);
+                }}
                 className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm sm:text-base"
+                aria-autocomplete="list"
+                aria-expanded={searchSuggestionsOpen && searchSuggestions.length > 0}
               />
+              {searchSuggestionsOpen && searchSuggestions.length > 0 && (
+                <div
+                  role="listbox"
+                  className="absolute left-0 right-0 top-full mt-1 z-20 rounded-lg border border-slate-700 bg-slate-900 shadow-xl overflow-hidden"
+                >
+                  <p className="text-xs text-slate-500 px-3 pt-2 pb-1 uppercase tracking-wider">
+                    Try a filter
+                  </p>
+                  {searchSuggestions.map((s, i) => (
+                    <button
+                      key={`${s.kind}:${s.label}:${i}`}
+                      role="option"
+                      aria-selected="false"
+                      type="button"
+                      // onMouseDown fires before input's onBlur, so the filter
+                      // click lands even though blur is about to close the list.
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        s.onApply();
+                        setSearchQuery("");
+                        setSearchSuggestionsOpen(false);
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-slate-800 transition focus:bg-slate-800 focus:outline-none"
+                    >
+                      <span className="text-sm text-white">{s.label}</span>
+                      <span className="text-xs text-slate-500 capitalize">{s.kind}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <Button
               variant="secondary"
