@@ -85,8 +85,16 @@ export function decryptPII(value: string | null | undefined): string | null | un
   }
 }
 
-/** Fields on StudentProfile that pass through encryption helpers transparently. */
+/** Fields on StudentProfile that pass through encryption helpers transparently.
+ *
+ * Only string fields are listed — the extension's type-guard skips
+ * non-string values, so adding numeric test-score fields here would be a
+ * no-op. Migrating test-score columns to encrypted strings requires a
+ * schema change (Int → String with cast) and is tracked as a follow-up.
+ */
 export const STUDENT_PROFILE_PII_FIELDS = [
+  "firstName",
+  "lastName",
   "gender",
   "ethnicity",
   "citizenship",

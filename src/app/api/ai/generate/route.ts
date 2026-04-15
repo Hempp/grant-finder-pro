@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { logError, logEvent, logWarning, timer } from "@/lib/telemetry";
+import { withCircuitBreaker } from "@/lib/circuit-breaker";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -39,22 +40,36 @@ export async function POST(request: NextRequest) {
     logEvent("ai.generate.started", { field, userId: session.user.id });
     const stop = timer("ai.generate");
 
-    // If API key available, use Claude
+    // If API key available, use Claude — wrapped in circuit breaker so
+    // a downed Anthropic endpoint or quota exhaustion flips us into
+    // template mode instead of hammering the API for every request.
+    // After 3 failures, the circuit opens for 5 minutes; every request
+    // during that window short-circuits to the template fallback.
     if (ANTHROPIC_API_KEY) {
-      try {
-        const content = await generateWithClaude(field, context, grantInfo, organizationInfo);
-        stop({ source: "claude", field, chars: content.length });
+      const fallbackSentinel = Symbol("circuit-open");
+      const { result, fromFallback, circuitState } = await withCircuitBreaker(
+        "anthropic.messages",
+        () => generateWithClaude(field, context, grantInfo, organizationInfo),
+        fallbackSentinel as unknown as string
+      );
+
+      if (!fromFallback && result !== (fallbackSentinel as unknown as string)) {
+        const content = result as string;
+        stop({ source: "claude", field, chars: content.length, circuitState });
         logEvent("ai.generate.succeeded", { source: "claude", field });
         return NextResponse.json({ content, source: "claude" });
-      } catch (claudeError) {
-        logWarning("ai.generate.claude_fallback", {
-          field,
-          message: claudeError instanceof Error ? claudeError.message : String(claudeError),
-        });
-        const content = generateContent(field, context, grantInfo, organizationInfo);
-        stop({ source: "template", field, reason: "claude_error" });
-        return NextResponse.json({ content, source: "template", error: String(claudeError) });
       }
+
+      if (fromFallback) {
+        logWarning("ai.generate.circuit_open", { field, circuitState });
+      }
+      const content = generateContent(field, context, grantInfo, organizationInfo);
+      stop({ source: "template", field, reason: fromFallback ? "circuit_open" : "claude_error" });
+      return NextResponse.json({
+        content,
+        source: "template",
+        reason: fromFallback ? "Claude is temporarily unavailable — serving a template draft." : undefined,
+      });
     }
 
     // Fallback to templates if no API key

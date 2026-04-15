@@ -69,7 +69,7 @@ export async function sendGrantAlertEmail({
             </span>
             ${
               grant.deadline
-                ? `<span style="color: #dc2626;">Deadline: ${new Date(grant.deadline).toLocaleDateString()}</span>`
+                ? `<span style="color: #dc2626;">Deadline: ${new Date(grant.deadline).toLocaleDateString("en-US")}</span>`
                 : ""
             }
           </div>
@@ -400,8 +400,8 @@ export async function sendDeadlineReminderEmail(
       <h3 style="color: #e2e8f0; margin: 0 0 8px; font-size: 16px;">${grant.title}</h3>
       <p style="color: #64748b; margin: 0 0 12px; font-size: 14px;">${grant.funder}</p>
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="color: #10b981; font-weight: 600;">$${grant.amount.toLocaleString()}</span>
-        <span style="color: #f59e0b; font-size: 14px;">Due: ${new Date(grant.deadline).toLocaleDateString()}</span>
+        <span style="color: #10b981; font-weight: 600;">$${grant.amount.toLocaleString("en-US")}</span>
+        <span style="color: #f59e0b; font-size: 14px;">Due: ${new Date(grant.deadline).toLocaleDateString("en-US")}</span>
       </div>
       <a href="${APP_URL}/dashboard/grants/${grant.id}/apply" style="display: inline-block; margin-top: 12px; color: #10b981; text-decoration: none; font-size: 14px; font-weight: 500;">
         Continue Application →
@@ -610,7 +610,7 @@ export async function sendOutcomePromptEmail(
     <div style="background-color: #0f172a; border-radius: 8px; padding: 20px; margin-bottom: 12px;">
       <h3 style="color: #e2e8f0; margin: 0 0 4px; font-size: 15px;">${grant.title}</h3>
       <p style="color: #64748b; margin: 0 0 8px; font-size: 13px;">${grant.funder}</p>
-      <p style="color: #94a3b8; margin: 0 0 12px; font-size: 13px;">Deadline was ${new Date(grant.deadline).toLocaleDateString()}</p>
+      <p style="color: #94a3b8; margin: 0 0 12px; font-size: 13px;">Deadline was ${new Date(grant.deadline).toLocaleDateString("en-US")}</p>
       <a href="${APP_URL}/dashboard/applications/${grant.applicationId}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 13px;">
         Report Outcome
       </a>
