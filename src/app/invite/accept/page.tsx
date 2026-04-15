@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -14,7 +14,40 @@ type ViewState =
   | { kind: "success"; organizationId: string }
   | { kind: "error"; message: string };
 
+// useSearchParams triggers a client-side bailout; wrapping in Suspense
+// lets the rest of the shell prerender while the param resolves.
 export default function InviteAcceptPage() {
+  return (
+    <Suspense fallback={<InviteAcceptShell loading />}>
+      <InviteAcceptInner />
+    </Suspense>
+  );
+}
+
+function InviteAcceptShell({ loading }: { loading?: boolean }) {
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      <header className="border-b border-slate-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-emerald-400" aria-hidden="true" />
+            <span className="font-bold text-white text-lg">GrantPilot</span>
+          </Link>
+        </div>
+      </header>
+      <main id="main-content" className="flex-1 flex items-center justify-center px-4 sm:px-6 py-12">
+        {loading && (
+          <div className="flex items-center gap-3 text-slate-300">
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+            Loading invitation…
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function InviteAcceptInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { data: session, status } = useSession();

@@ -625,18 +625,23 @@ ${formData.budgetJustification}
             </div>
           )}
 
-        {/* Outcome Modal */}
-        {showOutcomeModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-lg rounded-xl border border-slate-700 bg-slate-800 p-4 sm:p-6 shadow-xl">
-              <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
-                Report Outcome
-              </h2>
-
-              <p className="text-slate-400 text-xs sm:text-sm mb-4">
-                What was the result of your application for &quot;{application.grant.title}&quot;?
-              </p>
-
+        {/* Outcome Modal — Radix Dialog: focus trap + ESC + click-outside + focus
+            restoration come for free, replacing the hand-rolled backdrop below. */}
+        <Dialog
+          open={showOutcomeModal}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowOutcomeModal(false);
+              setOutcomeResult(null);
+              setOutcomeNotes("");
+              setOutcomeFeedback("");
+            }
+          }}
+          title="Report Outcome"
+          description={`What was the result of your application for "${application.grant.title}"?`}
+          size="md"
+        >
+          <div>
               {/* Result Buttons */}
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4">
                 <button
@@ -802,9 +807,8 @@ ${formData.budgetJustification}
                   {submittingOutcome ? "Submitting..." : "Submit Outcome"}
                 </Button>
               </div>
-            </div>
           </div>
-        )}
+        </Dialog>
 
         {/* Celebration Modal — Radix Dialog handles focus restoration so
             the user lands back on the "Report Outcome" button when they

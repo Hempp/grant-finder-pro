@@ -21,6 +21,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface Scholarship {
   id: string;
@@ -799,12 +800,17 @@ export default function StudentApplicationDetailPage() {
         </div>
       )}
 
-      {/* ── Celebration + Fee Modal ──────────────────────────────────────── */}
-      {showCelebration && application.status === "awarded" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-xl border border-emerald-500/30 bg-slate-800 p-6 text-center">
-            <div className="text-5xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-white mb-2">Congratulations!</h2>
+      {/* ── Celebration + Fee Modal — Radix Dialog: focus trap, ESC, and
+          focus restoration, without reimplementing the overlay per-page. */}
+      <Dialog
+        open={showCelebration && application.status === "awarded"}
+        onOpenChange={(open) => !open && setShowCelebration(false)}
+        title="Congratulations!"
+        size="sm"
+        closeButton={application.successFeePercent === 0}
+      >
+        <div className="text-center">
+            <div className="text-5xl mb-4" aria-hidden="true">🎉</div>
             <p className="text-slate-300 mb-1">
               You won{" "}
               <span className="text-emerald-400 font-bold">
@@ -888,15 +894,15 @@ export default function StudentApplicationDetailPage() {
 
             {application.successFeePercent === 0 && (
               <button
+                type="button"
                 onClick={() => setShowCelebration(false)}
-                className="w-full py-3 rounded-xl bg-emerald-500 text-white font-semibold"
+                className="w-full py-3 rounded-xl bg-emerald-500 text-white font-semibold focus-ring"
               >
                 Continue
               </button>
             )}
-          </div>
         </div>
-      )}
+      </Dialog>
 
       {/* ── Success Fee Info ──────────────────────────────────────────────── */}
       {application.status === "awarded" && (
