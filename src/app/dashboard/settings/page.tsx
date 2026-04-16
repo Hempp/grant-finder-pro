@@ -295,11 +295,18 @@ function SettingsContent() {
           </h2>
 
           {success && (
-            <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-emerald-400" />
-              <p className="text-emerald-400">
-                Your subscription has been updated successfully!
-              </p>
+            <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <div className="flex items-center gap-3 mb-1">
+                <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                <p className="text-emerald-400 font-semibold">
+                  You&apos;re on {subscription?.planName ?? "a paid"} plan now!
+                </p>
+              </div>
+              {subscription && subscription.limits.teamMembers > 1 && (
+                <p className="text-emerald-300/80 text-sm ml-8">
+                  You can now <Link href="/dashboard/team" className="underline hover:text-emerald-200">invite up to {subscription.limits.teamMembers - 1} teammate{subscription.limits.teamMembers - 1 === 1 ? "" : "s"}</Link> to share your grant pipeline.
+                </p>
+              )}
             </div>
           )}
 
@@ -375,6 +382,20 @@ function SettingsContent() {
                       : `Resets in ${subscription.daysUntilReset} days`}
                   </p>
                 </div>
+                {subscription.limits.teamMembers > 1 && (
+                  <div className="p-4 bg-slate-700/30 rounded-lg">
+                    <p className="text-sm text-slate-400 mb-1">Team Seats</p>
+                    <p className="text-xl font-bold text-white">
+                      {subscription.limits.teamMembers}
+                      <span className="text-slate-400 text-sm font-normal">
+                        {" "}total
+                      </span>
+                    </p>
+                    <Link href="/dashboard/team" className="text-xs text-emerald-400 hover:text-emerald-300 mt-1 inline-block">
+                      Manage team →
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* Actions */}
