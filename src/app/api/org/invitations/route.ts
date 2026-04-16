@@ -16,7 +16,7 @@ import {
   INVITATION_ROLES,
 } from "@/lib/invitation-token";
 import { sendOrganizationInvitationEmail } from "@/lib/email";
-import { getPlanLimits, PlanType } from "@/lib/stripe";
+import { getPlanLimits, getEffectivePlan } from "@/lib/stripe";
 
 /**
  * Team seat invitations. Only the organization owner (Organization.userId)
@@ -113,9 +113,18 @@ export async function POST(request: NextRequest) {
     // free plan hoping they all ghost.
     const ownerUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { plan: true },
+      select: {
+        plan: true,
+        trialEndsAt: true,
+        stripeSubscriptionId: true,
+      },
     });
-    const planKey = (ownerUser?.plan ?? "free") as PlanType;
+    // Use the *effective* plan so a user whose trial expired (but DB
+    // plan still reads "pro" because they haven't refreshed the dashboard
+    // yet) can't sneak in extra invites. Handles the stale-cache case.
+    const planKey = ownerUser
+      ? getEffectivePlan(ownerUser)
+      : "free";
     const seatCap = getPlanLimits(planKey).teamMembers ?? 1;
     const inviteCap = Math.max(0, seatCap - 1); // minus 1 for the owner seat
 

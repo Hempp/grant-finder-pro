@@ -19,6 +19,7 @@ import {
   Gift,
   BookOpen,
   Users,
+  ShieldCheck,
 } from "lucide-react";
 import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -49,6 +50,7 @@ const navGroups = [
     label: "More",
     items: [
       { name: "Referrals", href: "/dashboard/referrals", icon: Gift },
+      { name: "Audit log", href: "/dashboard/audit", icon: ShieldCheck },
     ],
   },
 ];

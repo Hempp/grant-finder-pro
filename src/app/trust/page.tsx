@@ -85,7 +85,7 @@ const SECURITY_CONTROLS = [
     icon: Eye,
     title: "Audit logging",
     body:
-      "Authentication events, account deletions, data exports, and billing lifecycle events are recorded to an append-only audit log retained for forensic review. Log rows survive user deletion via ON DELETE SET NULL.",
+      "Authentication events, account deletions, data exports, billing lifecycle, and org membership changes are recorded to an append-only audit log. Customers can review their own trail from the dashboard. Log rows survive user deletion via ON DELETE SET NULL so forensic review isn't foiled by account closure.",
   },
   {
     icon: FileCheck,

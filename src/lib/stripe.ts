@@ -191,6 +191,34 @@ export function getPlanLimits(plan: PlanType) {
   return PLANS[plan]?.limits ?? PLANS.free.limits;
 }
 
+/**
+ * Compute the user's *effective* plan for permissions / seat caps.
+ *
+ * The DB column `user.plan` is a cached snapshot — it gets set to
+ * "pro" when a trial starts and only reverts to "free" when the user
+ * hits GET /api/stripe/subscription after the trial ends. Anywhere we
+ * gate features on plan (seat caps, match limits, Smart Fill count)
+ * we must check here or a trial user who never revisits the dashboard
+ * can retain Pro privileges indefinitely.
+ *
+ * Rule: if `user.plan !== "free"` AND `user.trialEndsAt < now` AND no
+ * `stripeSubscriptionId`, the effective plan is "free". In every other
+ * case the stored plan is authoritative.
+ */
+export function getEffectivePlan(user: {
+  plan: string | null | undefined;
+  trialEndsAt: Date | null | undefined;
+  stripeSubscriptionId: string | null | undefined;
+}): PlanType {
+  const stored = (user.plan ?? "free") as PlanType;
+  if (stored === "free") return stored;
+  if (user.stripeSubscriptionId) return stored; // paid — trial expiry irrelevant
+  if (user.trialEndsAt && user.trialEndsAt.getTime() < Date.now()) {
+    return "free";
+  }
+  return stored;
+}
+
 // Success fee calculations
 export function getSuccessFeePercent(plan: PlanType): number {
   return PLANS[plan]?.successFeePercent ?? 0;
