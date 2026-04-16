@@ -17,7 +17,7 @@ test.describe("Public surfaces", () => {
     await page.goto("/pricing");
     for (const name of ["Starter", "Growth", "Pro", "Organization"]) {
       await expect(
-        page.getByRole("heading", { level: 3, name })
+        page.getByRole("heading", { level: 3, name, exact: true })
       ).toBeVisible();
     }
   });
