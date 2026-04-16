@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, Building2, Target, Users, DollarSign, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import {
+  CheckCircle, Building2, Target, Users, DollarSign, ArrowRight, ArrowLeft,
+  Loader2, Globe, Sparkles, FileText, ClipboardPaste,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Input, Textarea, Select } from "@/components/ui";
+import { useToast } from "@/components/ui";
 
 const steps = [
   { id: 1, name: "Basic Info", icon: Building2 },
@@ -77,9 +81,14 @@ const fundingRanges = [
 ];
 
 export default function OrganizationPage() {
+  const toast = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [autoFilling, setAutoFilling] = useState(false);
+  const [autoFillUrl, setAutoFillUrl] = useState("");
+  const [autoFillMode, setAutoFillMode] = useState<"url" | "paste" | null>(null);
+  const [pasteContent, setPasteContent] = useState("");
   const [formData, setFormData] = useState({
     // Basic Info
     name: "",
@@ -154,6 +163,72 @@ export default function OrganizationPage() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  const handleAutoFill = async () => {
+    setAutoFilling(true);
+    try {
+      const payload =
+        autoFillMode === "paste"
+          ? { source: "paste", content: pasteContent }
+          : { source: "url", url: autoFillUrl || formData.website || undefined };
+
+      const res = await fetch("/api/organizations/auto-fill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error("Auto-fill failed", data.error ?? "Please try again.");
+        return;
+      }
+
+      // Apply returned updates directly to the form so the user sees
+      // the filled fields BEFORE saving — they can review and correct.
+      if (data.profile?.updates) {
+        setFormData((prev) => {
+          const merged = { ...prev };
+          for (const [key, value] of Object.entries(data.profile.updates)) {
+            if (typeof value === "string" && key in merged) {
+              (merged as Record<string, string>)[key] = value;
+            }
+          }
+          return merged;
+        });
+      }
+
+      const { fieldsFilled, fieldsFound } = data.profile ?? {};
+      if (fieldsFilled > 0) {
+        toast.success(
+          `Auto-filled ${fieldsFilled} fields`,
+          `Found ${fieldsFound} data points from your ${autoFillMode === "paste" ? "content" : "website"}. Review and save when ready.`
+        );
+      } else if (fieldsFound > 0) {
+        toast.info(
+          "Profile already filled",
+          "We found data but your profile already has values for those fields."
+        );
+      } else {
+        toast.warning(
+          "Not enough data found",
+          "Try pasting your company description or an 'About Us' page."
+        );
+      }
+
+      if (data.blocksCreated > 0) {
+        toast.success(
+          `${data.blocksCreated} Content Library entries`,
+          "New blocks extracted and saved to your library."
+        );
+      }
+
+      setAutoFillMode(null);
+    } catch {
+      toast.error("Network error", "Check your connection and try again.");
+    } finally {
+      setAutoFilling(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setSaving(true);
     try {
@@ -193,6 +268,100 @@ export default function OrganizationPage() {
         <p className="text-slate-400 mt-1 text-sm sm:text-base">
           Complete your profile to improve grant matching accuracy.
         </p>
+      </div>
+
+      {/* ═══ Smart Fill ═══════════════════════════════════════════════ */}
+      <div className="mb-6 rounded-xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5 p-5">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-300 flex-shrink-0">
+            <Sparkles className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-white font-semibold">Auto-fill your profile</p>
+            <p className="text-slate-400 text-sm mt-0.5">
+              Paste your website URL or company description — we&apos;ll extract
+              your org details and fill in the fields automatically.
+            </p>
+          </div>
+        </div>
+
+        {!autoFillMode && (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <button
+              type="button"
+              onClick={() => setAutoFillMode("url")}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition focus-ring"
+            >
+              <Globe className="h-4 w-4" aria-hidden="true" />
+              Import from website
+            </button>
+            <button
+              type="button"
+              onClick={() => setAutoFillMode("paste")}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition focus-ring"
+            >
+              <ClipboardPaste className="h-4 w-4" aria-hidden="true" />
+              Paste company info
+            </button>
+          </div>
+        )}
+
+        {autoFillMode === "url" && (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" aria-hidden="true" />
+                <input
+                  type="url"
+                  placeholder="https://yourcompany.com"
+                  value={autoFillUrl || formData.website}
+                  onChange={(e) => setAutoFillUrl(e.target.value)}
+                  disabled={autoFilling}
+                  className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60 text-sm"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAutoFill}
+                disabled={autoFilling}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition disabled:opacity-60 focus-ring"
+              >
+                {autoFilling ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
+                {autoFilling ? "Extracting..." : "Extract"}
+              </button>
+            </div>
+            <button type="button" onClick={() => setAutoFillMode(null)} className="text-xs text-slate-500 hover:text-slate-300">
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {autoFillMode === "paste" && (
+          <div className="space-y-3">
+            <textarea
+              placeholder={"Paste your company description, About Us page, annual report excerpt, or any text that describes your organization..."}
+              value={pasteContent}
+              onChange={(e) => setPasteContent(e.target.value)}
+              disabled={autoFilling}
+              rows={5}
+              className="w-full px-3 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60 text-sm resize-y"
+            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleAutoFill}
+                disabled={autoFilling || !pasteContent.trim()}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold text-sm transition disabled:opacity-60 focus-ring"
+              >
+                {autoFilling ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <FileText className="h-4 w-4" aria-hidden="true" />}
+                {autoFilling ? "Extracting..." : "Extract from text"}
+              </button>
+              <button type="button" onClick={() => setAutoFillMode(null)} className="text-xs text-slate-500 hover:text-slate-300">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Progress Steps */}
