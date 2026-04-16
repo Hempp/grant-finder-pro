@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.ai";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev";
 
 export default function robots(): MetadataRoute.Robots {
   return {

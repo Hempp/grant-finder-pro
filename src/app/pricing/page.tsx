@@ -173,7 +173,7 @@ const faqs = [
   },
   {
     q: "What happens to my annual plan if I cancel mid-year?",
-    a: "Annual plans renew yearly. If you cancel before the renewal date, you keep access through the end of the period you've already paid for, and we issue a prorated refund for any remaining unused full months. Refund requests go to support@grantpilot.ai.",
+    a: "Annual plans renew yearly. If you cancel before the renewal date, you keep access through the end of the period you've already paid for, and we issue a prorated refund for any remaining unused full months. Refund requests go to support@grantpilot.dev.",
   },
   {
     q: "When does the success fee get charged?",

@@ -36,7 +36,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://grantpilot.ai";
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://grantpilot.dev";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -765,7 +765,7 @@ export default async function LandingPage() {
               {[
                 { href: "/pricing", label: "Pricing" },
                 { href: "/resources", label: "Resources" },
-                { href: "mailto:support@grantpilot.ai", label: "Contact" },
+                { href: "mailto:support@grantpilot.dev", label: "Contact" },
                 { href: "/trust", label: "Trust" },
                 { href: "/privacy", label: "Privacy" },
                 { href: "/terms", label: "Terms" },

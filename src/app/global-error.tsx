@@ -40,7 +40,7 @@ export default function GlobalError({
           </h1>
           <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.5rem" }}>
             We&apos;re sorry — GrantPilot hit an unexpected error. Please try again, or
-            email <a href="mailto:support@grantpilot.ai" style={{ color: "#34d399" }}>support@grantpilot.ai</a>.
+            email <a href="mailto:support@grantpilot.dev" style={{ color: "#34d399" }}>support@grantpilot.dev</a>.
           </p>
           {error.digest && (
             <p style={{ color: "#475569", fontSize: "0.75rem", marginBottom: "1rem" }}>

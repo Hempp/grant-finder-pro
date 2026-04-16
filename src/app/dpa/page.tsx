@@ -180,17 +180,17 @@ export default function DpaPage() {
           <p className="text-slate-400 leading-7">
             Data protection questions or DPA execution requests:{" "}
             <a
-              href="mailto:privacy@grantpilot.ai"
+              href="mailto:privacy@grantpilot.dev"
               className="text-emerald-400 hover:text-emerald-300"
             >
-              privacy@grantpilot.ai
+              privacy@grantpilot.dev
             </a>
             . Security reports:{" "}
             <a
-              href="mailto:security@grantpilot.ai"
+              href="mailto:security@grantpilot.dev"
               className="text-emerald-400 hover:text-emerald-300"
             >
-              security@grantpilot.ai
+              security@grantpilot.dev
             </a>
             .
           </p>

@@ -147,10 +147,10 @@ export default function TrustPage() {
             to us. It is maintained as a living record — the claims below map to specific controls
             in our codebase and infrastructure. If you need something we don&apos;t cover, email{" "}
             <a
-              href="mailto:security@grantpilot.ai"
+              href="mailto:security@grantpilot.dev"
               className="text-emerald-400 hover:text-emerald-300"
             >
-              security@grantpilot.ai
+              security@grantpilot.dev
             </a>
             .
           </p>
@@ -297,10 +297,10 @@ export default function TrustPage() {
             <li>
               <strong className="text-slate-200">Object / restrict</strong> — email{" "}
               <a
-                href="mailto:privacy@grantpilot.ai"
+                href="mailto:privacy@grantpilot.dev"
                 className="text-emerald-400 hover:text-emerald-300"
               >
-                privacy@grantpilot.ai
+                privacy@grantpilot.dev
               </a>{" "}
               to restrict specific processing activities.
             </li>
@@ -319,10 +319,10 @@ export default function TrustPage() {
               <p className="text-slate-300 leading-7">
                 We appreciate responsible disclosure. Email{" "}
                 <a
-                  href="mailto:security@grantpilot.ai"
+                  href="mailto:security@grantpilot.dev"
                   className="text-emerald-400 hover:text-emerald-300"
                 >
-                  security@grantpilot.ai
+                  security@grantpilot.dev
                 </a>{" "}
                 with reproduction steps and any supporting evidence. We acknowledge reports within
                 two business days and will coordinate disclosure timelines with you.

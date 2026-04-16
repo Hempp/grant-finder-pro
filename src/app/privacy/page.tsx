@@ -113,7 +113,7 @@ export default function PrivacyPage() {
 
           <h2 className="text-xl font-bold text-white mt-8">9. How to Exercise Your Rights</h2>
           <p className="text-slate-400 leading-7">
-            Email <a href="mailto:privacy@grantpilot.ai" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.ai</a> with your request. We will respond within <strong className="text-slate-200">30 days</strong>. We may ask you to verify your identity before processing requests.
+            Email <a href="mailto:privacy@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.dev</a> with your request. We will respond within <strong className="text-slate-200">30 days</strong>. We may ask you to verify your identity before processing requests.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">10. International Data Transfers</h2>
@@ -133,7 +133,7 @@ export default function PrivacyPage() {
 
           <h2 className="text-xl font-bold text-white mt-8">13. Contact Us</h2>
           <p className="text-slate-400 leading-7">
-            For privacy questions or data requests, contact us at <a href="mailto:privacy@grantpilot.ai" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.ai</a>.
+            For privacy questions or data requests, contact us at <a href="mailto:privacy@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.dev</a>.
           </p>
         </div>
       </main>

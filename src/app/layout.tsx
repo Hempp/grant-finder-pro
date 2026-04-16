@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.ai";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

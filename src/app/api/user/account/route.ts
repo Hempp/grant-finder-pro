@@ -95,7 +95,7 @@ export async function DELETE(request: NextRequest) {
   } catch (err) {
     logError(err, { endpoint: "/api/user/account", userId });
     return NextResponse.json(
-      { error: "Failed to delete account. Contact support@grantpilot.ai." },
+      { error: "Failed to delete account. Contact support@grantpilot.dev." },
       { status: 500 }
     );
   }

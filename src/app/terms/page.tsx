@@ -41,7 +41,7 @@ export default function TermsPage() {
 
           <h2 className="text-xl font-bold text-white mt-8">3. Account Responsibilities</h2>
           <p className="text-slate-400 leading-7">
-            You are responsible for maintaining the security of your account credentials, providing accurate information, and all activity under your account. One account per organization unless on an Organization plan with team seats. Notify us immediately at <a href="mailto:support@grantpilot.ai" className="text-emerald-400 hover:text-emerald-300">support@grantpilot.ai</a> if you suspect unauthorized access.
+            You are responsible for maintaining the security of your account credentials, providing accurate information, and all activity under your account. One account per organization unless on an Organization plan with team seats. Notify us immediately at <a href="mailto:support@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">support@grantpilot.dev</a> if you suspect unauthorized access.
           </p>
 
           <h2 className="text-xl font-bold text-white mt-8">4. Subscription Plans & Billing</h2>
@@ -132,7 +132,7 @@ export default function TermsPage() {
 
           <h2 className="text-xl font-bold text-white mt-8">17. Contact</h2>
           <p className="text-slate-400 leading-7">
-            For questions about these terms, contact us at <a href="mailto:legal@grantpilot.ai" className="text-emerald-400 hover:text-emerald-300">legal@grantpilot.ai</a>.
+            For questions about these terms, contact us at <a href="mailto:legal@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">legal@grantpilot.dev</a>.
           </p>
         </div>
       </main>

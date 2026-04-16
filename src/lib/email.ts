@@ -123,7 +123,7 @@ export async function sendGrantAlertEmail({
 
           <!-- CTA -->
           <div style="text-align: center; margin-top: 32px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grant-finder-pro.vercel.app"}/dashboard/grants"
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev"}/dashboard/grants"
                style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500;">
               View All Grants
             </a>
@@ -135,7 +135,7 @@ export async function sendGrantAlertEmail({
           <p style="color: #9ca3af; font-size: 12px; margin: 0;">
             You're receiving this because you enabled grant alerts.
             <br>
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grant-finder-pro.vercel.app"}/dashboard/settings" style="color: #6b7280;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev"}/dashboard/settings" style="color: #6b7280;">
               Manage preferences
             </a>
           </p>
@@ -203,7 +203,7 @@ export async function sendWelcomeEmail(to: string, userName?: string) {
             Complete your organization profile for better grant matches!
           </p>
           <div style="text-align: center; margin-top: 24px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grant-finder-pro.vercel.app"}/dashboard/organization"
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev"}/dashboard/organization"
                style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: 500;">
               Complete Profile
             </a>
@@ -671,7 +671,7 @@ export async function sendOutcomePromptEmail(
 
   if (grants.length === 0) return null;
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grant-finder-pro.vercel.app";
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev";
 
   const grantListHtml = grants.map(grant => `
     <div style="background-color: #0f172a; border-radius: 8px; padding: 20px; margin-bottom: 12px;">

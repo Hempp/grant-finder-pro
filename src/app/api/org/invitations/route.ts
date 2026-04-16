@@ -25,7 +25,7 @@ import { getPlanLimits, getEffectivePlan } from "@/lib/stripe";
  * the rest of the codebase relies on.
  */
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.ai";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev";
 
 /** GET /api/org/invitations — list outstanding + accepted invitations for the owner's org. */
 export async function GET(request: NextRequest) {
