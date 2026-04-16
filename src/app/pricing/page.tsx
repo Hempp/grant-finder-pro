@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -201,6 +201,19 @@ function PricingContent() {
   const [pendingPlan, setPendingPlan] = useState<typeof plans[number] | null>(null);
 
   const canceled = searchParams.get("canceled");
+  const highlightedPlan = searchParams.get("plan");
+
+  // Scroll the deep-linked plan into view when arriving from the
+  // seat-limit card on /dashboard/team (?plan=pro or ?plan=organization).
+  // Smooth scroll + centered positioning so the ring + CTA are in the
+  // user's primary focus zone.
+  useEffect(() => {
+    if (!highlightedPlan) return;
+    const el = document.getElementById(`plan-${highlightedPlan}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [highlightedPlan]);
 
   const handleStartTrial = async () => {
     if (!session) { router.push("/login?redirect=/pricing"); return; }
@@ -348,11 +361,15 @@ function PricingContent() {
             const isCurrentPlan = plan.id === subscription?.plan;
             const savings = annualSavings(plan.price, plan.priceAnnual);
 
+            const isHighlighted = plan.id === highlightedPlan;
             return (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border transition-all duration-300 ${
-                  plan.popular
+                id={`plan-${plan.id}`}
+                className={`relative rounded-2xl border transition-all duration-300 scroll-mt-24 ${
+                  isHighlighted
+                    ? "border-emerald-400 bg-gradient-to-b from-emerald-500/[0.12] via-slate-900/80 to-slate-900/60 shadow-2xl shadow-emerald-500/20 ring-2 ring-emerald-400/40 scale-[1.02] lg:scale-105"
+                    : plan.popular
                     ? "border-emerald-500/50 bg-gradient-to-b from-emerald-500/[0.08] via-slate-900/80 to-slate-900/60 shadow-xl shadow-emerald-500/10 scale-[1.02] lg:scale-105"
                     : "border-slate-800 bg-slate-900/60 hover:border-slate-700"
                 }`}

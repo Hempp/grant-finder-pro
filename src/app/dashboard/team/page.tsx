@@ -15,7 +15,10 @@ import {
   Shield,
   Eye,
   Pencil,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 import { useToast } from "@/components/ui";
 
 interface Invitation {
@@ -65,6 +68,14 @@ export default function TeamPage() {
   const [loading, setLoading] = useState(true);
   const [migrationPending, setMigrationPending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Persist seat-limit info across renders so the upgrade card stays
+  // visible after the toast fades — the toast alone has a ~3s half-life
+  // and doesn't convert. The card gives the user a clear next action.
+  const [seatLimit, setSeatLimit] = useState<{
+    plan: string;
+    inviteCap: number;
+    used: number;
+  } | null>(null);
   const [form, setForm] = useState<{ email: string; role: Invitation["role"] }>({
     email: "",
     role: "editor",
@@ -158,9 +169,14 @@ export default function TeamPage() {
         return;
       }
       if (res.status === 402 && body?.code === "seat_limit_reached") {
+        setSeatLimit({
+          plan: body.plan ?? "free",
+          inviteCap: body.inviteCap ?? 0,
+          used: body.used ?? 0,
+        });
         toast.warning(
           body.inviteCap === 0 ? "Team seats not included" : "Seat limit reached",
-          body.error
+          "See the upgrade options below."
         );
         return;
       }
@@ -253,6 +269,8 @@ export default function TeamPage() {
           </div>
         </div>
       )}
+
+      {seatLimit && <SeatLimitUpgradeCard limit={seatLimit} />}
 
       <section aria-labelledby="invite-heading" className="rounded-xl border border-slate-800 bg-slate-900/60 p-6">
         <h2 id="invite-heading" className="text-lg font-semibold text-white mb-4">
@@ -448,6 +466,58 @@ export default function TeamPage() {
           </ul>
         </section>
       )}
+    </div>
+  );
+}
+
+/**
+ * Persistent upgrade card shown after a 402 seat_limit_reached response.
+ * The toast version fades in 3s and converts poorly — this card stays
+ * rendered with a specific plan recommendation + deep link to /pricing.
+ *
+ * Plan recommendation logic:
+ *   - inviteCap === 0 (free / growth) → recommend Pro (3 seats)
+ *   - inviteCap >= 1 (pro)             → recommend Organization (10 seats)
+ *
+ * Deep-link uses the plan query param so the /pricing page can scroll-
+ * highlight the right tier when it lands — see pricing/page.tsx.
+ */
+function SeatLimitUpgradeCard({
+  limit,
+}: {
+  limit: { plan: string; inviteCap: number; used: number };
+}) {
+  const recommendPro = limit.inviteCap === 0;
+  const target = recommendPro ? "pro" : "organization";
+  const targetLabel = recommendPro ? "Pro" : "Organization";
+  const seatCount = recommendPro ? 3 : 10;
+
+  return (
+    <div className="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 p-5">
+      <div className="flex items-start gap-3 mb-4">
+        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-300 flex-shrink-0">
+          <Sparkles className="h-5 w-5" aria-hidden="true" />
+        </div>
+        <div>
+          <p className="text-emerald-200 font-semibold">
+            {limit.inviteCap === 0
+              ? "Team seats aren't included on your current plan"
+              : `You've used all ${limit.inviteCap} teammate seat${limit.inviteCap === 1 ? "" : "s"} on your plan`}
+          </p>
+          <p className="text-emerald-100/80 text-sm mt-1">
+            Upgrade to {targetLabel} for {seatCount} total seats (you + {seatCount - 1}
+            {" "}teammate{seatCount - 1 === 1 ? "" : "s"}), lower success-fee tier,
+            and higher monthly match + Smart Fill limits.
+          </p>
+        </div>
+      </div>
+      <Link
+        href={`/pricing?plan=${target}`}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+      >
+        Upgrade to {targetLabel}
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
     </div>
   );
 }
