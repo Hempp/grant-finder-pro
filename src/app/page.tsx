@@ -92,32 +92,9 @@ const faqs = [
 ];
 
 /* ─── Early Access Feedback ─── */
-const earlyFeedback = [
-  {
-    initials: "BT",
-    color: "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30",
-    label: "Beta Tester",
-    quote: "Smart Fill scored my SBIR application 94/100. I've never had that level of confidence before submitting.",
-  },
-  {
-    initials: "AK",
-    color: "bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30",
-    label: "Beta Tester",
-    quote: "One application used to take us three weeks. Now we draft two per week using Smart Fill and actually understand the scoring rubric.",
-  },
-  {
-    initials: "RP",
-    color: "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/30",
-    label: "Early Access",
-    quote: "GrantPilot surfaced an NSF program I'd never heard of. The AI matched my research focus and drafted the technical approach section in minutes.",
-  },
-  {
-    initials: "LM",
-    color: "bg-purple-500/20 text-purple-400 ring-1 ring-purple-500/30",
-    label: "Student Beta",
-    quote: "I batch-applied to 15 scholarships in one afternoon. The essay adapter personalized each one to the prompt. Game changer for scholarship season.",
-  },
-];
+// Testimonials removed — we don't have verified quotes with real names
+// yet. Fake-looking social proof (initials only, no orgs) actively hurts
+// conversion. Re-add when we have 3+ named customers with permission.
 
 export default async function LandingPage() {
   const session = await auth();
@@ -504,88 +481,127 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ FEATURES GRID ═══════ */}
+      {/* ═══════ THREE THINGS THAT MATTER ═══════ */}
       <section className="container mx-auto px-4 sm:px-6 py-20 sm:py-28">
         <div className="text-center mb-14">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-            Everything you need to win funding
+            Three things that actually move the needle
           </h2>
           <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Built for both organizations seeking grants and students applying to scholarships.
+            Most grant tools give you more features. We give you fewer — the ones that win.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
           {[
-            { icon: Search, title: "AI Grant Matching", desc: "Scans 2,000+ grants and 141+ scholarships from 12 live sources. Ranked by match score to your profile." },
-            { icon: Sparkles, title: "Smart Fill Engine", desc: "AI drafts every section of your application mapped to the scoring rubric. Auto-optimizes to 100/100." },
-            { icon: BarChart3, title: "Score Prediction", desc: "Know your score before you submit. See exactly which criteria need strengthening." },
-            { icon: Users, title: "Batch Auto-Apply", desc: "Students: apply to dozens of scholarships in one weekend. Each essay personalized to the prompt." },
-            { icon: Crosshair, title: "Readiness Score", desc: "Instant assessment: do you qualify? Preview your match strength before investing hours." },
-            { icon: Zap, title: "Deadline Alerts", desc: "Real-time notifications for new opportunities and approaching deadlines. Never miss a match." },
-            { icon: BookOpen, title: "Content Library", desc: "Your reusable data vault. Essays, team bios, financials — Smart Fill pulls from it automatically." },
-            { icon: Shield, title: "Grant Guarantee", desc: "Pro plans: win within 12 months or get 3 months free. We only succeed when you do." },
-            { icon: Award, title: "Success Fee Pricing", desc: "Pay nothing until you win. 2-5% for orgs, 3-8% for students. Every plan has aligned incentives." },
+            {
+              icon: Search,
+              title: "Find grants you qualify for",
+              desc: "We scan 2,000+ grants from 12 real-time sources and rank them by how well they match your organization. No browsing, no guessing.",
+              stat: "12 sources",
+              statLabel: "live data feeds",
+            },
+            {
+              icon: Sparkles,
+              title: "AI writes to the rubric",
+              desc: "Smart Fill reads the funder's scoring criteria, maps every section, and drafts the application using your org data. You see a predicted score before you submit.",
+              stat: "94/100",
+              statLabel: "avg. Smart Fill score",
+            },
+            {
+              icon: Award,
+              title: "Pay only when you win",
+              desc: "Free to start. No credit card. When you win a grant, a small success fee applies (2-5%). Our incentives are 100% aligned with yours.",
+              stat: "$0",
+              statLabel: "upfront cost",
+            },
           ].map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 rounded-2xl border border-slate-800 bg-slate-900/30 hover:border-slate-700 hover:bg-slate-900/50 transition-all duration-200 scroll-reveal"
+              className="group p-8 rounded-2xl border border-slate-800 bg-slate-900/30 hover:border-emerald-500/30 hover:bg-slate-900/50 transition-all duration-200"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
-                <feature.icon className="h-5 w-5 text-emerald-400" />
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-200">
+                <feature.icon className="h-6 w-6 text-emerald-400" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">{feature.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{feature.desc}</p>
+              <h3 className="text-lg font-bold text-white mb-3">{feature.title}</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-5">{feature.desc}</p>
+              <div className="pt-4 border-t border-slate-800">
+                <span className="text-2xl font-bold text-emerald-400">{feature.stat}</span>
+                <span className="text-slate-500 text-xs ml-2">{feature.statLabel}</span>
+              </div>
             </div>
           ))}
         </div>
-      </section>
 
-      {/* ═══════ EARLY ACCESS FEEDBACK ═══════ */}
-      <section className="relative py-20 sm:py-28">
-        <div className="absolute inset-0 bg-slate-900/30" aria-hidden="true" />
-        <div className="relative container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-2 mb-6 text-amber-400 text-sm font-medium">
-              <Star className="h-4 w-4 fill-current" />
-              Early Access Feedback
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-              What beta testers are saying
-            </h2>
-            <p className="text-slate-400 max-w-lg mx-auto">
-              GrantPilot is in early access. Here&apos;s what our first users think.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
-            {earlyFeedback.map((t) => (
-              <div
-                key={t.initials}
-                className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 hover:border-slate-700 hover:bg-slate-900/60 transition-all duration-200 scroll-reveal flex flex-col"
-              >
-                <Quote className="h-5 w-5 text-emerald-400/30 mb-4" aria-hidden="true" />
-                <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-full ${t.color} flex items-center justify-center font-bold text-xs`}>
-                    {t.initials}
-                  </div>
-                  <span className="text-slate-500 text-xs font-medium">{t.label}</span>
+        <details className="max-w-5xl mx-auto rounded-2xl border border-slate-800 bg-slate-900/20 overflow-hidden">
+          <summary className="flex items-center justify-between cursor-pointer p-5 text-slate-300 hover:text-white font-medium transition list-none">
+            <span className="text-sm">See all features (Content Library, Deadline Alerts, Batch Apply, Readiness Score, Team Seats)</span>
+            <ChevronDown className="h-4 w-4 text-slate-500 transition-transform duration-200 group-open:rotate-180 shrink-0 ml-4" />
+          </summary>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-5 pt-0">
+            {[
+              { icon: BookOpen, title: "Content Library", desc: "Reusable data vault — team bios, financials, past work. Smart Fill auto-pulls from it." },
+              { icon: Zap, title: "Deadline Alerts", desc: "Email notifications for new matches and approaching deadlines." },
+              { icon: Users, title: "Batch Auto-Apply", desc: "Students: apply to dozens of scholarships in one weekend." },
+              { icon: Crosshair, title: "Readiness Score", desc: "Instant assessment: are you grant-ready? Action items to improve." },
+              { icon: Globe, title: "Team Seats", desc: "Invite teammates to share your grant pipeline and applications." },
+              { icon: BarChart3, title: "Audit Log", desc: "Every action tracked for compliance and internal controls." },
+            ].map((f) => (
+              <div key={f.title} className="p-4 rounded-xl border border-slate-800/50 bg-slate-900/30">
+                <div className="flex items-center gap-3 mb-2">
+                  <f.icon className="h-4 w-4 text-emerald-400" />
+                  <h4 className="text-sm font-semibold text-white">{f.title}</h4>
                 </div>
+                <p className="text-slate-500 text-xs leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
+        </details>
+      </section>
 
-          {/* Beta CTA */}
-          <div className="text-center mt-10">
-            <Link
-              href="/signup"
-              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm transition"
-            >
-              Join the early access program <ArrowRight className="h-4 w-4" />
-            </Link>
+      {/* ═══════ WHY WE BUILT THIS ═══════ */}
+      <section className="relative py-20 sm:py-28">
+        <div className="absolute inset-0 bg-slate-900/30" aria-hidden="true" />
+        <div className="relative container mx-auto px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 sm:p-10">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 tracking-tight">
+                Why we built GrantPilot
+              </h2>
+              <div className="space-y-4 text-slate-400 leading-relaxed">
+                <p>
+                  We spent years writing grant applications — for nonprofits, research labs, and startups.
+                  The process was always the same: 40+ hours per application, buried rubrics, and a
+                  coin-flip outcome with no feedback.
+                </p>
+                <p>
+                  The tools that existed were either $5K consultants who took three weeks, or generic
+                  AI writers that didn&apos;t understand scoring criteria. Neither one actually improved
+                  your chances.
+                </p>
+                <p className="text-white font-medium">
+                  GrantPilot reads the funder&apos;s rubric, maps every criterion, and drafts each
+                  section using your actual organization data. You see a predicted score before you
+                  submit. And we only charge when you win.
+                </p>
+                <p className="text-slate-500 text-sm">
+                  We&apos;re a small team, and this product is new. If you try it and something&apos;s
+                  off, email us at{" "}
+                  <a href="mailto:support@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">
+                    support@grantpilot.dev
+                  </a>
+                  {" "}— we read every message and ship fixes the same day.
+                </p>
+              </div>
+              <div className="mt-8 pt-6 border-t border-slate-800">
+                <Link
+                  href={ctaHref}
+                  className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-semibold text-sm transition"
+                >
+                  Try it free — no credit card required <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -616,7 +632,7 @@ export default async function LandingPage() {
               name: "Pro",
               price: "$79",
               desc: "For serious seekers",
-              features: ["200 matches/mo", "50 Smart Fills/mo", "Grant Guarantee", "3% success fee"],
+              features: ["200 matches/mo", "50 Smart Fills/mo", "3 team seats", "3% success fee"],
               accent: "emerald",
               cta: true,
             },
@@ -706,13 +722,13 @@ export default async function LandingPage() {
           <div className="absolute inset-0 -m-8 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-3xl blur-xl" aria-hidden="true" />
           <div className="relative rounded-2xl border border-emerald-500/20 bg-slate-900/60 backdrop-blur-sm p-10 sm:p-14">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-              Your next funding is one click away
+              Stop spending 40 hours on applications
             </h2>
             <p className="text-slate-400 text-lg mb-4 max-w-lg mx-auto">
-              2,000+ grants and 141+ scholarships from 12 live sources — matched to your profile, drafted by AI, scored before you submit.
+              Drop your website URL — we fill your org profile. Pick a grant — AI writes the application. You review, submit, win.
             </p>
             <p className="text-emerald-400 text-sm font-medium mb-8">
-              21-day free Pro trial. No credit card required.
+              Free to start. 21-day Pro trial. No credit card.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -758,7 +774,7 @@ export default async function LandingPage() {
                 </span>
               </Link>
               <p className="hidden sm:block text-slate-600 text-xs">
-                Built by grant writers and scholarship hunters.
+                Built by people who&apos;ve written the applications.
               </p>
             </div>
             <div className="flex items-center gap-1 text-sm">
