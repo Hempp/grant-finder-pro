@@ -7,6 +7,10 @@ import { createBlocks } from "@/lib/content-library/content-manager";
 import { requireAuth } from "@/lib/api-helpers";
 import { getAccessibleUserIds } from "@/lib/org-context";
 import { logError } from "@/lib/telemetry";
+import {
+  extractOrgProfile,
+  mergeOrgProfile,
+} from "@/lib/content-library/extract-org-profile";
 
 // GET - Fetch documents for caller + any org teammates (phase 2a).
 export async function GET() {
@@ -147,6 +151,44 @@ export async function POST(request: NextRequest) {
       console.error("Content extraction failed (non-blocking):", extractError);
     }
 
+    // Auto-fill org profile from the parsed content (non-blocking).
+    // Uses the same "fill blanks, don't overwrite" strategy as the
+    // /api/organizations/auto-fill route. Fires only if we got enough
+    // text to meaningfully extract from.
+    let profileFieldsFilled = 0;
+    if (parsedText.length > 100) {
+      try {
+        const { profile: extracted } = await extractOrgProfile(
+          parsedText,
+          `document (${fileName})`
+        );
+        const org = await prisma.organization.findUnique({
+          where: { userId },
+        });
+        if (org) {
+          const existingFields: Record<string, string | null | undefined> = {
+            name: org.name, type: org.type, legalStructure: org.legalStructure,
+            ein: org.ein, city: org.city, state: org.state, mission: org.mission,
+            vision: org.vision, problemStatement: org.problemStatement,
+            solution: org.solution, targetMarket: org.targetMarket,
+            teamSize: org.teamSize, founderBackground: org.founderBackground,
+            annualRevenue: org.annualRevenue, fundingSeeking: org.fundingSeeking,
+            previousFunding: org.previousFunding,
+          };
+          const { updates, fieldsFilled } = mergeOrgProfile(existingFields, extracted);
+          if (fieldsFilled > 0) {
+            await prisma.organization.update({
+              where: { id: org.id },
+              data: updates,
+            });
+            profileFieldsFilled = fieldsFilled;
+          }
+        }
+      } catch (profileErr) {
+        console.error("Org profile extraction from document failed (non-blocking):", profileErr);
+      }
+    }
+
     const updatedDoc = await prisma.document.findUnique({
       where: { id: document.id },
     });
@@ -154,9 +196,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       ...updatedDoc,
       blocksCreated,
-      message: blocksCreated > 0
-        ? `Extracted ${blocksCreated} content blocks from "${fileName}". Your Content Library has been updated.`
-        : `Parsed "${fileName}" successfully.`,
+      profileFieldsFilled,
+      message: [
+        blocksCreated > 0
+          ? `Extracted ${blocksCreated} content blocks from "${fileName}".`
+          : `Parsed "${fileName}" successfully.`,
+        profileFieldsFilled > 0
+          ? `Auto-filled ${profileFieldsFilled} profile fields.`
+          : null,
+      ].filter(Boolean).join(" "),
     });
   } catch (error) {
     console.error("Failed to upload document:", error);

@@ -87,8 +87,9 @@ export default function OrganizationPage() {
   const [saving, setSaving] = useState(false);
   const [autoFilling, setAutoFilling] = useState(false);
   const [autoFillUrl, setAutoFillUrl] = useState("");
-  const [autoFillMode, setAutoFillMode] = useState<"url" | "paste" | null>(null);
+  const [autoFillMode, setAutoFillMode] = useState<"url" | "paste" | "upload" | null>(null);
   const [pasteContent, setPasteContent] = useState("");
+  const [uploadingDoc, setUploadingDoc] = useState(false);
   const [formData, setFormData] = useState({
     // Basic Info
     name: "",
@@ -229,6 +230,67 @@ export default function OrganizationPage() {
     }
   };
 
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingDoc(true);
+    try {
+      const formPayload = new FormData();
+      formPayload.append("file", file);
+      const res = await fetch("/api/documents", {
+        method: "POST",
+        body: formPayload,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error("Upload failed", data.error ?? "Please try again.");
+        return;
+      }
+
+      // If the backend auto-filled profile fields, refresh the form
+      if (data.profileFieldsFilled > 0) {
+        // Re-fetch the org to get the updated fields
+        const orgRes = await fetch("/api/organizations");
+        if (orgRes.ok) {
+          const orgData = await orgRes.json();
+          setFormData((prev) => {
+            const merged = { ...prev };
+            for (const key of Object.keys(prev)) {
+              const val = orgData[key];
+              if (typeof val === "string" && val.trim() && !(prev as Record<string, string>)[key]?.trim()) {
+                (merged as Record<string, string>)[key] = val;
+              }
+            }
+            return merged;
+          });
+        }
+        toast.success(
+          `Auto-filled ${data.profileFieldsFilled} fields`,
+          `Extracted from "${file.name}". Review and save when ready.`
+        );
+      }
+
+      if (data.blocksCreated > 0) {
+        toast.success(
+          `${data.blocksCreated} Content Library entries`,
+          `Extracted from "${file.name}".`
+        );
+      }
+
+      if (!data.profileFieldsFilled && !data.blocksCreated) {
+        toast.info("Document saved", data.message);
+      }
+
+      setAutoFillMode(null);
+    } catch {
+      toast.error("Upload failed", "Check your connection and try again.");
+    } finally {
+      setUploadingDoc(false);
+      // Reset the file input so the same file can be re-uploaded
+      e.target.value = "";
+    }
+  };
+
   const handleSubmit = async () => {
     setSaving(true);
     try {
@@ -297,6 +359,14 @@ export default function OrganizationPage() {
             </button>
             <button
               type="button"
+              onClick={() => setAutoFillMode("upload")}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition focus-ring"
+            >
+              <FileText className="h-4 w-4" aria-hidden="true" />
+              Upload a document
+            </button>
+            <button
+              type="button"
               onClick={() => setAutoFillMode("paste")}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition focus-ring"
             >
@@ -333,6 +403,46 @@ export default function OrganizationPage() {
             <button type="button" onClick={() => setAutoFillMode(null)} className="text-xs text-slate-500 hover:text-slate-300">
               Cancel
             </button>
+          </div>
+        )}
+
+        {autoFillMode === "upload" && (
+          <div className="space-y-3">
+            <p className="text-slate-300 text-sm">
+              Upload a PDF, DOCX, or text file — annual report, pitch deck,
+              990 tax form, business plan, or any document that describes
+              your organization.
+            </p>
+            <div className="flex items-center gap-3">
+              <label
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition cursor-pointer focus-ring ${
+                  uploadingDoc
+                    ? "bg-slate-700 text-slate-400"
+                    : "bg-emerald-500 hover:bg-emerald-400 text-white"
+                }`}
+              >
+                {uploadingDoc ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <FileText className="h-4 w-4" aria-hidden="true" />
+                )}
+                {uploadingDoc ? "Extracting..." : "Choose file"}
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx,.txt,.md,.csv,.xlsx"
+                  onChange={handleDocUpload}
+                  disabled={uploadingDoc}
+                  className="sr-only"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => setAutoFillMode(null)}
+                className="text-xs text-slate-500 hover:text-slate-300"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
 
