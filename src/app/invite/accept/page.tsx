@@ -6,10 +6,19 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Sparkles, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
 
+interface InvitationPreview {
+  email: string;
+  role: string;
+  organizationName: string;
+  inviterName: string | null;
+  inviterEmail: string | null;
+  expiresAt: string;
+}
+
 type ViewState =
   | { kind: "loading" }
-  | { kind: "needs-signup"; token: string }
-  | { kind: "confirm"; token: string }
+  | { kind: "needs-signup"; token: string; preview: InvitationPreview }
+  | { kind: "confirm"; token: string; preview: InvitationPreview }
   | { kind: "accepting" }
   | { kind: "success"; organizationId: string }
   | { kind: "error"; message: string };
@@ -61,11 +70,52 @@ function InviteAcceptInner() {
       setView({ kind: "error", message: "This invitation link is incomplete." });
       return;
     }
-    if (!session?.user) {
-      setView({ kind: "needs-signup", token });
-      return;
-    }
-    setView({ kind: "confirm", token });
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/org/invitations/preview?token=${encodeURIComponent(token)}`
+        );
+        const data = await res.json();
+        if (cancelled) return;
+
+        if (!data?.valid) {
+          setView({
+            kind: "error",
+            message:
+              "This invitation is invalid or has expired. Ask your teammate to send a new one.",
+          });
+          return;
+        }
+
+        const preview: InvitationPreview = {
+          email: data.email,
+          role: data.role,
+          organizationName: data.organizationName,
+          inviterName: data.inviterName,
+          inviterEmail: data.inviterEmail,
+          expiresAt: data.expiresAt,
+        };
+
+        if (!session?.user) {
+          setView({ kind: "needs-signup", token, preview });
+        } else {
+          setView({ kind: "confirm", token, preview });
+        }
+      } catch {
+        if (!cancelled) {
+          setView({
+            kind: "error",
+            message: "Network error. Try again in a moment.",
+          });
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token, session, status]);
 
   async function handleAccept() {
@@ -117,12 +167,11 @@ function InviteAcceptInner() {
 
           {view.kind === "needs-signup" && (
             <>
-              <h1 className="text-2xl font-bold text-white mb-2">Join on GrantPilot</h1>
-              <p className="text-slate-400 mb-6">
-                You&apos;ve been invited to collaborate. Create an account or sign in to accept
-                the invitation — we&apos;ll return you here automatically.
-              </p>
-              <div className="flex flex-col gap-3">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Join {view.preview.organizationName}
+              </h1>
+              <InvitationSummary preview={view.preview} />
+              <div className="flex flex-col gap-3 mt-6">
                 <Link
                   href={`/signup?invite=${encodeURIComponent(view.token)}`}
                   className="inline-flex justify-center items-center px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold transition focus-ring"
@@ -136,23 +185,29 @@ function InviteAcceptInner() {
                   Sign in
                 </Link>
               </div>
+              <p className="text-xs text-slate-500 mt-4">
+                Sign up with <span className="text-slate-300">{view.preview.email}</span>
+                {" "}to accept — that&apos;s the address this invitation was sent to.
+              </p>
             </>
           )}
 
           {view.kind === "confirm" && (
             <>
-              <h1 className="text-2xl font-bold text-white mb-2">Accept invitation</h1>
-              <p className="text-slate-400 mb-6">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Join {view.preview.organizationName}
+              </h1>
+              <InvitationSummary preview={view.preview} />
+              <p className="text-slate-400 text-sm mt-4 mb-4">
                 Signed in as{" "}
                 <span className="text-slate-200 font-medium">{session?.user?.email}</span>.
-                Clicking below adds you to the organization that invited you.
               </p>
               <button
                 type="button"
                 onClick={handleAccept}
                 className="w-full inline-flex justify-center items-center px-4 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white font-semibold transition focus-ring"
               >
-                Accept invitation
+                Accept and join {view.preview.organizationName}
               </button>
               <p className="text-xs text-slate-500 mt-4">
                 Wrong account?{" "}
@@ -198,6 +253,35 @@ function InviteAcceptInner() {
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+/** Rendered above both the needs-signup and confirm buttons so the
+ *  invitee always sees who invited them, what role they're accepting,
+ *  and when the link expires — before any commitment. */
+function InvitationSummary({ preview }: { preview: InvitationPreview }) {
+  const inviter =
+    preview.inviterName && preview.inviterEmail
+      ? `${preview.inviterName} (${preview.inviterEmail})`
+      : preview.inviterName ?? preview.inviterEmail ?? "A teammate";
+  const expiresOn = new Date(preview.expiresAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900 p-4 text-sm">
+      <p className="text-slate-300">
+        <span className="text-slate-500">Invited by</span>{" "}
+        <span className="font-medium">{inviter}</span>
+      </p>
+      <p className="text-slate-300 mt-1">
+        <span className="text-slate-500">Role</span>{" "}
+        <span className="font-medium capitalize">{preview.role}</span>
+      </p>
+      <p className="text-slate-500 mt-2 text-xs">
+        Link expires {expiresOn}
+      </p>
     </div>
   );
 }
