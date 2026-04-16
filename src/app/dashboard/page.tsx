@@ -259,10 +259,54 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* ═══ First-visit guided experience vs returning-user stats ═══ */}
       {loading ? (
         <StatsSkeleton />
+      ) : stats.grantsFound === 0 && stats.applicationsCount === 0 ? (
+        /* First visit: no data yet — guide them to the auto-fill flow
+           instead of showing a wall of zeros */
+        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-slate-900/50 to-cyan-500/5 p-6 sm:p-10">
+          <div className="max-w-xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
+              Let&apos;s find your grants
+            </h2>
+            <p className="text-slate-400 leading-relaxed mb-6">
+              Three steps to your first matched grant. Most users finish in under 5 minutes.
+            </p>
+            <ol className="space-y-4 mb-8">
+              <li className="flex items-start gap-4">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-sm">1</span>
+                <div>
+                  <p className="text-white font-medium">Tell us about your organization</p>
+                  <p className="text-slate-500 text-sm">Paste your website URL — we auto-fill your profile in seconds.</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 text-slate-300 font-bold flex items-center justify-center text-sm">2</span>
+                <div>
+                  <p className="text-slate-300 font-medium">Review your matched grants</p>
+                  <p className="text-slate-500 text-sm">We scan 2,000+ grants and rank them by fit. You pick the best ones.</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 text-slate-300 font-bold flex items-center justify-center text-sm">3</span>
+                <div>
+                  <p className="text-slate-300 font-medium">Let AI write the application</p>
+                  <p className="text-slate-500 text-sm">Smart Fill drafts every section to the funder&apos;s rubric. You review + submit.</p>
+                </div>
+              </li>
+            </ol>
+            <Link href="/dashboard/organization">
+              <Button variant="gradient" className="shadow-xl shadow-emerald-500/20">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Set up your profile
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       ) : (
+        /* Returning user: show real stats */
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <StatsCard
             title="Grants Found"

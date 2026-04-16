@@ -27,13 +27,20 @@ import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
 import { ToastProvider } from "@/components/ui";
 
-const navGroups = [
+// Core nav — always visible. New users see these four.
+const coreNavItems = [
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Find Grants", href: "/dashboard/grants", icon: Search },
+  { name: "Applications", href: "/dashboard/applications", icon: FileText },
+  { name: "Profile", href: "/dashboard/organization", icon: Building2 },
+];
+
+// Extended nav — shown once the user has started using the product
+// (has at least one application or completed their profile).
+const extendedNavGroups = [
   {
-    label: null as string | null,
+    label: "Workspace",
     items: [
-      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { name: "Find Grants", href: "/dashboard/grants", icon: Search },
-      { name: "Applications", href: "/dashboard/applications", icon: FileText },
       { name: "Documents", href: "/dashboard/documents", icon: Upload },
       { name: "Library", href: "/dashboard/library", icon: BookOpen },
     ],
@@ -41,7 +48,6 @@ const navGroups = [
   {
     label: "Organization",
     items: [
-      { name: "Profile", href: "/dashboard/organization", icon: Building2 },
       { name: "Team", href: "/dashboard/team", icon: Users },
       { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ],
@@ -63,8 +69,9 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showExtendedNav, setShowExtendedNav] = useState(false);
 
-  // Redirect students to /student dashboard
+  // Redirect students to /student dashboard + check activation status
   useEffect(() => {
     fetch("/api/user/type")
       .then((res) => res.json())
@@ -74,7 +81,26 @@ export default function DashboardLayout({
         }
       })
       .catch(() => {});
+    // Show extended nav once user has any activity — simple check via
+    // applications count. Alternatively, if they're navigating to an
+    // extended route, show it immediately.
+    fetch("/api/applications")
+      .then((res) => res.json())
+      .then((apps) => {
+        if (Array.isArray(apps) && apps.length > 0) {
+          setShowExtendedNav(true);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  // Always show extended nav if the user is currently ON one of those pages
+  useEffect(() => {
+    const extendedPaths = ["/dashboard/documents", "/dashboard/library", "/dashboard/team", "/dashboard/settings", "/dashboard/referrals", "/dashboard/audit"];
+    if (extendedPaths.some((p) => pathname.startsWith(p))) {
+      setShowExtendedNav(true);
+    }
+  }, [pathname]);
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
@@ -169,9 +195,35 @@ export default function DashboardLayout({
           </div>
         )}
 
-        {/* Navigation */}
+        {/* Navigation — progressive disclosure: new users see 4 core
+            items; extended groups reveal after first activity or when
+            the user navigates to one of those pages directly. */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navGroups.map((group, groupIdx) => (
+          {/* Core items — always visible */}
+          <div>
+            {coreNavItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={closeMobileMenu}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+                    isActive
+                      ? "bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400 pl-3"
+                      : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
+                  }`}
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                  <span className="font-medium text-sm leading-5">{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Extended groups — revealed after activation */}
+          {showExtendedNav && extendedNavGroups.map((group, groupIdx) => (
             <div key={groupIdx}>
               {group.label && (
                 <p className="text-xs text-slate-600 uppercase tracking-wider font-medium px-4 pt-6 pb-1">
