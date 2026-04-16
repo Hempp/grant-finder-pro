@@ -21,7 +21,7 @@ export default async function Image() {
           position: "relative",
         }}
       >
-        {/* Decorative circles */}
+        {/* Glow effects */}
         <div
           style={{
             position: "absolute",
@@ -47,32 +47,62 @@ export default async function Image() {
           }}
         />
 
-        {/* Logo area */}
+        {/* Logo + wordmark */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "16px",
-            marginBottom: "24px",
+            gap: "20px",
+            marginBottom: "28px",
           }}
         >
           <div
             style={{
-              width: "56px",
-              height: "56px",
-              borderRadius: "12px",
-              background: "linear-gradient(135deg, #10b981, #06b6d4)",
+              width: "64px",
+              height: "64px",
+              borderRadius: "16px",
+              background: "linear-gradient(135deg, #059669, #10b981, #06b6d4)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "28px",
             }}
           >
-            ✦
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+              <path
+                d="M24 6C14.06 6 6 14.06 6 24s8.06 18 18 18c4.97 0 9.5-2.01 12.73-5.27"
+                stroke="white"
+                strokeWidth="4"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M38.73 36.73L38.73 24H26"
+                stroke="white"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+              <path
+                d="M24 20V8"
+                stroke="white"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M20 12L24 5L28 12"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
           </div>
           <span
             style={{
-              fontSize: "48px",
+              fontSize: "52px",
               fontWeight: 800,
               color: "white",
               letterSpacing: "-1px",
@@ -93,7 +123,7 @@ export default async function Image() {
             textAlign: "center",
           }}
         >
-          Find Grants You&apos;ll Win.
+          Find Grants. Win Funding. Grow Your Mission.
         </p>
         <p
           style={{
@@ -104,34 +134,24 @@ export default async function Image() {
             lineHeight: 1.5,
           }}
         >
-          AI fills your application to 100/100, optimized for each
-          funder&apos;s scoring criteria. We only earn when you win.
+          AI-powered grant matching and application writing.
+          Drop your website, we fill the application.
         </p>
 
-        {/* Stats bar */}
+        {/* Domain */}
         <div
           style={{
             display: "flex",
-            gap: "48px",
-            marginTop: "40px",
-            padding: "20px 40px",
-            borderRadius: "16px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.03)",
+            marginTop: "36px",
+            padding: "12px 28px",
+            borderRadius: "12px",
+            border: "1px solid rgba(16, 185, 129, 0.3)",
+            background: "rgba(16, 185, 129, 0.08)",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: "28px", fontWeight: 800, color: "#10b981" }}>100/100</span>
-            <span style={{ fontSize: "14px", color: "#64748b" }}>AI Score</span>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: "28px", fontWeight: 800, color: "white" }}>8</span>
-            <span style={{ fontSize: "14px", color: "#64748b" }}>Grant Sources</span>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <span style={{ fontSize: "28px", fontWeight: 800, color: "white" }}>3%</span>
-            <span style={{ fontSize: "14px", color: "#64748b" }}>Success Fee</span>
-          </div>
+          <span style={{ fontSize: "18px", fontWeight: 600, color: "#10b981" }}>
+            grantpilot.dev
+          </span>
         </div>
       </div>
     ),

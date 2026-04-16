@@ -1,57 +1,17 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Primary gradient: emerald → teal → cyan diagonal -->
-    <linearGradient id="bg" x1="0" y1="64" x2="64" y2="0">
-      <stop offset="0%" stop-color="#059669"/>
-      <stop offset="40%" stop-color="#10b981"/>
-      <stop offset="70%" stop-color="#14b8a6"/>
-      <stop offset="100%" stop-color="#06b6d4"/>
+    <linearGradient id="gp-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#059669"/>
+      <stop offset="0.5" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#06b6d4"/>
     </linearGradient>
-    <!-- Highlight shimmer -->
-    <linearGradient id="hi" x1="0" y1="0" x2="64" y2="64">
-      <stop offset="0%" stop-color="white" stop-opacity="0.25"/>
-      <stop offset="50%" stop-color="white" stop-opacity="0"/>
-      <stop offset="100%" stop-color="white" stop-opacity="0.08"/>
-    </linearGradient>
-    <!-- Inner shadow for depth -->
-    <radialGradient id="depth" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="white" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#000" stop-opacity="0.1"/>
-    </radialGradient>
-    <!-- Glow behind mark -->
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
   </defs>
-
-  <!-- Background: superellipse (squircle) for premium feel -->
-  <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#bg)"/>
-  <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#depth)"/>
-  <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#hi)"/>
-
-  <!-- The Mark: Abstract ascending path through a lens/portal -->
-  <g filter="url(#glow)">
-    <!-- Outer ring — the "lens" / compass -->
-    <circle cx="32" cy="32" r="19" stroke="white" stroke-width="2.5" stroke-opacity="0.9" fill="none"/>
-
-    <!-- Ascending path — three stacked chevrons creating motion trail -->
-    <!-- Bottom chevron (faded) -->
-    <path d="M22 38 L32 30 L42 38" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.3" fill="none"/>
-    <!-- Middle chevron -->
-    <path d="M24 33 L32 25 L40 33" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6" fill="none"/>
-    <!-- Top chevron (bright) — the lead indicator -->
-    <path d="M26 28 L32 20 L38 28" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.95" fill="none"/>
-
-    <!-- Central spark — the AI node -->
-    <circle cx="32" cy="31" r="2.5" fill="white" fill-opacity="0.95"/>
-
-    <!-- Tiny orbiting dots — data points / intelligence -->
-    <circle cx="20" cy="25" r="1.2" fill="white" fill-opacity="0.5"/>
-    <circle cx="44" cy="25" r="1.2" fill="white" fill-opacity="0.5"/>
-    <circle cx="32" cy="46" r="1" fill="white" fill-opacity="0.3"/>
-  </g>
-
-  <!-- Subtle inner border highlight -->
-  <rect x="2" y="2" width="60" height="60" rx="17" stroke="white" stroke-opacity="0.1" stroke-width="0.5" fill="none"/>
+  <rect width="48" height="48" rx="12" fill="url(#gp-grad)"/>
+  <!-- Compass-G: open circle forming a G letterform -->
+  <path d="M24 6C14.06 6 6 14.06 6 24s8.06 18 18 18c4.97 0 9.5-2.01 12.73-5.27" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- G crossbar -->
+  <path d="M38.73 36.73L38.73 24H26" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Compass needle pointing up (the Pilot) -->
+  <path d="M24 20V8" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <path d="M20 12L24 5L28 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>
