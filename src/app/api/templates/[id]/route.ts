@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, requireOwnership } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 
 /**
  * GET /api/templates/:id
@@ -15,10 +16,12 @@ export async function GET(
   if (session instanceof NextResponse) return session;
   const { id } = await params;
 
+  const accessibleIds = await getAccessibleUserIds(session.user.id);
   const owned = await requireOwnership({
     userId: session.user.id,
     resourceId: id,
     model: "userApplicationTemplate",
+    accessibleUserIds: accessibleIds,
   });
   if (owned instanceof NextResponse) return owned;
 

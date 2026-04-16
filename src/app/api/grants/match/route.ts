@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { calculateMatchScore } from "@/lib/grant-matcher";
 import { rateLimit } from "@/lib/rate-limit";
 import { requireAuth } from "@/lib/api-helpers";
+import { getAccessibleUserIds } from "@/lib/org-context";
 import { logError } from "@/lib/telemetry";
 
 /**
@@ -51,8 +52,12 @@ export async function POST() {
       return rateLimitResult.response;
     }
 
-    const organization = await prisma.organization.findUnique({
-      where: { userId: session.user.id },
+    // Phase 2a: a member recalculating matches should score against
+    // the *team's* organization profile and see the team's grants.
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
+
+    const organization = await prisma.organization.findFirst({
+      where: { userId: { in: accessibleIds }, profileComplete: true },
     });
 
     if (!organization) {
@@ -69,13 +74,9 @@ export async function POST() {
       );
     }
 
-    // Select only the fields calculateMatchScore reads — drops ~30% of
-    // wire weight on a large Grant row (no url, source, scrapedAt, status,
-    // createdAt, matchReasons, etc.). Ordered by deadline so the cap bites
-    // into stale long-dated grants first if we ever hit it.
     const grants = await prisma.grant.findMany({
       where: {
-        OR: [{ userId: session.user.id }, { userId: null }],
+        OR: [{ userId: { in: accessibleIds } }, { userId: null }],
       },
       select: GRANT_SELECT_FOR_MATCHING,
       orderBy: { deadline: "asc" },
@@ -147,8 +148,11 @@ export async function GET() {
     const session = await requireAuth();
     if (session instanceof NextResponse) return session;
 
-    const organization = await prisma.organization.findUnique({
-      where: { userId: session.user.id },
+    // Phase 2a: member reads the team's org + team's grants.
+    const accessibleIds = await getAccessibleUserIds(session.user.id);
+
+    const organization = await prisma.organization.findFirst({
+      where: { userId: { in: accessibleIds } },
     });
 
     if (!organization || !organization.profileComplete) {
