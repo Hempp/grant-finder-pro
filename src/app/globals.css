@@ -759,6 +759,26 @@ body {
   --accent-soft: #0B3329;
 }
 
+/* Hero compass mark intentionally extends past the right edge of the
+   container — editorial layout convention. Scoped so it never
+   affects dashboards. */
+[data-theme="editorial"] .hero-bleed {
+  margin-right: calc(-1 * max(1rem, (100vw - 1280px) / 2 + 1.5rem));
+}
+
+@media print {
+  [data-theme="editorial"] {
+    --bg: #ffffff;
+    --ink: #000000;
+    --accent: #000000;
+    --rule: #000000;
+  }
+  [data-theme="editorial"] nav,
+  [data-theme="editorial"] .hero-bleed,
+  [data-theme="editorial"] footer { display: none; }
+  [data-theme="editorial"] section { break-inside: avoid; }
+}
+
 /* ============================================
    RESPONSIVE / ACCESSIBILITY
    ============================================ */
