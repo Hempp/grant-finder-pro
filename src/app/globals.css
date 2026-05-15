@@ -29,6 +29,14 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --breakpoint-xs: 475px;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --font-display: var(--font-fraunces);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -705,6 +713,50 @@ body {
 .stat-value {
   font-variant-numeric: tabular-nums;
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================
+   EDITORIAL THEME — landing-only token scope
+   ============================================
+   Activated by data-theme="editorial" on a parent
+   (set by <EditorialShell>). Dashboard surfaces
+   keep the original :root tokens unchanged. */
+
+[data-theme="editorial"] {
+  --bg: #F8F5EE;
+  --surface: #FFFFFF;
+  --ink: #181614;
+  --ink-2: #5E5A52;
+  --rule: #E6E1D5;
+  --accent: #0B5A3F;
+  --accent-soft: #E3F2EA;
+
+  --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-needle: 60000ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="editorial"]:not([data-theme-mode="light"]) {
+    --bg: #0E1714;
+    --surface: #15201C;
+    --ink: #F4EFE4;
+    --ink-2: #A8A29A;
+    --rule: #283330;
+    --accent: #34D399;
+    --accent-soft: #0B3329;
+  }
+}
+
+[data-theme="editorial"][data-theme-mode="dark"] {
+  --bg: #0E1714;
+  --surface: #15201C;
+  --ink: #F4EFE4;
+  --ink-2: #A8A29A;
+  --rule: #283330;
+  --accent: #34D399;
+  --accent-soft: #0B3329;
 }
 
 /* ============================================
