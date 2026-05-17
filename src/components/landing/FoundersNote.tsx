@@ -18,16 +18,16 @@ export function FoundersNote() {
           <div className="text-[18px] leading-[1.7] text-ink">
             <DropCap>
               When I started coaching families at the Family Source Center,
-              the same thing kept happening. A nonprofit director would walk
+              I kept seeing the same thing. A nonprofit director would walk
               in, eligible for a grant that could save their program, and
-              walk out because the $7,000 consultant fee made it impossible
-              to even apply.
+              walk out because the $7,000 consultant fee made even applying
+              impossible.
             </DropCap>
 
             <p className="mt-6 indent-[1.5em]">
-              I watched it for two years. The grants that mattered most went
-              to the organizations that could afford to chase them, not the
-              ones that needed them most.
+              I watched it for two years. The grants that mattered went to
+              organizations that could afford to chase them. Not the ones
+              that actually needed them.
             </p>
 
             <PullQuote>
@@ -36,23 +36,22 @@ export function FoundersNote() {
             </PullQuote>
 
             <p className="mt-6 indent-[1.5em]">
-              I tried to fix it the only way I knew — sitting with clients
-              after hours, walking through eligibility, drafting their first
-              draft. It worked, and it didn&apos;t scale. One coach can do
-              one application at a time.
+              I tried to fix it the only way I knew. After-hours sessions in
+              my office. Walking through eligibility line by line. Drafts
+              written at the kitchen table. It worked. It didn&apos;t scale.
+              One coach, one application at a time.
             </p>
 
             <p className="mt-6 indent-[1.5em]">
-              GrantPilot is the tool I built to keep doing that work without
-              being in the room. It finds the grants you qualify for, drafts
-              each section against the funder&apos;s rubric, and shows you a
-              predicted score before you submit.
+              GrantPilot is the tool I built to keep doing the work without
+              being in the room. The hours I used to spend with one
+              nonprofit, the software now spends with all of them.
             </p>
 
             <p className="mt-6 indent-[1.5em]">
               I built it so the platform only earns when you do. No upfront
-              fee, no monthly retainer you can&apos;t afford. If you
-              don&apos;t win, we don&apos;t either.
+              fee. No monthly retainer you can&apos;t afford. If the grant
+              doesn&apos;t come through, neither does my paycheck.
             </p>
           </div>
 
