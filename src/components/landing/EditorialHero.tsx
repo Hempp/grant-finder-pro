@@ -34,28 +34,41 @@ export function EditorialHero({
               See how it works →
             </EditorialCTA>
           </div>
-          <div className="pt-6 border-t border-rule">
-            <ul className="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-[13px] font-medium tracking-[0.04em] uppercase text-ink-2">
-              <li>
-                <span className="font-mono text-ink mr-1.5">2,000+</span>
-                grants indexed
-              </li>
-              <li aria-hidden="true" className="text-rule">·</li>
-              <li>
-                <span className="font-mono text-ink mr-1.5">141+</span>
-                scholarships
-              </li>
-              <li aria-hidden="true" className="text-rule">·</li>
-              <li>
-                <span className="font-mono text-ink mr-1.5">12</span>
-                live sources
-              </li>
-              <li aria-hidden="true" className="text-rule">·</li>
-              <li>
-                <span className="font-mono text-ink mr-1.5">0%</span>
-                upfront
-              </li>
-            </ul>
+          <div className="pt-8 border-t border-rule">
+            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-6">
+              <div>
+                <dt className="font-mono font-medium text-ink text-[clamp(28px,4vw,40px)] leading-none tracking-[-0.02em]">
+                  2,000+
+                </dt>
+                <dd className="mt-2 text-[12px] font-medium tracking-[0.12em] uppercase text-ink-2">
+                  Grants indexed
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono font-medium text-ink text-[clamp(28px,4vw,40px)] leading-none tracking-[-0.02em]">
+                  141+
+                </dt>
+                <dd className="mt-2 text-[12px] font-medium tracking-[0.12em] uppercase text-ink-2">
+                  Scholarships
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono font-medium text-ink text-[clamp(28px,4vw,40px)] leading-none tracking-[-0.02em]">
+                  12
+                </dt>
+                <dd className="mt-2 text-[12px] font-medium tracking-[0.12em] uppercase text-ink-2">
+                  Live sources
+                </dd>
+              </div>
+              <div>
+                <dt className="font-mono font-medium text-accent text-[clamp(28px,4vw,40px)] leading-none tracking-[-0.02em]">
+                  0%
+                </dt>
+                <dd className="mt-2 text-[12px] font-medium tracking-[0.12em] uppercase text-ink-2">
+                  Upfront cost
+                </dd>
+              </div>
+            </dl>
           </div>
         </div>
         <div className="col-span-12 md:col-span-5 lg:col-span-5 hero-bleed flex justify-center md:justify-end order-first md:order-last">
