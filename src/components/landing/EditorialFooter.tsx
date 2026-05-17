@@ -39,8 +39,7 @@ export function EditorialFooter() {
           <div>
             <p className="font-display text-2xl text-ink mb-2">GrantPilot</p>
             <p className="text-[14px] text-ink-2">
-              Built by Coach Phillips · Made for people who need the grant
-              more than the platform needs the fee.
+              You only pay when you win.
             </p>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-ink-2">

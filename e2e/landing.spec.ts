@@ -8,12 +8,6 @@ test.describe("Public surfaces — editorial landing", () => {
     ).toBeVisible();
   });
 
-  test("founder note section renders on the page", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#founder").scrollIntoViewIfNeeded();
-    await expect(page.locator("#founder")).toBeVisible();
-  });
-
   test("FAQ accordion opens and closes", async ({ page }) => {
     await page.goto("/");
     const firstQuestion = page.locator("#faq details").first();

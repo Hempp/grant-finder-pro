@@ -4,7 +4,6 @@ import {
   EditorialShell,
   EditorialNav,
   EditorialHero,
-  FoundersNote,
   HowItWorksStep,
   SmartFillProof,
   EditorialFAQ,
@@ -85,8 +84,6 @@ export default async function LandingPage() {
       <EditorialNav state={{ loggedIn: isLoggedIn, destinationHref }} />
 
       <EditorialHero primaryCtaHref={ctaHref} primaryCtaLabel={ctaLabel} />
-
-      <FoundersNote />
 
       <section
         id="how-it-works"
