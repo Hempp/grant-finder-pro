@@ -737,6 +737,10 @@ body {
   --dur-needle: 60000ms;
 }
 
+[data-theme="editorial"] summary::-webkit-details-marker {
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   [data-theme="editorial"]:not([data-theme-mode="light"]) {
     --bg: #0E1714;

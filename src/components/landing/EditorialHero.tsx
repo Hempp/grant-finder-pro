@@ -43,10 +43,7 @@ export function EditorialHero({
           </p>
         </div>
         <div className="col-span-12 md:col-span-5 lg:col-span-5 hero-bleed flex justify-center md:justify-end order-first md:order-last">
-          <SignatureMark
-            size={480}
-            className="w-[200px] md:w-[280px] lg:w-[480px]"
-          />
+          <SignatureMark className="w-[200px] md:w-[280px] lg:w-[480px]" />
         </div>
       </div>
     </section>

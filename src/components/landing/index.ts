@@ -2,7 +2,6 @@ export { EditorialShell } from "./EditorialShell";
 export { EditorialNav } from "./EditorialNav";
 export { EditorialHero } from "./EditorialHero";
 export { SignatureMark } from "./SignatureMark";
-export { EditorialSection } from "./EditorialSection";
 export { SmallCapsEyebrow } from "./SmallCapsEyebrow";
 export { FoundersNote } from "./FoundersNote";
 export { DropCap } from "./DropCap";

@@ -44,26 +44,41 @@ export function EditorialFooter() {
             </p>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px] text-ink-2">
-            <Link href="/pricing" className="hover:text-ink">
+            <Link
+              href="/pricing"
+              className="hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Pricing
             </Link>
-            <Link href="/resources" className="hover:text-ink">
+            <Link
+              href="/resources"
+              className="hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Resources
             </Link>
-            <Link href="/trust" className="hover:text-ink">
+            <Link
+              href="/trust"
+              className="hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Trust
             </Link>
-            <Link href="/privacy" className="hover:text-ink">
+            <Link
+              href="/privacy"
+              className="hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-ink">
+            <Link
+              href="/terms"
+              className="hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
               Terms
             </Link>
             {hydrated && (
               <button
                 type="button"
                 onClick={handleToggle}
-                className="hover:text-ink underline-offset-4 hover:underline"
+                className="hover:text-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {effective === "dark" ? "Switch to light" : "Switch to dark"}
               </button>

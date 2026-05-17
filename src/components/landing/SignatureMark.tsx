@@ -2,18 +2,14 @@
  * Inline compass-G with a 60s linear rotation on the needle <g>.
  * prefers-reduced-motion freezes the needle pointing northeast — a
  * deliberate "found something" position.
+ *
+ * Width comes from the caller via className; height auto-matches via
+ * aspect-square so the SVG fills the box at any responsive size.
  */
-export function SignatureMark({
-  size = 480,
-  className = "",
-}: {
-  size?: number;
-  className?: string;
-}) {
+export function SignatureMark({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`text-accent ${className}`}
-      style={{ width: size, height: size }}
+      className={`text-accent aspect-square ${className}`}
       aria-hidden="true"
     >
       <svg
@@ -32,7 +28,6 @@ export function SignatureMark({
         <line x1={20} y1={240} x2={44} y2={240} />
         <line x1={436} y1={240} x2={460} y2={240} />
         <circle cx={240} cy={240} r={160} />
-        {/* G letterform — brand compass-G path from commit 1515c73, scaled 10x */}
         <path d="M240 60C140.6 60 60 140.6 60 240s80.6 180 180 180c49.7 0 95-20.1 127.3-52.7" />
         <path d="M387.3 367.3L387.3 240H260" />
         <g
