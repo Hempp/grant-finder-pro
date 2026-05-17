@@ -723,13 +723,13 @@ body {
    keep the original :root tokens unchanged. */
 
 [data-theme="editorial"] {
-  --bg: #F8F5EE;
+  --bg: #FAFAFA;
   --surface: #FFFFFF;
-  --ink: #181614;
-  --ink-2: #5E5A52;
-  --rule: #E6E1D5;
-  --accent: #0B5A3F;
-  --accent-soft: #E3F2EA;
+  --ink: #0F172A;
+  --ink-2: #475569;
+  --rule: #E2E8F0;
+  --accent: #0891B2;
+  --accent-soft: #CFFAFE;
 
   --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
   --dur-fast: 150ms;
@@ -743,24 +743,24 @@ body {
 
 @media (prefers-color-scheme: dark) {
   [data-theme="editorial"]:not([data-theme-mode="light"]) {
-    --bg: #0E1714;
-    --surface: #15201C;
-    --ink: #F4EFE4;
-    --ink-2: #A8A29A;
-    --rule: #283330;
-    --accent: #34D399;
-    --accent-soft: #0B3329;
+    --bg: #0B1220;
+    --surface: #111827;
+    --ink: #F1F5F9;
+    --ink-2: #94A3B8;
+    --rule: #1E293B;
+    --accent: #22D3EE;
+    --accent-soft: #0E7490;
   }
 }
 
 [data-theme="editorial"][data-theme-mode="dark"] {
-  --bg: #0E1714;
-  --surface: #15201C;
-  --ink: #F4EFE4;
-  --ink-2: #A8A29A;
-  --rule: #283330;
-  --accent: #34D399;
-  --accent-soft: #0B3329;
+  --bg: #0B1220;
+  --surface: #111827;
+  --ink: #F1F5F9;
+  --ink-2: #94A3B8;
+  --rule: #1E293B;
+  --accent: #22D3EE;
+  --accent-soft: #0E7490;
 }
 
 /* Hero compass mark intentionally extends past the right edge of the
