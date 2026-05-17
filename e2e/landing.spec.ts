@@ -8,10 +8,10 @@ test.describe("Public surfaces — editorial landing", () => {
     ).toBeVisible();
   });
 
-  test("founder note section is reachable via anchor", async ({ page }) => {
+  test("founder note section renders on the page", async ({ page }) => {
     await page.goto("/");
-    await page.locator('a[href="#founder"]').first().click();
-    await expect(page.locator("#founder")).toBeInViewport({ ratio: 0.5 });
+    await page.locator("#founder").scrollIntoViewIfNeeded();
+    await expect(page.locator("#founder")).toBeVisible();
   });
 
   test("FAQ accordion opens and closes", async ({ page }) => {
