@@ -36,6 +36,12 @@
   --color-rule: var(--rule);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-device: var(--device);
+  --color-device-2: var(--device-2);
   --font-display: var(--font-fraunces);
 }
 
@@ -731,6 +737,16 @@ body {
   --accent: #0891B2;
   --accent-soft: #CFFAFE;
 
+  /* Secondary status colors. Cyan remains the brand accent;
+     these are for in-product status signals (match score, amount,
+     deadline urgency) and the dashboard-mock device chrome. */
+  --success: #16A34A;
+  --success-soft: #DCFCE7;
+  --warn: #F59E0B;
+  --warn-soft: #FEF3C7;
+  --device: #0F172A;
+  --device-2: #334155;
+
   --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
   --dur-fast: 150ms;
   --dur-base: 250ms;
@@ -750,6 +766,12 @@ body {
     --rule: #1E293B;
     --accent: #22D3EE;
     --accent-soft: #0E7490;
+    --success: #4ADE80;
+    --success-soft: #14532D;
+    --warn: #FBBF24;
+    --warn-soft: #78350F;
+    --device: #020617;
+    --device-2: #1E293B;
   }
 }
 
@@ -761,6 +783,12 @@ body {
   --rule: #1E293B;
   --accent: #22D3EE;
   --accent-soft: #0E7490;
+  --success: #4ADE80;
+  --success-soft: #14532D;
+  --warn: #FBBF24;
+  --warn-soft: #78350F;
+  --device: #020617;
+  --device-2: #1E293B;
 }
 
 /* Hero compass mark intentionally extends past the right edge of the
