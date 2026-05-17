@@ -172,9 +172,11 @@ const fraunces = Fraunces({
   style: ["normal", "italic"],
   display: "swap",
   preload: true,
-  adjustFontFallback: "Times New Roman",
+  adjustFontFallback: true,
 });
 ```
+
+> **Framework note:** Next.js 16+ types `adjustFontFallback` as `boolean` for Google fonts (the string form survives only on `next/font/local`). `true` lets Next pick the metric-adjusted serif fallback automatically, which is what we want for Fraunces.
 
 - [ ] **Step 2: Apply the Fraunces variable to `<body>`**
 
