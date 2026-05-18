@@ -43,16 +43,16 @@ const jsonLd = {
 
 const faqs = [
   {
+    q: "How is this different from hiring a $5K–$15K grant consultant?",
+    a: "Consultants charge upfront whether you win or lose, often $5K–$15K per application. GrantPilot charges nothing until you win. Organizations pay 2–5% on grants won; students pay 8% on the free plan or 3% on Student Pro. If you don't win, we don't either.",
+  },
+  {
     q: "What types of grants and scholarships do you cover?",
     a: "For organizations: federal (SAM.gov, Grants.gov), state, and foundation grants — SBIR/STTR, NIH, NSF, USDA, DOE, and 2,000+ programs across 12 real-time sources. For students: 141+ scholarships including merit, need-based, STEM, minority-focused, essay contests, and niche awards.",
   },
   {
     q: "How does Smart Fill actually work?",
     a: "Smart Fill reads the complete RFP or scholarship prompt, maps every scoring criterion, then drafts each section using your organization's data or student profile. It auto-optimizes up to 3 rounds until every criterion scores maximum points. You see exactly what the AI changed, why, and how it maps to the rubric.",
-  },
-  {
-    q: "What is the success fee?",
-    a: "You pay nothing until you win. Students on the free plan pay 8% of any scholarship won through GrantPilot; Student Pro reduces it to 3%. Organizations pay 2-5% depending on plan. Every plan includes a success fee — we earn when you earn. Compared to grant consultants who charge $5K-$15K per application, our model is a fraction of the cost.",
   },
   {
     q: "Is my data secure?",
@@ -63,8 +63,8 @@ const faqs = [
     a: "Yes. Build your profile once, and our AI drafts a personalized essay for each scholarship using your personal statement and activities. Review them in a batch queue — approve, edit, or skip — then submit all approved applications in one click.",
   },
   {
-    q: "What's the Grant Guarantee?",
-    a: "We're building toward a Grant Guarantee for Pro plans: if you don't win within 12 months, we'll extend your subscription free. This will launch once we have enough data to back it. For now, all paid plans include a 21-day free trial — cancel anytime if you're not seeing results.",
+    q: "What if my work doesn't have many matches yet?",
+    a: "Tell us your work, location, and audience once. We'll surface every grant and scholarship you qualify for across 12 live sources, ranked by predicted score. If we can't find at least three relevant matches in your first week, we'll work with you to expand your profile or refund any plan charges — no questions.",
   },
 ];
 

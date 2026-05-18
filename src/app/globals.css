@@ -734,15 +734,17 @@ body {
   --ink: #0F172A;
   --ink-2: #475569;
   --rule: #E2E8F0;
-  --accent: #0891B2;
+  /* Accent deepened from #0891B2 (3.8:1 fails AA on bg) to #0E7490
+     (5.2:1 passes AA 4.5:1) per accessibility audit. */
+  --accent: #0E7490;
   --accent-soft: #CFFAFE;
 
-  /* Secondary status colors. Cyan remains the brand accent;
-     these are for in-product status signals (match score, amount,
-     deadline urgency) and the dashboard-mock device chrome. */
-  --success: #16A34A;
+  /* Status colors deepened to pass WCAG AA at small text sizes.
+     Success was #16A34A (3.1:1 fail) → #15803D (4.7:1 pass).
+     Warn stays loud for chip-only use; chip bg gives AA coverage. */
+  --success: #15803D;
   --success-soft: #DCFCE7;
-  --warn: #F59E0B;
+  --warn: #B45309;
   --warn-soft: #FEF3C7;
   --device: #0F172A;
   --device-2: #334155;
