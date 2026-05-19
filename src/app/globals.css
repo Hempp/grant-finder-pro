@@ -40,8 +40,14 @@
   --color-success-soft: var(--success-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --color-device: var(--device);
-  --color-device-2: var(--device-2);
+  --color-tile-teal: var(--tile-teal);
+  --color-tile-teal-bg: var(--tile-teal-bg);
+  --color-tile-peach: var(--tile-peach);
+  --color-tile-peach-bg: var(--tile-peach-bg);
+  --color-tile-yellow: var(--tile-yellow);
+  --color-tile-yellow-bg: var(--tile-yellow-bg);
+  --color-tile-lavender: var(--tile-lavender);
+  --color-tile-lavender-bg: var(--tile-lavender-bg);
   --font-display: var(--font-fraunces);
 }
 
@@ -729,25 +735,32 @@ body {
    keep the original :root tokens unchanged. */
 
 [data-theme="editorial"] {
-  --bg: #FAFAFA;
+  /* v7 — Zeffy-aligned palette. Pure white substrate, deep navy
+     text, marine blue primary, soft pastels reserved for tile
+     chrome inside the FeatureCarousel. Sans-only typography. */
+  --bg: #FFFFFF;
   --surface: #FFFFFF;
-  --ink: #0F172A;
-  --ink-2: #475569;
-  --rule: #E2E8F0;
-  /* Accent deepened from #0891B2 (3.8:1 fails AA on bg) to #0E7490
-     (5.2:1 passes AA 4.5:1) per accessibility audit. */
-  --accent: #0E7490;
-  --accent-soft: #CFFAFE;
+  --ink: #111827;
+  --ink-2: #4B5563;
+  --rule: #E5E7EB;
+  --accent: #2563EB;
+  --accent-soft: #DBEAFE;
 
-  /* Status colors deepened to pass WCAG AA at small text sizes.
-     Success was #16A34A (3.1:1 fail) → #15803D (4.7:1 pass).
-     Warn stays loud for chip-only use; chip bg gives AA coverage. */
   --success: #15803D;
   --success-soft: #DCFCE7;
   --warn: #B45309;
   --warn-soft: #FEF3C7;
-  --device: #0F172A;
-  --device-2: #334155;
+
+  /* Pastel tile colors used only inside FeatureCarousel — Zeffy's
+     muted teal / peach / yellow / lavender language. */
+  --tile-teal: #5EEAD4;
+  --tile-teal-bg: #F0FDFA;
+  --tile-peach: #FDBA74;
+  --tile-peach-bg: #FFF7ED;
+  --tile-yellow: #FCD34D;
+  --tile-yellow-bg: #FEFCE8;
+  --tile-lavender: #C4B5FD;
+  --tile-lavender-bg: #F5F3FF;
 
   --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
   --dur-fast: 150ms;
