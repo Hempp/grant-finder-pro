@@ -774,6 +774,28 @@ body {
   --dur-fast: 150ms;
   --dur-base: 250ms;
   --dur-needle: 60000ms;
+
+  /* v2 redesign tokens */
+  --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-reveal: 520ms;
+
+  --section-tint-1: linear-gradient(180deg, #F0F7FF 0%, #F5FBFF 100%);
+  --section-tint-2: linear-gradient(180deg, #F0FDF4 0%, #F7FCF8 100%);
+  --section-tint-3: linear-gradient(180deg, #FEF7E0 0%, #FFFBED 100%);
+  --section-tint-4: linear-gradient(180deg, #F5F3FF 0%, #FAF8FF 100%);
+  --section-tint-5: linear-gradient(180deg, #FDF2F8 0%, #FEF7FB 100%);
+  --section-border-1: rgba(0, 102, 204, 0.08);
+  --section-border-2: rgba(21, 128, 61, 0.08);
+  --section-border-3: rgba(180, 83, 9, 0.08);
+  --section-border-4: rgba(124, 58, 237, 0.08);
+  --section-border-5: rgba(190, 24, 93, 0.08);
+
+  --panel-prelaunch: linear-gradient(180deg, #F0FDF4 0%, #FAFEFB 100%);
+  --gradient-cta-banner: linear-gradient(135deg, #0066CC 0%, #1a73e8 60%, #2563EB 100%);
+
+  --glass-bg: rgba(255, 255, 255, 0.70);
+  --glass-blur: 10px;
+  --glass-border: rgba(15, 23, 42, 0.06);
 }
 
 [data-theme="editorial"] summary::-webkit-details-marker {
