@@ -737,7 +737,9 @@ body {
 [data-theme="editorial"] {
   /* v7 — Zeffy-aligned palette. Pure white substrate, deep navy
      text, marine blue primary, soft pastels reserved for tile
-     chrome inside the FeatureCarousel. Sans-only typography. */
+     chrome inside the FeatureCarousel. Roboto throughout to
+     match Zeffy's typographic register. */
+  --font-sans: var(--font-roboto), Helvetica, Arial, sans-serif;
   --bg: #FFFFFF;
   --surface: #FFFFFF;
   --ink: #111827;

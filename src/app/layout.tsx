@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces, Roboto } from "next/font/google";
 import Script from "next/script";
 import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
@@ -23,6 +23,15 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+});
+
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
   display: "swap",
   preload: true,
   adjustFontFallback: true,
@@ -102,7 +111,7 @@ export default function RootLayout({
     <html lang="en">
       <Script src="/theme-init.js" strategy="beforeInteractive" />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${roboto.variable} antialiased`}
       >
         {/* Skip Navigation Link for Accessibility */}
         <a
