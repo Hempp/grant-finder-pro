@@ -817,6 +817,21 @@ body {
     --warn-soft: #78350F;
     --device: #020617;
     --device-2: #1E293B;
+    --section-tint-1: linear-gradient(180deg, rgba(0, 102, 204, 0.10) 0%, rgba(0, 102, 204, 0.04) 100%);
+    --section-tint-2: linear-gradient(180deg, rgba(21, 128, 61, 0.10) 0%, rgba(21, 128, 61, 0.04) 100%);
+    --section-tint-3: linear-gradient(180deg, rgba(180, 83, 9, 0.10) 0%, rgba(180, 83, 9, 0.04) 100%);
+    --section-tint-4: linear-gradient(180deg, rgba(124, 58, 237, 0.10) 0%, rgba(124, 58, 237, 0.04) 100%);
+    --section-tint-5: linear-gradient(180deg, rgba(190, 24, 93, 0.10) 0%, rgba(190, 24, 93, 0.04) 100%);
+    --section-border-1: rgba(34, 211, 238, 0.18);
+    --section-border-2: rgba(74, 222, 128, 0.18);
+    --section-border-3: rgba(251, 191, 36, 0.18);
+    --section-border-4: rgba(167, 139, 250, 0.18);
+    --section-border-5: rgba(244, 114, 182, 0.18);
+    --panel-prelaunch: linear-gradient(180deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.02) 100%);
+    --gradient-cta-banner: linear-gradient(135deg, #0E7490 0%, #155E75 60%, #164E63 100%);
+    --glass-bg: rgba(15, 23, 42, 0.55);
+    --glass-blur: 12px;
+    --glass-border: rgba(241, 245, 249, 0.08);
   }
 }
 
@@ -834,6 +849,21 @@ body {
   --warn-soft: #78350F;
   --device: #020617;
   --device-2: #1E293B;
+  --section-tint-1: linear-gradient(180deg, rgba(0, 102, 204, 0.10) 0%, rgba(0, 102, 204, 0.04) 100%);
+  --section-tint-2: linear-gradient(180deg, rgba(21, 128, 61, 0.10) 0%, rgba(21, 128, 61, 0.04) 100%);
+  --section-tint-3: linear-gradient(180deg, rgba(180, 83, 9, 0.10) 0%, rgba(180, 83, 9, 0.04) 100%);
+  --section-tint-4: linear-gradient(180deg, rgba(124, 58, 237, 0.10) 0%, rgba(124, 58, 237, 0.04) 100%);
+  --section-tint-5: linear-gradient(180deg, rgba(190, 24, 93, 0.10) 0%, rgba(190, 24, 93, 0.04) 100%);
+  --section-border-1: rgba(34, 211, 238, 0.18);
+  --section-border-2: rgba(74, 222, 128, 0.18);
+  --section-border-3: rgba(251, 191, 36, 0.18);
+  --section-border-4: rgba(167, 139, 250, 0.18);
+  --section-border-5: rgba(244, 114, 182, 0.18);
+  --panel-prelaunch: linear-gradient(180deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.02) 100%);
+  --gradient-cta-banner: linear-gradient(135deg, #0E7490 0%, #155E75 60%, #164E63 100%);
+  --glass-bg: rgba(15, 23, 42, 0.55);
+  --glass-blur: 12px;
+  --glass-border: rgba(241, 245, 249, 0.08);
 }
 
 /* Hero compass mark intentionally extends past the right edge of the
