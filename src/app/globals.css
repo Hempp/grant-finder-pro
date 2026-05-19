@@ -744,6 +744,7 @@ body {
      - accent #0066CC Zeffy's exact marine blue (was #2563EB blue-600)
      Roboto throughout. */
   --font-sans: var(--font-roboto), Helvetica, Arial, sans-serif;
+  --font-display: var(--font-roboto), Helvetica, Arial, sans-serif;
   --bg: #FFFFFF;
   --bg-soft: #F5F5F5;
   --surface: #FFFFFF;
