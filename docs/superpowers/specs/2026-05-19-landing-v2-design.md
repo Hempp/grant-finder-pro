@@ -177,18 +177,39 @@ The three taste decisions form a coherent gradient down the page. The spec uses 
 
 ### 4.6 Comparison / pricing  ← NEW `ComparisonSection.tsx` + `PricingCards.tsx`
 
-**Spec — comparison table.**
-- Three-column table: **GrantPilot** | **Consultants ($5K–$15K/app)** | **Subscribe-up-front competitors**.
-- Rows: Upfront cost, Time to draft first app, Predicted score before submit, Cancel anytime, 21-day free trial, Pay only on win, Number of opportunities indexed.
-- GrantPilot column has soft `bg-accent-soft` highlight. Consultant column gets a subtle red tint on negatives. Competitor column is neutral.
-- Each row checkmark/cross uses lucide `<Check>` / `<X>` icons.
+**Spec — comparison table (named competitors).**
+- Four-column table comparing GrantPilot against actual top grant-finding tools:
+  - **GrantPilot**
+  - **Instrumentl** (~$179–$329 / mo, subscribe-upfront prospect research)
+  - **Submittable** (~$1,000+ / yr, submission management)
+  - **Traditional consultants** ($5K–$15K per application)
+- Rows: Upfront cost, Pay only on win, Drafts the application for you, Predicts your score before submit, Cancel anytime, 21-day free trial, Time to first ranked match, Number of opportunities indexed, Best-suited audience.
+- GrantPilot column has soft `bg-accent-soft` highlight + a "Most efficient" pill at the top. Other columns are neutral. Negatives use lucide `<X>` (`text-ink-2/50`), positives use lucide `<Check>` (`text-success`).
+- All claimed competitor facts (pricing, what each does) must be verified against current published rates / docs immediately before merge — competitor pricing changes. A `<small>` footnote under the table reads: `Competitor pricing as of YYYY-MM-DD, sourced from each vendor's public site. Refer to each vendor for current rates.`
+- **Open for confirmation:** the three named competitors above. Swap any name before execution; row content does not depend on which name is in the column.
 
-**Spec — pricing cards.**
-- Three cards: **Free** ($0, 8% success fee), **Pro** ($79/mo, 4% success fee), **Organization** ($249/mo, 2% success fee). Match the JSON-LD pricing structure already in `page.tsx:28–33`.
-- Card chrome: rounded-2xl, `border-rule`, white background, generous padding. The middle (Pro) card has a marine border + small "Most popular" pill at top, indicating recommended tier.
-- Each card lists 5–7 features with lucide check icons. Bottom of each card has its CTA button — Free has secondary style, Pro and Organization have primary.
+**Spec — pricing cards (audience-tiered, 2 cards).**
+The pricing block presents **two audience-aimed tiers** rather than four feature tiers — per the project's pricing logic where organizations operate on a success-fee model and students operate on a monthly subscription:
 
-**A11y.** Comparison table uses real `<table>` semantics. Pricing cards are `<article>` with proper headings.
+- **Card 1: For organizations**
+  - Eyebrow: `Nonprofits · Founders · Grantmakers`
+  - Headline price: `0%` (extra-large display weight) `upfront`
+  - Subhead: `Pay only on grants won — 2–5% success fee.`
+  - Feature list (5 items): Federal + state + foundation indexing, Smart Fill against the RFP rubric, Predicted score before submit, Unlimited applications, Single-source-of-truth dashboard.
+  - CTA: `Start free — pay only on a win →`. Primary style.
+
+- **Card 2: For students**
+  - Eyebrow: `Scholarship applicants · Undergrad · Grad`
+  - Headline price: `$9.99` (display weight) `/month`
+  - Subhead: `Auto-apply to scholarships you qualify for. Cancel anytime.`
+  - Feature list (5 items): 141+ scholarship index, Auto-draft personalized essays, Batch submission queue, Predicted score per scholarship, 3% success fee on wins (vs 8% on free plan).
+  - CTA: `Start Student Pro →`. Primary style.
+
+- Card chrome: rounded-2xl, `border-rule`, white background, generous padding. Both cards are equal weight (no "Most popular" pill — the audience split is the decision, not a recommended tier).
+- Layout: `grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto`. Stack on mobile.
+- The 4-tier JSON-LD in `page.tsx:28–33` remains unchanged for SEO — the landing presentation is a UX simplification on top, not a re-pricing.
+
+**A11y.** Comparison table uses real `<table>` semantics with `<caption>` + `<thead scope="col">`. Pricing cards are `<article>` with `<h3>` audience headers and `<dl>` for price/period.
 
 ### 4.7 Pre-launch panel  ← NEW `PreLaunchPanel.tsx` (replaces testimonials section)
 
@@ -235,8 +256,9 @@ The three taste decisions form a coherent gradient down the page. The spec uses 
   - **Resources:** Grant index · Scholarship index · Blog · Help center · Smart Fill rubric
   - **Company:** About · Careers · Press · Contact
   - **Legal:** Trust · Privacy · Terms · Security · DPA
-- Above the columns: brand block on the left (`GrantPilot` wordmark + tagline) + email capture on the right (`Get one curated grant in your inbox each week`). Email capture is a simple `<form>` with an input + button; the actual subscription endpoint is out of scope for v2 (form `action=""` placeholder for follow-up phase).
-- Below the columns: bottom row with copyright, social icons (lucide: `<Twitter>`, `<Linkedin>`, `<Github>`), and the existing light/dark toggle.
+- Above the columns: brand block on the left (`GrantPilot` wordmark + tagline) + email capture on the right (`Get one curated grant in your inbox each week`). Email capture is a simple `<form>` with an input + button; `action=""` is left empty as a stub. The subscribe endpoint is out of scope for v2 — wiring lands in a follow-up phase once the provider (Resend / Loops / ConvertKit) is chosen.
+- **No social icons.** Mirroring Zeffy's approach, the footer ships without Twitter / LinkedIn / GitHub icons until real handles exist. Add them in a follow-up phase, not as TODO links in v2.
+- Below the columns: bottom row with copyright and the existing light/dark toggle. That's it — no social row, no extra rule.
 - All link targets check existence in `app/`. Where a route doesn't exist yet, add as `disabled` link with a `title="Coming soon"` — do not add fake pages.
 
 ---
@@ -379,7 +401,7 @@ Update tailwind config (`tailwind.config.ts` or `app/globals.css` if using Tailw
 | **LCP** | < 2.5s | The LCP element will be the hero headline (`<h1>` in `EditorialHero`). Above-the-fold content must not depend on JS for rendering. `HeroPreview` is server-rendered inline (no async data, no client-only effects). |
 | **CLS** | < 0.1 | `FloatingScoreCard` overlay is positioned absolutely — must have explicit `width`/`height` reservations on the preview container to prevent layout shift when it mounts. Hero stats row reserves space for all 4 stat cells from the first paint. |
 | **INP** | < 200ms | Reveal hook uses passive observers. FAQ accordion uses native `<details>` (zero JS for open/close). Nav scroll-state transition uses CSS only — no `scroll` listener. |
-| **Bundle delta** | + 0 KB of new motion/animation libraries | CSS-only motion. `lucide-react` icons stay tree-shaken (only `Check`, `X`, `Twitter`, `Linkedin`, `Github` get imported). |
+| **Bundle delta** | + 0 KB of new motion/animation libraries | CSS-only motion. `lucide-react` icons stay tree-shaken (`Check`, `X`, and chevron icons only — no social icons in v2). |
 
 If a metric regresses below target on a Vercel preview, the responsible block ships behind a feature flag (or doesn't ship) until fixed.
 
@@ -422,14 +444,12 @@ Block 1 unblocks Blocks 2, 3, 5. Blocks 4, 6, 7 are independent and parallelizab
 
 ---
 
-## 12. Out-of-spec questions surfaced during write-up
+## 12. Resolved open questions
 
-Flagging these so they don't get silently invented in `writing-plans`:
-
-1. **Free plan default vs Student Pro on pricing cards.** The JSON-LD lists "Free, Student Pro ($9.99), Pro ($79), Organization ($249)" — 4 tiers. The pricing cards spec proposes 3 (Free, Pro, Organization). Student Pro is omitted because it's a student-only tier and the landing serves both audiences. **Decision needed:** show 3 generic tiers, or split landing into per-audience views, or show 4 cards. Recommend 3 (status quo).
-2. **Comparison table — "Subscribe-up-front competitors" naming.** Is there a specific competitor we're calling out, or is this a category? Recommend keeping it categorical to avoid trademark issues.
-3. **Email capture endpoint.** If user has a preferred provider (Resend, Loops, ConvertKit), we can wire it later. Out of scope for v2 markup. **Decision needed:** stub or no email-capture form at all in v2.
-4. **Social links in footer — actual handles.** Need real URLs for Twitter/LinkedIn/GitHub. Recommend leaving as TODOs marked in code until handles are confirmed.
+1. **Pricing cards — RESOLVED · 2 audience-tiered cards.** Organizations card (success-fee, $0 upfront) + Students card (Student Pro $9.99 / mo). See §4.6. The 4-tier JSON-LD remains unchanged for SEO.
+2. **Comparison table — RESOLVED · named top competitors.** Three columns of competitors named in the spec: Instrumentl, Submittable, traditional consultants. Pricing is fact-checked at merge time. Any name can be swapped in `writing-plans` without changing row content.
+3. **Email capture — RESOLVED · stub form in v2, wired in follow-up phase.** Form ships with `action=""` and a no-op handler. Endpoint decision (Resend / Loops / ConvertKit) deferred.
+4. **Social media — RESOLVED · OMIT from v2 footer.** Following the Zeffy precedent; handles get added once they exist (separate follow-up phase). No TODO links, no placeholders.
 
 ---
 
