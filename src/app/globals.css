@@ -30,6 +30,7 @@
   --font-mono: var(--font-geist-mono);
   --breakpoint-xs: 475px;
   --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
@@ -735,18 +736,22 @@ body {
    keep the original :root tokens unchanged. */
 
 [data-theme="editorial"] {
-  /* v7 — Zeffy-aligned palette. Pure white substrate, deep navy
-     text, marine blue primary, soft pastels reserved for tile
-     chrome inside the FeatureCarousel. Roboto throughout to
-     match Zeffy's typographic register. */
+  /* Zeffy palette — verified against zeffy.com:
+     - bg #FFFFFF pure white
+     - bg-soft #F5F5F5 for alternating section bands
+     - ink #1a1a1a warm near-black (was #111827 cool slate)
+     - ink-2 #6B7280 mid-gray (was #4B5563)
+     - accent #0066CC Zeffy's exact marine blue (was #2563EB blue-600)
+     Roboto throughout. */
   --font-sans: var(--font-roboto), Helvetica, Arial, sans-serif;
   --bg: #FFFFFF;
+  --bg-soft: #F5F5F5;
   --surface: #FFFFFF;
-  --ink: #111827;
-  --ink-2: #4B5563;
+  --ink: #1a1a1a;
+  --ink-2: #6B7280;
   --rule: #E5E7EB;
-  --accent: #2563EB;
-  --accent-soft: #DBEAFE;
+  --accent: #0066CC;
+  --accent-soft: #E0EBFA;
 
   --success: #15803D;
   --success-soft: #DCFCE7;
