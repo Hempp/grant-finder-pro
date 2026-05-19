@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces, Roboto } from "next/font/google";
+import Script from "next/script";
 import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  // Preload the hero font to shave FOUT off LCP. Mono isn't above-the-fold.
   preload: true,
   display: "swap",
 });
@@ -16,6 +16,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   preload: false,
   display: "swap",
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
+});
+
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://grantpilot.dev";
@@ -90,13 +109,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Script src="/theme-init.js" strategy="beforeInteractive" />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${roboto.variable} antialiased`}
       >
         {/* Skip Navigation Link for Accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-emerald-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-emerald-800 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none"
         >
           Skip to main content
         </a>

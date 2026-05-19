@@ -1,16 +1,31 @@
 import { test, expect } from "@playwright/test";
 
-/**
- * Smoke tests that prove the three public surfaces render and the auth
- * form is keyboard-operable. These are NOT trying to be thorough — they
- * catch routing / build / import regressions in CI, nothing more.
- */
-test.describe("Public surfaces", () => {
-  test("landing hero is visible", async ({ page }) => {
+test.describe("Public surfaces — editorial landing", () => {
+  test("hero headline is visible", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { level: 1, name: /Stop writing grants/i })
+      page.getByRole("heading", { level: 1, name: /Win grants and scholarships/i })
     ).toBeVisible();
+  });
+
+  test("FAQ accordion opens and closes", async ({ page }) => {
+    await page.goto("/");
+    const firstQuestion = page.locator("#faq details").first();
+    await expect(firstQuestion).not.toHaveAttribute("open", "");
+    await firstQuestion.locator("summary").click();
+    await expect(firstQuestion).toHaveAttribute("open", "");
+  });
+
+  test("theme toggle persists across reloads", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.getByRole("button", {
+      name: /Switch to (dark|light)/,
+    });
+    await toggle.click();
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    const mode = await page.locator("html").getAttribute("data-theme-mode");
+    expect(["dark", "light"]).toContain(mode);
   });
 
   test("pricing renders the four org plans", async ({ page }) => {
