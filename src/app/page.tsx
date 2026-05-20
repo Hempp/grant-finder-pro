@@ -12,6 +12,8 @@ import {
   EditorialFAQ,
   EditorialFooter,
   CtaBanner,
+  ComparisonSection,
+  PricingCards,
 } from "@/components/landing";
 
 export const revalidate = 3600;
@@ -136,26 +138,8 @@ export default async function LandingPage() {
 
       <SmartFillProof />
 
-      <section className="border-t border-rule container mx-auto px-4 sm:px-6 py-20 md:py-32">
-        <div className="max-w-[60ch] mx-auto text-center">
-          <p className="text-[13px] font-medium tracking-[0.16em] uppercase text-ink-2 mb-6">
-            Pricing
-          </p>
-          <h2 className="font-display text-[clamp(36px,5vw,64px)] leading-[1.05] tracking-[-0.02em] text-ink mb-6">
-            You only pay when you win.
-          </h2>
-          <p className="text-[18px] leading-[1.625] text-ink-2 mb-10">
-            Compared to grant consultants who charge $5K–$15K per
-            application, we earn 2–5% on a win — and nothing if you don&apos;t.
-          </p>
-          <a
-            href="/pricing"
-            className="text-accent hover:text-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]"
-          >
-            See full pricing →
-          </a>
-        </div>
-      </section>
+      <ComparisonSection />
+      <PricingCards ctaHref={ctaHref} ctaLabel={ctaLabel} />
 
       <EditorialFAQ items={faqs} />
 

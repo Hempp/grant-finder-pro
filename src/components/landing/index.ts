@@ -18,3 +18,5 @@ export { EditorialFooter } from "./EditorialFooter";
 export { CtaBanner } from "./CtaBanner";
 export { Stat } from "./Stat";
 export { FloatingScoreCard } from "./FloatingScoreCard";
+export { ComparisonSection } from "./ComparisonSection";
+export { PricingCards } from "./PricingCards";
