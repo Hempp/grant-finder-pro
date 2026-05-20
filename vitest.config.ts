@@ -8,7 +8,16 @@ export default defineConfig({
     // Excluding them here keeps `npm test` a clean unit-only run and
     // fixes the "test.describe() called here" crash vitest throws when
     // it tries to import a Playwright spec as a vitest file.
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.next/**', 'e2e/**'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.next/**',
+      'e2e/**',
+      // Leftover git worktrees carry their own copies of e2e/ + unit
+      // specs. Without this, `npm test` collects them and crashes on the
+      // Playwright specs ("test.describe() called here") / double-counts.
+      '**/.claude/worktrees/**',
+    ],
   },
   resolve: {
     alias: {
