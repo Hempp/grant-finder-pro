@@ -14,3 +14,4 @@ export { EditorialCTA } from "./EditorialCTA";
 export { EditorialFooter } from "./EditorialFooter";
 export { CtaBanner } from "./CtaBanner";
 export { Stat } from "./Stat";
+export { FloatingScoreCard } from "./FloatingScoreCard";
