@@ -48,4 +48,12 @@ test.describe("Public surfaces — editorial landing", () => {
     await password.focus();
     await expect(password).toBeFocused();
   });
+
+  test("nav transitions to frosted state on scroll", async ({ page }) => {
+    await page.goto("/");
+    const nav = page.locator("nav").first();
+    await expect(nav).toHaveAttribute("data-scrolled", "false");
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await expect(nav).toHaveAttribute("data-scrolled", "true");
+  });
 });
