@@ -73,4 +73,11 @@ test.describe("Public surfaces — editorial landing", () => {
     await expect(section.getByRole("heading", { level: 3, name: "For organizations" })).toBeVisible();
     await expect(section.getByRole("heading", { level: 3, name: "For students" })).toBeVisible();
   });
+
+  test("pre-launch panel CTA links to signup", async ({ page }) => {
+    await page.goto("/");
+    const cta = page.getByRole("link", { name: /Join the launch list/i });
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", "/signup");
+  });
 });

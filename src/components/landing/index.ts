@@ -13,6 +13,7 @@ export { HowItWorksMockup2 } from "./HowItWorksMockup2";
 export { HowItWorksMockup3 } from "./HowItWorksMockup3";
 export { SmartFillProof } from "./SmartFillProof";
 export { EditorialFAQ } from "./EditorialFAQ";
+export { PreLaunchPanel } from "./PreLaunchPanel";
 export { EditorialCTA } from "./EditorialCTA";
 export { EditorialFooter } from "./EditorialFooter";
 export { CtaBanner } from "./CtaBanner";

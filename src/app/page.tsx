@@ -10,6 +10,7 @@ import {
   HowItWorksMockup3,
   SmartFillProof,
   EditorialFAQ,
+  PreLaunchPanel,
   EditorialFooter,
   CtaBanner,
   ComparisonSection,
@@ -140,6 +141,8 @@ export default async function LandingPage() {
 
       <ComparisonSection />
       <PricingCards ctaHref={ctaHref} ctaLabel={ctaLabel} />
+
+      <PreLaunchPanel />
 
       <EditorialFAQ items={faqs} />
 
