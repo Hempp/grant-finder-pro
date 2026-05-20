@@ -1,5 +1,8 @@
 import { Check, X } from "lucide-react";
 
+// Set at fact-check time; update manually when competitor rows are re-verified.
+const PRICING_AS_OF = "May 2026";
+
 type Cell = boolean | string;
 
 interface Row {
@@ -20,8 +23,8 @@ const ROWS: Row[] = [
 ];
 
 function CellContent({ value }: { value: Cell }) {
-  if (value === true) return <Check className="size-4 text-success mx-auto" aria-label="Yes" />;
-  if (value === false) return <X className="size-4 text-ink-2/50 mx-auto" aria-label="No" />;
+  if (value === true) return <Check className="size-4 text-success mx-auto" aria-label="Yes" role="img" />;
+  if (value === false) return <X className="size-4 text-ink-2/50 mx-auto" aria-label="No" role="img" />;
   return <span className="text-[13px] tabular-nums">{value}</span>;
 }
 
@@ -73,7 +76,7 @@ export function ComparisonSection() {
       </div>
 
       <p className="mt-4 text-[11px] text-ink-2/70 text-center max-w-3xl mx-auto">
-        Competitor pricing as of {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}, sourced from each vendor&apos;s public site. Refer to each vendor for current rates.
+        Competitor pricing as of {PRICING_AS_OF}, sourced from each vendor&apos;s public site. Refer to each vendor for current rates.
       </p>
     </section>
   );
