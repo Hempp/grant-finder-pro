@@ -12,3 +12,4 @@ export { SmartFillProof } from "./SmartFillProof";
 export { EditorialFAQ } from "./EditorialFAQ";
 export { EditorialCTA } from "./EditorialCTA";
 export { EditorialFooter } from "./EditorialFooter";
+export { CtaBanner } from "./CtaBanner";

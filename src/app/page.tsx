@@ -8,6 +8,7 @@ import {
   SmartFillProof,
   EditorialFAQ,
   EditorialFooter,
+  CtaBanner,
 } from "@/components/landing";
 
 export const revalidate = 3600;
@@ -158,17 +159,7 @@ export default async function LandingPage() {
 
       <EditorialFAQ items={faqs} />
 
-      <section className="container mx-auto px-4 sm:px-6 py-20 md:py-32 text-center">
-        <h2 className="font-display text-[clamp(36px,5vw,64px)] leading-[1.05] tracking-[-0.02em] text-ink mb-10 max-w-[20ch] mx-auto">
-          Find the grant you&apos;d almost have given up on.
-        </h2>
-        <a
-          href={ctaHref}
-          className="inline-flex items-center gap-2 bg-accent text-surface px-8 py-4 font-medium tracking-tight hover:bg-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]"
-        >
-          {ctaLabel}
-        </a>
-      </section>
+      <CtaBanner ctaHref={ctaHref} ctaLabel={ctaLabel} />
 
       <EditorialFooter />
     </EditorialShell>
