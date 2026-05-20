@@ -1,48 +1,38 @@
-import { ReactNode } from "react";
-import Image from "next/image";
+import type { ReactNode } from "react";
+
+interface HowItWorksStepProps {
+  number: string;
+  title: string;
+  body: ReactNode;
+  mockup: ReactNode;
+  reverse?: boolean;
+}
 
 export function HowItWorksStep({
   number,
   title,
   body,
-  imageSrc,
-  imageAlt,
+  mockup,
   reverse = false,
-}: {
-  number: string; // "01", "02", "03"
-  title: string;
-  body: ReactNode;
-  imageSrc: string;
-  imageAlt: string;
-  reverse?: boolean;
-}) {
+}: HowItWorksStepProps) {
   return (
     <div
-      className={`grid grid-cols-12 gap-6 items-center py-12 ${
-        reverse ? "md:[&>*:first-child]:order-last" : ""
+      className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-12 md:py-20 ${
+        reverse ? "lg:[&>*:first-child]:col-start-2" : ""
       }`}
     >
-      <div className="col-span-12 md:col-span-6">
-        <p className="font-display text-[44px] text-accent leading-none mb-4">
+      <div>
+        <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-accent mb-4">
           {number}
         </p>
-        <h3 className="font-display text-[clamp(28px,3.5vw,44px)] leading-[1.1] text-ink mb-4">
+        <h3 className="font-display text-[clamp(24px,3.2vw,36px)] leading-[1.15] tracking-[-0.02em] text-ink mb-4 max-w-[18ch]">
           {title}
         </h3>
-        <div className="text-[16px] leading-[1.625] text-ink-2 max-w-[52ch]">
+        <div className="text-[16px] leading-[1.65] text-ink-2 max-w-[44ch]">
           {body}
         </div>
       </div>
-      <div className="col-span-12 md:col-span-6">
-        <Image
-          src={imageSrc}
-          alt={imageAlt}
-          width={640}
-          height={480}
-          className="w-full h-auto"
-          loading="lazy"
-        />
-      </div>
+      <div>{mockup}</div>
     </div>
   );
 }
