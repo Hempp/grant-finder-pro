@@ -9,6 +9,7 @@ export function EditorialFAQ({ items }: { items: FAQItem[] }) {
   return (
     <section
       id="faq"
+      aria-label="Frequently asked questions"
       className="border-t border-rule py-20 md:py-32"
     >
       <div className="container mx-auto px-4 sm:px-6">
@@ -20,7 +21,7 @@ export function EditorialFAQ({ items }: { items: FAQItem[] }) {
                 key={item.q}
                 className="group rounded-xl border border-[color:var(--glass-border)] bg-[color:var(--glass-bg)] [backdrop-filter:blur(var(--glass-blur))] px-5 py-3 transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]"
               >
-                <summary className="cursor-pointer text-[15px] font-medium text-ink list-none flex items-center justify-between gap-3">
+                <summary className="cursor-pointer text-[15px] font-medium text-ink list-none flex items-center justify-between gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
                   <span>{item.q}</span>
                   <span
                     aria-hidden="true"
