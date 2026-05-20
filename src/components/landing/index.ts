@@ -10,6 +10,7 @@ export { SignatureBlock } from "./SignatureBlock";
 export { HowItWorksStep } from "./HowItWorksStep";
 export { SmartFillProof } from "./SmartFillProof";
 export { EditorialFAQ } from "./EditorialFAQ";
+export { PreLaunchPanel } from "./PreLaunchPanel";
 export { EditorialCTA } from "./EditorialCTA";
 export { EditorialFooter } from "./EditorialFooter";
 export { CtaBanner } from "./CtaBanner";

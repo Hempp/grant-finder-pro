@@ -7,6 +7,7 @@ import {
   HowItWorksStep,
   SmartFillProof,
   EditorialFAQ,
+  PreLaunchPanel,
   EditorialFooter,
   CtaBanner,
 } from "@/components/landing";
@@ -156,6 +157,8 @@ export default async function LandingPage() {
           </a>
         </div>
       </section>
+
+      <PreLaunchPanel />
 
       <EditorialFAQ items={faqs} />
 

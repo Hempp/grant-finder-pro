@@ -57,4 +57,11 @@ test.describe("Public surfaces — editorial landing", () => {
     await page.evaluate(() => window.scrollTo(0, 600));
     await expect(nav).toHaveAttribute("data-scrolled", "true");
   });
+
+  test("pre-launch panel CTA links to signup", async ({ page }) => {
+    await page.goto("/");
+    const cta = page.getByRole("link", { name: /Join the launch list/i });
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute("href", "/signup");
+  });
 });
