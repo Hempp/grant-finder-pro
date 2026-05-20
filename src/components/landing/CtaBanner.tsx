@@ -15,13 +15,13 @@ export function CtaBanner({ ctaHref, ctaLabel }: CtaBannerProps) {
         aria-hidden="true"
       />
       <div className="relative max-w-3xl mx-auto">
-        <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-white/85 mb-4">
+        <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-white mb-4">
           Ready when you are
         </p>
         <h2 className="font-display text-[clamp(36px,5vw,60px)] leading-[1.05] tracking-[-0.02em] text-white mb-5 max-w-[22ch] mx-auto">
           Find the grant you&apos;d almost have given up on.
         </h2>
-        <p className="text-[15px] md:text-[16px] text-white/85 mb-9">
+        <p className="text-[15px] md:text-[16px] text-white mb-9">
           No credit card · 21-day free trial · 0% upfront.
         </p>
         <a
