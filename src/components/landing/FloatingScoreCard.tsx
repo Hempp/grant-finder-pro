@@ -6,7 +6,7 @@ export function FloatingScoreCard() {
   return (
     <div
       aria-hidden="true"
-      className="absolute z-10 top-0 right-0 translate-x-[18%] -translate-y-[28%] rotate-2
+      className="absolute z-10 top-0 right-0 w-[88px] translate-x-[18%] -translate-y-[28%] rotate-2
         rounded-xl px-3.5 py-2.5
         bg-white/85 [backdrop-filter:blur(8px)]
         border border-[color:var(--glass-border)]
