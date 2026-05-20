@@ -809,6 +809,7 @@ body {
     --ink: #F1F5F9;
     --ink-2: #94A3B8;
     --rule: #1E293B;
+    --bg-soft: #1E293B;
     --accent: #22D3EE;
     --accent-soft: #0E7490;
     --success: #4ADE80;
@@ -841,6 +842,7 @@ body {
   --ink: #F1F5F9;
   --ink-2: #94A3B8;
   --rule: #1E293B;
+  --bg-soft: #1E293B;
   --accent: #22D3EE;
   --accent-soft: #0E7490;
   --success: #4ADE80;
