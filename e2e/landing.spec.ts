@@ -57,4 +57,20 @@ test.describe("Public surfaces — editorial landing", () => {
     await page.evaluate(() => window.scrollTo(0, 600));
     await expect(nav).toHaveAttribute("data-scrolled", "true");
   });
+
+  test("comparison table renders all four columns", async ({ page }) => {
+    await page.goto("/");
+    const table = page.locator("section#compare table");
+    await expect(table.locator("thead th").nth(1)).toContainText("GrantPilot");
+    await expect(table.locator("thead th").nth(2)).toContainText("Instrumentl");
+    await expect(table.locator("thead th").nth(3)).toContainText("Submittable");
+    await expect(table.locator("thead th").nth(4)).toContainText("Consultants");
+  });
+
+  test("pricing renders the two audience cards", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("section#pricing");
+    await expect(section.getByRole("heading", { level: 3, name: "For organizations" })).toBeVisible();
+    await expect(section.getByRole("heading", { level: 3, name: "For students" })).toBeVisible();
+  });
 });
