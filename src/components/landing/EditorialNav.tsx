@@ -21,6 +21,7 @@ export function EditorialNav({ state }: { state: NavSubscriptionState }) {
     sentinel.style.height = "1px";
     sentinel.style.width = "1px";
     sentinel.style.pointerEvents = "none";
+    sentinel.setAttribute("aria-hidden", "true");
     document.body.prepend(sentinel);
     const observer = new IntersectionObserver(
       ([entry]) => setScrolled(!entry.isIntersecting),

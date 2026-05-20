@@ -51,6 +51,7 @@ test.describe("Public surfaces — editorial landing", () => {
 
   test("nav transitions to frosted state on scroll", async ({ page }) => {
     await page.goto("/");
+    await page.waitForLoadState("domcontentloaded");
     const nav = page.locator("nav").first();
     await expect(nav).toHaveAttribute("data-scrolled", "false");
     await page.evaluate(() => window.scrollTo(0, 600));

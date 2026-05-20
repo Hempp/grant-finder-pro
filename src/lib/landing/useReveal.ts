@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseRevealOptions {
   threshold?: number;
@@ -52,9 +52,9 @@ export function useReveal(options: UseRevealOptions = {}): UseRevealResult {
     return () => observer.disconnect();
   }, [threshold, once]);
 
-  const ref: React.RefCallback<HTMLElement> = (node) => {
+  const ref = useCallback<React.RefCallback<HTMLElement>>((node) => {
     elRef.current = node;
-  };
+  }, []);
 
   return { ref, visible };
 }

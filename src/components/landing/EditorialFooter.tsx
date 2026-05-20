@@ -110,7 +110,7 @@ export function EditorialFooter() {
               Win grants and scholarships. Pay 0% upfront.
             </p>
             <form
-              action=""
+              action="#"
               onSubmit={(e) => e.preventDefault()}
               className="flex flex-col sm:flex-row gap-2 max-w-[360px]"
               aria-label="Newsletter signup"
@@ -120,6 +120,7 @@ export function EditorialFooter() {
               </label>
               <input
                 id="footer-email"
+                name="email"
                 type="email"
                 required
                 placeholder="you@example.com"
