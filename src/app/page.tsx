@@ -5,6 +5,9 @@ import {
   EditorialNav,
   EditorialHero,
   HowItWorksStep,
+  HowItWorksMockup1,
+  HowItWorksMockup2,
+  HowItWorksMockup3,
   SmartFillProof,
   EditorialFAQ,
   EditorialFooter,
@@ -101,8 +104,7 @@ export default async function LandingPage() {
               grants and 141+ scholarships, updated every morning.
             </p>
           }
-          imageSrc="/landing/howitworks-1.webp"
-          imageAlt="Schematic of GrantPilot's 12 live grant data sources flowing into a unified index."
+          mockup={<HowItWorksMockup1 />}
         />
         <HowItWorksStep
           number="02"
@@ -115,8 +117,7 @@ export default async function LandingPage() {
               actually win.
             </p>
           }
-          imageSrc="/landing/howitworks-2.webp"
-          imageAlt="GrantPilot's match-score interface showing ranked grants for an example nonprofit profile."
+          mockup={<HowItWorksMockup2 />}
           reverse
         />
         <HowItWorksStep
@@ -129,8 +130,7 @@ export default async function LandingPage() {
               three rounds until every criterion scores maximum points.
             </p>
           }
-          imageSrc="/landing/howitworks-3.webp"
-          imageAlt="Side-by-side of an RFP's scoring rubric and the draft sections produced by Smart Fill."
+          mockup={<HowItWorksMockup3 />}
         />
       </section>
 
