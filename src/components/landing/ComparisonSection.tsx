@@ -1,4 +1,7 @@
+"use client";
+
 import { Check, X } from "lucide-react";
+import { useReveal } from "@/lib/landing/useReveal";
 
 // Set at fact-check time; update manually when competitor rows are re-verified.
 const PRICING_AS_OF = "May 2026";
@@ -29,8 +32,14 @@ function CellContent({ value }: { value: Cell }) {
 }
 
 export function ComparisonSection() {
+  const { ref, visible } = useReveal();
   return (
-    <section id="compare" className="container mx-auto px-4 sm:px-6 py-20 md:py-28">
+    <section
+      id="compare"
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
+      className="reveal container mx-auto px-4 sm:px-6 py-20 md:py-28"
+    >
       <div className="text-center max-w-2xl mx-auto mb-12">
         <p className="text-meta font-semibold tracking-[0.14em] uppercase text-accent mb-3">
           How we compare
