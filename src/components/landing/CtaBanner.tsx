@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useReveal } from "@/lib/landing/useReveal";
 
 interface CtaBannerProps {
   ctaHref: string;
@@ -6,10 +9,13 @@ interface CtaBannerProps {
 }
 
 export function CtaBanner({ ctaHref, ctaLabel }: CtaBannerProps) {
+  const { ref, visible } = useReveal();
   return (
     <section
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
       aria-labelledby="cta-banner-heading"
-      className="relative overflow-hidden py-20 md:py-28 px-4 sm:px-6 text-center bg-[image:var(--gradient-cta-banner)]"
+      className="reveal relative overflow-hidden py-20 md:py-28 px-4 sm:px-6 text-center bg-[image:var(--gradient-cta-banner)]"
     >
       <div
         className="pointer-events-none absolute inset-0"
