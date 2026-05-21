@@ -85,6 +85,7 @@ test.describe("Public surfaces — editorial landing", () => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
     const page = await context.newPage();
     await page.goto("/");
+    await page.waitForLoadState("networkidle");
     const firstReveal = page.locator(".reveal").first();
     // Under reduced motion the hook short-circuits to visible.
     await expect(firstReveal).toHaveAttribute("data-reveal", "visible");

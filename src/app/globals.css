@@ -998,9 +998,11 @@ body {
    One curve, one duration, applied uniformly.
    ============================================ */
 
-[data-theme="editorial"] .reveal[data-reveal="hidden"] {
-  opacity: 0;
-  transform: translateY(16px);
+@media (scripting: enabled) {
+  [data-theme="editorial"] .reveal[data-reveal="hidden"] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
 }
 
 [data-theme="editorial"] .reveal[data-reveal="visible"] {
