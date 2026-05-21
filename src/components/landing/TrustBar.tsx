@@ -37,12 +37,12 @@ export function TrustBar() {
         <p className="text-meta font-semibold tracking-[0.14em] uppercase text-ink-2 mb-7 text-center">
           What we&apos;ve indexed so far
         </p>
-        <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8">
           <Stat value="2,000+" label="Grants" />
           <Stat value="141+" label="Scholarships" />
           <Stat value="12" label="Live sources" />
           <Stat value="0%" label="Upfront" tone="success" />
-        </dl>
+        </div>
       </div>
 
       <div className="mt-12 mx-auto max-w-2xl">
