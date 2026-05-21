@@ -1,4 +1,7 @@
+"use client";
+
 import { Fragment } from "react";
+import { useReveal } from "@/lib/landing/useReveal";
 import { Stat } from "./Stat";
 
 const INDEXED_FUNDERS = [
@@ -13,8 +16,13 @@ const INDEXED_FUNDERS = [
 ];
 
 export function TrustBar() {
+  const { ref, visible } = useReveal();
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-14 md:py-20 border-t border-rule">
+    <section
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
+      className="reveal container mx-auto px-4 sm:px-6 py-14 md:py-20 border-t border-rule"
+    >
       <div className="text-center mb-10">
         <p className="text-meta font-semibold tracking-[0.14em] uppercase text-ink-2 mb-5">
           Indexing funding from
