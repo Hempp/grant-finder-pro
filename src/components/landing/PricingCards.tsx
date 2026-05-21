@@ -1,4 +1,7 @@
+"use client";
+
 import { Check } from "lucide-react";
+import { useReveal } from "@/lib/landing/useReveal";
 import { EditorialCTA } from "./EditorialCTA";
 
 const ORG_FEATURES = [
@@ -23,8 +26,14 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ ctaHref, ctaLabel }: PricingCardsProps) {
+  const { ref, visible } = useReveal();
   return (
-    <section id="pricing" className="container mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <section
+      id="pricing"
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
+      className="reveal container mx-auto px-4 sm:px-6 py-12 md:py-16"
+    >
       <div className="text-center max-w-2xl mx-auto mb-10">
         <p className="text-meta font-semibold tracking-[0.14em] uppercase text-accent mb-3">
           Pricing
