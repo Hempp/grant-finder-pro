@@ -21,7 +21,7 @@ export function HowItWorksMockup1() {
           </div>
         </div>
         <div className="p-5">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-ink-2 mb-3">
+          <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2 mb-3">
             12 live sources · Updated 4 min ago
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -36,10 +36,10 @@ export function HowItWorksMockup1() {
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-rule flex items-center justify-between">
-            <p className="text-[11px] uppercase tracking-[0.12em] text-ink-2">
+            <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2">
               Next sync in 56 min
             </p>
-            <p className="text-[12px] font-semibold text-accent">
+            <p className="text-[12px] font-mono font-semibold text-accent">
               2,141 opportunities indexed
             </p>
           </div>

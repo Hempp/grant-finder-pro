@@ -27,7 +27,7 @@ export function HowItWorksMockup3() {
               {CRITERIA.map((c) => (
                 <li key={c.name} className="flex items-center justify-between text-[12px]">
                   <span className="text-ink">{c.name}</span>
-                  <span className="font-semibold text-success tabular-nums">{c.score}</span>
+                  <span className="font-mono font-semibold text-success tabular-nums">{c.score}</span>
                 </li>
               ))}
             </ul>

@@ -25,7 +25,7 @@ const ROWS: Row[] = [
 function CellContent({ value }: { value: Cell }) {
   if (value === true) return <Check className="size-4 text-success mx-auto" aria-label="Yes" role="img" />;
   if (value === false) return <X className="size-4 text-ink-2/50 mx-auto" aria-label="No" role="img" />;
-  return <span className="text-[13px] tabular-nums">{value}</span>;
+  return <span className="text-[13px] font-mono tabular-nums">{value}</span>;
 }
 
 export function ComparisonSection() {

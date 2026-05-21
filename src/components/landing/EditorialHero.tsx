@@ -121,14 +121,14 @@ function HeroPreview() {
                   <p className="text-[11px] text-ink-2 truncate">{row.f}</p>
                 </div>
                 <div className="hidden sm:block text-right shrink-0">
-                  <p className="text-[13px] font-semibold text-success tabular-nums">
+                  <p className="text-[13px] font-mono font-semibold text-success tabular-nums">
                     {row.a}
                   </p>
-                  <p className="text-[10px] uppercase tracking-[0.1em] text-ink-2">
+                  <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-ink-2">
                     {row.d}
                   </p>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-bold tabular-nums">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-mono font-bold tabular-nums">
                   {row.s}
                 </span>
               </div>

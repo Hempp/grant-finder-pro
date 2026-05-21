@@ -31,10 +31,10 @@ export function HowItWorksMockup2() {
                   <p className="text-[13px] font-semibold text-ink truncate">{m.t}</p>
                   <p className="text-[11px] text-success font-medium mt-0.5">Eligible</p>
                 </div>
-                <p className="text-[12px] font-semibold text-success tabular-nums shrink-0">
+                <p className="text-[12px] font-mono font-semibold text-success tabular-nums shrink-0">
                   {m.a}
                 </p>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-bold tabular-nums">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-mono font-bold tabular-nums">
                   {m.s}
                 </span>
               </div>

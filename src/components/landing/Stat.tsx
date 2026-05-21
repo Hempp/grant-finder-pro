@@ -8,7 +8,7 @@ export function Stat({ value, label, tone = "default" }: StatProps) {
   return (
     <dl className="text-center">
       <dt
-        className={`font-bold text-[clamp(28px,4.2vw,44px)] leading-none tracking-[-0.02em] tabular-nums ${
+        className={`font-mono font-bold text-[clamp(28px,4.2vw,44px)] leading-none tracking-[-0.02em] tabular-nums ${
           tone === "success" ? "text-success" : "text-ink"
         }`}
       >

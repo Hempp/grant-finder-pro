@@ -44,7 +44,7 @@ export function PricingCards({ ctaHref, ctaLabel }: PricingCardsProps) {
           <dl className="mb-6 mt-4">
             <dt className="sr-only">Price</dt>
             <dd className="flex items-baseline gap-2">
-              <span className="text-[64px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">0%</span>
+              <span className="text-[64px] font-mono font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">0%</span>
               <span className="text-[16px] text-ink-2">upfront</span>
             </dd>
             <dt className="sr-only">Billing</dt>
@@ -73,7 +73,7 @@ export function PricingCards({ ctaHref, ctaLabel }: PricingCardsProps) {
           <dl className="mb-6 mt-4">
             <dt className="sr-only">Price</dt>
             <dd className="flex items-baseline gap-2">
-              <span className="text-[64px] font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">$9.99</span>
+              <span className="text-[64px] font-mono font-bold leading-none tracking-[-0.02em] text-ink tabular-nums">$9.99</span>
               <span className="text-[16px] text-ink-2">/ month</span>
             </dd>
             <dt className="sr-only">Billing</dt>

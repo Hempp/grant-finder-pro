@@ -17,7 +17,7 @@ export function FloatingScoreCard() {
       <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-ink-2">
         Score
       </p>
-      <p className="text-[20px] font-bold text-success leading-none tabular-nums mt-1">
+      <p className="text-[20px] font-mono font-bold text-success leading-none tabular-nums mt-1">
         94
       </p>
     </div>
