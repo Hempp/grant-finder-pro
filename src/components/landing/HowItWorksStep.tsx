@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useReveal } from "@/lib/landing/useReveal";
 
 interface HowItWorksStepProps {
   number: string;
@@ -15,9 +18,12 @@ export function HowItWorksStep({
   mockup,
   reverse = false,
 }: HowItWorksStepProps) {
+  const { ref, visible } = useReveal();
   return (
     <div
-      className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-12 md:py-20 ${
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
+      className={`reveal grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center py-12 md:py-20 ${
         reverse ? "lg:[&>*:first-child]:col-start-2" : ""
       }`}
     >
