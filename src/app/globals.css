@@ -991,3 +991,30 @@ body {
     animation: none !important;
   }
 }
+
+/* ============================================
+   EDITORIAL — SCROLL REVEAL
+   Wired by useReveal() (IntersectionObserver).
+   One curve, one duration, applied uniformly.
+   ============================================ */
+
+[data-theme="editorial"] .reveal[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+[data-theme="editorial"] .reveal[data-reveal="visible"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-soft),
+    transform var(--dur-reveal) var(--ease-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="editorial"] .reveal[data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
