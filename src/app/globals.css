@@ -52,6 +52,40 @@
   --font-display: var(--font-fraunces);
 }
 
+/* ============================================
+   EDITORIAL TYPE SCALE — named font-size ladder
+   ============================================
+   v2 landing type scale. Mirrors the named-ladder
+   discipline of the Stripe / Linear reference
+   DESIGN.md files (display-* → micro). These
+   `@theme` entries generate Tailwind `text-*`
+   utilities (text-display-xl, text-body, etc.)
+   that replace 110+ hardcoded `text-[NNpx]` sites.
+
+   px sizes are constant across light/dark — only
+   color tokens flip per theme — so the scale is
+   defined here as literal values. The same ladder
+   is mirrored as `--text-*` custom properties
+   under [data-theme="editorial"] for documentation
+   and arbitrary-value fallback.
+
+   The 17/18/19px body cluster is intentionally
+   collapsed into a single `text-body-lg` (18px). */
+@theme {
+  --text-display-xl: 64px;   /* hero-scale display numerals (pricing 0% / $9.99) */
+  --text-display: 40px;      /* large display numeral (carousel score) */
+  --text-title: 22px;        /* card title / pull-quote */
+  --text-heading: 20px;      /* sub-display numeral (FloatingScoreCard) */
+  --text-body-lg: 18px;      /* lead paragraph — collapses the old 17/18/19 cluster */
+  --text-body: 16px;         /* default body copy */
+  --text-body-sm: 15px;      /* secondary body / dense body */
+  --text-small: 14px;        /* UI small text, nav links, footer links */
+  --text-caption: 13px;      /* captions, fine print, the eyebrow base */
+  --text-meta: 12px;         /* meta labels, eyebrows, table headers */
+  --text-micro: 11px;        /* micro labels, chip/badge text */
+  --text-nano: 10px;         /* nano labels (mockup chrome timestamps) */
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -796,6 +830,43 @@ body {
   --glass-bg: rgba(255, 255, 255, 0.70);
   --glass-blur: 10px;
   --glass-border: rgba(15, 23, 42, 0.06);
+
+  /* Type scale — documented ladder (mirrors the @theme block above).
+     Kept as custom properties for reference and for the
+     `text-[length:var(--text-NAME)]` arbitrary-value fallback. */
+  --text-display-xl: 64px;
+  --text-display: 40px;
+  --text-title: 22px;
+  --text-heading: 20px;
+  --text-body-lg: 18px;
+  --text-body: 16px;
+  --text-body-sm: 15px;
+  --text-small: 14px;
+  --text-caption: 13px;
+  --text-meta: 12px;
+  --text-micro: 11px;
+  --text-nano: 10px;
+
+  /* Section vertical rhythm — one held value, replacing the four
+     drifting py-* pairs (py-12/16, py-20/28, py-20/32). Linear holds
+     96px between sections; Vercel 96–128px. clamp() keeps a tight
+     mobile rhythm and opens up on desktop. */
+  --section-py: clamp(80px, 9vw, 128px);
+  --section-py-tight: clamp(56px, 6vw, 88px);
+
+  /* Radius system — one card radius, one button/input radius,
+     pills stay rounded-full. Reference systems pick ONE card radius
+     and hold it (Linear 12px, Notion 12px). v2 standardizes on 16px
+     (the dominant existing value) for cards. */
+  --radius-card: 16px;
+  --radius-control: 8px;
+
+  /* Card elevation — the 2-stop shadow previously copy-pasted as a
+     literal string across every mockup. `-soft` is the lighter
+     variant for cards that sit inside an already-tinted container. */
+  --shadow-card: 0 20px 48px -12px rgba(15, 23, 42, 0.18),
+    0 4px 12px -2px rgba(15, 23, 42, 0.06);
+  --shadow-card-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.12);
 }
 
 [data-theme="editorial"] summary::-webkit-details-marker {
