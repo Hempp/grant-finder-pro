@@ -1,6 +1,7 @@
 export { EditorialShell } from "./EditorialShell";
 export { EditorialNav } from "./EditorialNav";
 export { EditorialHero } from "./EditorialHero";
+export { TrustBar } from "./TrustBar";
 export { SignatureMark } from "./SignatureMark";
 export { SmallCapsEyebrow } from "./SmallCapsEyebrow";
 export { FoundersNote } from "./FoundersNote";

@@ -4,6 +4,7 @@ import {
   EditorialShell,
   EditorialNav,
   EditorialHero,
+  TrustBar,
   HowItWorksStep,
   HowItWorksMockup1,
   HowItWorksMockup2,
@@ -91,6 +92,8 @@ export default async function LandingPage() {
       <EditorialNav state={{ loggedIn: isLoggedIn, destinationHref }} />
 
       <EditorialHero primaryCtaHref={ctaHref} primaryCtaLabel={ctaLabel} />
+
+      <TrustBar />
 
       <section
         id="how-it-works"
