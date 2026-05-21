@@ -43,7 +43,7 @@ export function BatchSubmissionMockup() {
           </div>
           <div className="mt-4 pt-3 border-t border-rule flex items-center justify-between">
             <p className="text-micro text-ink-2">Total potential: <span className="font-mono font-semibold text-ink tabular-nums">$215,000</span></p>
-            <button type="button" className="bg-accent text-surface text-meta font-semibold rounded-lg px-3.5 py-1.5">
+            <button type="button" className="bg-accent text-surface text-meta font-semibold rounded-lg px-3.5 py-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
               Submit 7 →
             </button>
           </div>

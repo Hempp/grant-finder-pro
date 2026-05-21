@@ -145,7 +145,7 @@ export default async function LandingPage() {
 
       <SmartFillProof />
 
-      <div className="flex flex-col gap-y-12 py-12 md:py-20">
+      <div className="flex flex-col gap-y-12 py-20 md:py-32">
         <FeatureSection
           tint={1}
           eyebrow="Discovery"
