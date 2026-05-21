@@ -20,3 +20,4 @@ export {
   SkeletonGrantCard
 } from "./skeleton";
 export { ToastProvider, useToast } from "./toast";
+export { ScoreRing } from "./ScoreRing";
