@@ -16,16 +16,16 @@ export function HowItWorksMockup3() {
             <span className="size-2.5 rounded-full bg-[#FEBC2E]" />
             <span className="size-2.5 rounded-full bg-[#28C840]" />
           </div>
-          <p className="ml-3 text-[12px] text-ink-2">grantpilot.dev / smart-fill</p>
+          <p className="ml-3 text-meta text-ink-2">grantpilot.dev / smart-fill</p>
         </div>
         <div className="grid grid-cols-2 divide-x divide-rule">
           <div className="p-4">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-ink-2 mb-3">
+            <p className="text-nano uppercase tracking-[0.12em] text-ink-2 mb-3">
               Scoring rubric
             </p>
             <ul className="space-y-2">
               {CRITERIA.map((c) => (
-                <li key={c.name} className="flex items-center justify-between text-[12px]">
+                <li key={c.name} className="flex items-center justify-between text-meta">
                   <span className="text-ink">{c.name}</span>
                   <span className="font-mono font-semibold text-success tabular-nums">{c.score}</span>
                 </li>
@@ -33,10 +33,10 @@ export function HowItWorksMockup3() {
             </ul>
           </div>
           <div className="p-4 bg-bg-soft/40">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-ink-2 mb-3">
+            <p className="text-nano uppercase tracking-[0.12em] text-ink-2 mb-3">
               Draft · §1 Specific Aims
             </p>
-            <p className="text-[11px] leading-[1.55] text-ink-2 line-clamp-[8]">
+            <p className="text-micro leading-[1.55] text-ink-2 line-clamp-[8]">
               We propose a software platform that addresses three specific
               aims: (1) reduce average grant-application drafting time from
               48 hours to under 4, (2) raise the rate at which applicants
@@ -44,7 +44,7 @@ export function HowItWorksMockup3() {
               capital accessible to first-time applicants without
               consultant fees…
             </p>
-            <p className="text-[10px] font-semibold text-accent mt-3">
+            <p className="text-nano font-semibold text-accent mt-3">
               Auto-optimizing · round 2 of 3
             </p>
           </div>

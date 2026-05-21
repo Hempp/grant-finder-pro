@@ -75,13 +75,13 @@ export function RotatingMatchProof() {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="flex items-center gap-2 mb-5">
-        <span className="font-mono text-[11px] font-medium tracking-[0.18em] uppercase text-ink-2">
+        <span className="font-mono text-micro font-medium tracking-[0.18em] uppercase text-ink-2">
           Example match
         </span>
         <span className="text-ink-2/30" aria-hidden="true">
           ·
         </span>
-        <span className="font-mono text-[11px] font-medium tracking-[0.18em] uppercase text-accent">
+        <span className="font-mono text-micro font-medium tracking-[0.18em] uppercase text-accent">
           {current.audienceShort}
         </span>
       </div>
@@ -94,7 +94,7 @@ export function RotatingMatchProof() {
           >
             {current.amount}
           </p>
-          <p className="mt-3 text-[11px] font-medium tracking-[0.14em] uppercase text-ink-2">
+          <p className="mt-3 text-micro font-medium tracking-[0.14em] uppercase text-ink-2">
             Award amount
           </p>
         </div>
@@ -105,7 +105,7 @@ export function RotatingMatchProof() {
               /100
             </span>
           </p>
-          <p className="mt-3 text-[11px] font-medium tracking-[0.14em] uppercase text-ink-2">
+          <p className="mt-3 text-micro font-medium tracking-[0.14em] uppercase text-ink-2">
             Predicted score
           </p>
         </div>
@@ -114,16 +114,16 @@ export function RotatingMatchProof() {
       <div className="pt-5 border-t border-rule">
         <div className="flex items-baseline justify-between gap-4 mb-4">
           <div className="min-w-0">
-            <p className="font-display text-[18px] font-medium leading-tight text-ink truncate">
+            <p className="font-display text-body-lg font-medium leading-tight text-ink truncate">
               {current.title}
             </p>
-            <p className="text-[13px] text-ink-2 truncate">{current.funder}</p>
+            <p className="text-caption text-ink-2 truncate">{current.funder}</p>
           </div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-2 shrink-0">
+          <p className="font-mono text-micro uppercase tracking-[0.12em] text-ink-2 shrink-0">
             {current.category}
           </p>
         </div>
-        <p className="text-[13px] text-ink-2">{current.audience}</p>
+        <p className="text-caption text-ink-2">{current.audience}</p>
       </div>
 
       <div

@@ -12,7 +12,7 @@ export function SmartFillProof() {
           <h2 className="font-display text-[clamp(36px,5vw,64px)] leading-[1.05] tracking-[-0.02em] text-ink mb-6">
             From RFP to ready-to-submit in under a minute.
           </h2>
-          <p className="text-[16px] leading-[1.625] text-ink-2 max-w-[52ch]">
+          <p className="text-body leading-[1.625] text-ink-2 max-w-[52ch]">
             Smart Fill reads the complete RFP or scholarship prompt, maps
             every scoring criterion to your organization&apos;s data, drafts
             each section, and auto-optimizes up to three rounds until every

@@ -15,10 +15,10 @@ export function HowItWorksMockup2() {
             <span className="size-2.5 rounded-full bg-[#FEBC2E]" />
             <span className="size-2.5 rounded-full bg-[#28C840]" />
           </div>
-          <p className="ml-3 text-[12px] text-ink-2">grantpilot.dev / matches</p>
+          <p className="ml-3 text-meta text-ink-2">grantpilot.dev / matches</p>
         </div>
         <div className="p-5">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-ink-2 mb-3">
+          <p className="text-micro uppercase tracking-[0.12em] text-ink-2 mb-3">
             Ranked for your profile
           </p>
           <div className="space-y-2.5">
@@ -28,13 +28,13 @@ export function HowItWorksMockup2() {
                 className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl border border-rule"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-ink truncate">{m.t}</p>
-                  <p className="text-[11px] text-success font-medium mt-0.5">Eligible</p>
+                  <p className="text-caption font-semibold text-ink truncate">{m.t}</p>
+                  <p className="text-micro text-success font-medium mt-0.5">Eligible</p>
                 </div>
-                <p className="text-[12px] font-mono font-semibold text-success tabular-nums shrink-0">
+                <p className="text-meta font-mono font-semibold text-success tabular-nums shrink-0">
                   {m.a}
                 </p>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-mono font-bold tabular-nums">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-micro font-mono font-bold tabular-nums">
                   {m.s}
                 </span>
               </div>

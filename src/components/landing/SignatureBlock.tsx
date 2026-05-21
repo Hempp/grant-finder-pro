@@ -32,7 +32,7 @@ export function SignatureBlock({
       )}
       <div className="flex-1">
         <SmallCapsEyebrow>{name}</SmallCapsEyebrow>
-        <p className="font-display italic text-[16px] text-ink-2 mt-1">
+        <p className="font-display italic text-body text-ink-2 mt-1">
           {role}
         </p>
         <div className="mt-2 text-accent opacity-50">

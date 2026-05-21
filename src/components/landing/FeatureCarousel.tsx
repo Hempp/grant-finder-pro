@@ -99,13 +99,13 @@ export function FeatureCarousel() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
           <div className="px-7 py-9 md:px-10 md:py-12 flex flex-col justify-center">
-            <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-ink-2 mb-3">
+            <p className="text-meta font-semibold tracking-[0.16em] uppercase text-ink-2 mb-3">
               {current.eyebrow}
             </p>
             <h3 className="text-[clamp(22px,2.4vw,30px)] font-semibold leading-[1.2] tracking-tight text-ink mb-3">
               {current.title}
             </h3>
-            <p className="text-[15px] leading-[1.55] text-ink-2 max-w-[420px]">
+            <p className="text-body-sm leading-[1.55] text-ink-2 max-w-[420px]">
               {current.body}
             </p>
           </div>
@@ -148,7 +148,7 @@ export function FeatureCarousel() {
 function FindMock() {
   return (
     <div className="w-full max-w-[320px] bg-surface rounded-2xl shadow-[0_8px_24px_-8px_rgba(15,23,42,0.18)] p-4 space-y-2.5">
-      <div className="flex items-center justify-between text-[11px] font-medium text-ink-2 mb-1">
+      <div className="flex items-center justify-between text-micro font-medium text-ink-2 mb-1">
         <span>3 new matches</span>
         <span className="font-mono uppercase tracking-[0.12em]">
           By score
@@ -163,9 +163,9 @@ function FindMock() {
           key={row.t}
           className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-rule"
         >
-          <p className="text-[12px] font-medium text-ink truncate">{row.t}</p>
+          <p className="text-meta font-medium text-ink truncate">{row.t}</p>
           <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[11px] font-semibold ${row.c}`}
+            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-micro font-semibold ${row.c}`}
           >
             <span className="size-1 rounded-full bg-current opacity-60" />
             {row.s}
@@ -181,7 +181,7 @@ function DraftMock() {
     <div className="w-full max-w-[320px] bg-surface rounded-2xl shadow-[0_8px_24px_-8px_rgba(15,23,42,0.18)] p-4 space-y-3">
       <div className="flex items-center gap-2">
         <span className="size-1.5 rounded-full bg-tile-peach" />
-        <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2">
+        <p className="text-micro font-mono uppercase tracking-[0.12em] text-ink-2">
           Section 2 — Methodology
         </p>
       </div>
@@ -195,10 +195,10 @@ function DraftMock() {
         <div className="h-2 rounded-full bg-rule w-[92%]" />
       </div>
       <div className="flex items-center justify-between pt-1.5 border-t border-rule">
-        <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2">
+        <p className="text-micro font-mono uppercase tracking-[0.12em] text-ink-2">
           Auto-optimize · Round 2/3
         </p>
-        <span className="font-mono text-[11px] font-semibold text-success">
+        <span className="font-mono text-micro font-semibold text-success">
           +18
         </span>
       </div>
@@ -209,7 +209,7 @@ function DraftMock() {
 function ScoreMock() {
   return (
     <div className="w-full max-w-[280px] bg-surface rounded-2xl shadow-[0_8px_24px_-8px_rgba(15,23,42,0.18)] p-6 flex flex-col items-center">
-      <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-ink-2 mb-3">
+      <p className="text-micro font-mono uppercase tracking-[0.14em] text-ink-2 mb-3">
         Predicted score
       </p>
       <div className="relative size-36 mb-3">
@@ -234,15 +234,15 @@ function ScoreMock() {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-mono text-[40px] font-semibold leading-none text-ink tabular-nums">
+          <span className="font-mono text-display font-semibold leading-none text-ink tabular-nums">
             94
           </span>
-          <span className="font-mono text-[11px] text-ink-2 mt-1">/100</span>
+          <span className="font-mono text-micro text-ink-2 mt-1">/100</span>
         </div>
       </div>
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft">
         <span className="size-1.5 rounded-full bg-success" />
-        <span className="font-mono text-[11px] font-semibold text-success">
+        <span className="font-mono text-micro font-semibold text-success">
           High confidence
         </span>
       </div>
@@ -257,29 +257,29 @@ function WinMock() {
         <svg viewBox="0 0 20 20" className="size-4 text-violet-600 fill-none stroke-current" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
           <polyline points="4,11 8,15 16,5" />
         </svg>
-        <p className="text-[12px] font-semibold text-ink">
+        <p className="text-meta font-semibold text-ink">
           Application submitted
         </p>
       </div>
       <div className="space-y-1.5">
         <div className="flex items-baseline justify-between">
-          <p className="text-[11px] text-ink-2">Awarded</p>
-          <p className="font-mono text-[14px] font-semibold text-success">
+          <p className="text-micro text-ink-2">Awarded</p>
+          <p className="font-mono text-small font-semibold text-success">
             $275,000
           </p>
         </div>
         <div className="flex items-baseline justify-between">
-          <p className="text-[11px] text-ink-2">Our fee</p>
-          <p className="font-mono text-[14px] text-ink">$5,500</p>
+          <p className="text-micro text-ink-2">Our fee</p>
+          <p className="font-mono text-small text-ink">$5,500</p>
         </div>
         <div className="flex items-baseline justify-between pt-1.5 border-t border-rule">
-          <p className="text-[11px] font-medium text-ink">You keep</p>
-          <p className="font-mono text-[14px] font-semibold text-ink">
+          <p className="text-micro font-medium text-ink">You keep</p>
+          <p className="font-mono text-small font-semibold text-ink">
             $269,500
           </p>
         </div>
       </div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-ink-2 pt-1 border-t border-rule">
+      <p className="text-nano font-mono uppercase tracking-[0.12em] text-ink-2 pt-1 border-t border-rule">
         Paid only because you won
       </p>
     </div>

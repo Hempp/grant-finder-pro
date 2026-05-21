@@ -21,7 +21,7 @@ export function EditorialHero({
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div className="text-left">
-          <p className="inline-flex items-center gap-2 text-[12px] font-semibold tracking-tight text-accent mb-6 px-3.5 py-1.5 rounded-full bg-accent-soft">
+          <p className="inline-flex items-center gap-2 text-meta font-semibold tracking-tight text-accent mb-6 px-3.5 py-1.5 rounded-full bg-accent-soft">
             <span className="size-1.5 rounded-full bg-accent" aria-hidden="true" />
             For nonprofits, founders &amp; students
           </p>
@@ -32,7 +32,7 @@ export function EditorialHero({
             <span className="text-accent">Pay 0% upfront.</span>
           </h1>
 
-          <p className="text-[18px] md:text-[19px] leading-[1.55] text-ink-2 max-w-[520px] mb-8">
+          <p className="text-body-lg leading-[1.55] text-ink-2 max-w-[520px] mb-8">
             Find the funding you actually qualify for. Draft each
             application against the funder&apos;s rubric. See your predicted
             score before you submit. <span className="font-semibold text-ink">You only pay when you win.</span>
@@ -47,7 +47,7 @@ export function EditorialHero({
             </EditorialCTA>
           </div>
 
-          <p className="text-[13px] text-ink-2">
+          <p className="text-caption text-ink-2">
             No credit card · 21-day free trial · Cancel anytime
           </p>
         </div>
@@ -71,18 +71,18 @@ function HeroPreview() {
             <span className="size-2.5 rounded-full bg-[#FEBC2E]" />
             <span className="size-2.5 rounded-full bg-[#28C840]" />
           </div>
-          <p className="ml-3 text-[12px] text-ink-2">grantpilot.dev / matches</p>
-          <div className="ml-auto flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-ink-2">
+          <p className="ml-3 text-meta text-ink-2">grantpilot.dev / matches</p>
+          <div className="ml-auto flex items-center gap-1.5 text-nano uppercase tracking-[0.1em] text-ink-2">
             <span className="size-1.5 rounded-full bg-success" />
             Live
           </div>
         </div>
         <div className="p-5">
           <div className="flex items-baseline justify-between mb-4">
-            <p className="text-[15px] font-semibold text-ink">
+            <p className="text-body-sm font-semibold text-ink">
               3 new matches today
             </p>
-            <p className="text-[11px] uppercase tracking-[0.12em] text-ink-2">
+            <p className="text-micro uppercase tracking-[0.12em] text-ink-2">
               By score
             </p>
           </div>
@@ -115,30 +115,30 @@ function HeroPreview() {
                 className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl border border-rule"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold text-ink truncate">
+                  <p className="text-caption font-semibold text-ink truncate">
                     {row.t}
                   </p>
-                  <p className="text-[11px] text-ink-2 truncate">{row.f}</p>
+                  <p className="text-micro text-ink-2 truncate">{row.f}</p>
                 </div>
                 <div className="hidden sm:block text-right shrink-0">
-                  <p className="text-[13px] font-mono font-semibold text-success tabular-nums">
+                  <p className="text-caption font-mono font-semibold text-success tabular-nums">
                     {row.a}
                   </p>
-                  <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-ink-2">
+                  <p className="text-nano font-mono uppercase tracking-[0.1em] text-ink-2">
                     {row.d}
                   </p>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-[11px] font-mono font-bold tabular-nums">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success-soft text-success text-micro font-mono font-bold tabular-nums">
                   {row.s}
                 </span>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-rule flex items-center justify-between">
-            <p className="text-[11px] uppercase tracking-[0.12em] text-ink-2">
+            <p className="text-micro uppercase tracking-[0.12em] text-ink-2">
               You only pay on a win
             </p>
-            <p className="text-[12px] font-semibold text-accent">
+            <p className="text-meta font-semibold text-accent">
               Draft all 3 →
             </p>
           </div>

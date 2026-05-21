@@ -14,14 +14,14 @@ export function HowItWorksMockup1() {
             <span className="size-2.5 rounded-full bg-[#FEBC2E]" />
             <span className="size-2.5 rounded-full bg-[#28C840]" />
           </div>
-          <p className="ml-3 text-[12px] text-ink-2">grantpilot.dev / sources</p>
-          <div className="ml-auto flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-ink-2">
+          <p className="ml-3 text-meta text-ink-2">grantpilot.dev / sources</p>
+          <div className="ml-auto flex items-center gap-1.5 text-nano uppercase tracking-[0.1em] text-ink-2">
             <span className="size-1.5 rounded-full bg-success animate-pulse" />
             Syncing
           </div>
         </div>
         <div className="p-5">
-          <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2 mb-3">
+          <p className="text-micro font-mono uppercase tracking-[0.12em] text-ink-2 mb-3">
             12 live sources · Updated 4 min ago
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -31,15 +31,15 @@ export function HowItWorksMockup1() {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-rule"
               >
                 <span className="size-1.5 rounded-full bg-success shrink-0" />
-                <span className="text-[12px] font-medium text-ink truncate">{s}</span>
+                <span className="text-meta font-medium text-ink truncate">{s}</span>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-rule flex items-center justify-between">
-            <p className="text-[11px] font-mono uppercase tracking-[0.12em] text-ink-2">
+            <p className="text-micro font-mono uppercase tracking-[0.12em] text-ink-2">
               Next sync in 56 min
             </p>
-            <p className="text-[12px] font-mono font-semibold text-accent">
+            <p className="text-meta font-mono font-semibold text-accent">
               2,141 opportunities indexed
             </p>
           </div>

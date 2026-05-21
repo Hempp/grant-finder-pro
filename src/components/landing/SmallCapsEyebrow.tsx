@@ -9,7 +9,7 @@ export function SmallCapsEyebrow({
 }) {
   return (
     <p
-      className={`text-[13px] font-medium tracking-[0.16em] uppercase text-ink-2 ${className}`}
+      className={`text-caption font-medium tracking-[0.16em] uppercase text-ink-2 ${className}`}
     >
       {children}
     </p>

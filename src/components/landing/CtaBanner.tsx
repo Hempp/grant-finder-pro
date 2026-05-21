@@ -20,7 +20,7 @@ export function CtaBanner({ ctaHref, ctaLabel }: CtaBannerProps) {
         aria-hidden="true"
       />
       <div className="relative max-w-3xl mx-auto">
-        <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-white mb-4">
+        <p className="text-meta font-semibold tracking-[0.16em] uppercase text-white mb-4">
           Ready when you are
         </p>
         <h2
@@ -29,7 +29,7 @@ export function CtaBanner({ ctaHref, ctaLabel }: CtaBannerProps) {
         >
           Find the grant you&apos;d almost have given up on.
         </h2>
-        <p className="text-[15px] md:text-[16px] text-white mb-9">
+        <p className="text-body-sm md:text-body text-white mb-9">
           No credit card · 21-day free trial · 0% upfront.
         </p>
         <Link

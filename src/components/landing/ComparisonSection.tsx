@@ -25,14 +25,14 @@ const ROWS: Row[] = [
 function CellContent({ value }: { value: Cell }) {
   if (value === true) return <Check className="size-4 text-success mx-auto" aria-label="Yes" role="img" />;
   if (value === false) return <X className="size-4 text-ink-2/50 mx-auto" aria-label="No" role="img" />;
-  return <span className="text-[13px] font-mono tabular-nums">{value}</span>;
+  return <span className="text-caption font-mono tabular-nums">{value}</span>;
 }
 
 export function ComparisonSection() {
   return (
     <section id="compare" className="container mx-auto px-4 sm:px-6 py-20 md:py-28">
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <p className="text-[12px] font-semibold tracking-[0.14em] uppercase text-accent mb-3">
+        <p className="text-meta font-semibold tracking-[0.14em] uppercase text-accent mb-3">
           How we compare
         </p>
         <h2 className="font-display text-[clamp(28px,3.6vw,42px)] leading-[1.1] tracking-[-0.02em] text-ink mb-3">
@@ -45,26 +45,26 @@ export function ComparisonSection() {
           <caption className="sr-only">Comparison of grant-finding tools</caption>
           <thead>
             <tr className="border-b border-rule">
-              <th scope="col" className="py-4 pr-4 text-[12px] font-semibold tracking-[0.12em] uppercase text-ink-2 align-bottom">&nbsp;</th>
+              <th scope="col" className="py-4 pr-4 text-meta font-semibold tracking-[0.12em] uppercase text-ink-2 align-bottom">&nbsp;</th>
               <th scope="col" className="py-4 px-4 text-center align-bottom bg-accent-soft/40 rounded-t-xl">
-                <span className="block text-[11px] font-semibold tracking-[0.12em] uppercase text-accent mb-1">Most efficient</span>
-                <span className="block text-[15px] font-bold text-ink">GrantPilot</span>
+                <span className="block text-micro font-semibold tracking-[0.12em] uppercase text-accent mb-1">Most efficient</span>
+                <span className="block text-body-sm font-bold text-ink">GrantPilot</span>
               </th>
               <th scope="col" className="py-4 px-4 text-center align-bottom">
-                <span className="block text-[15px] font-bold text-ink">Instrumentl</span>
+                <span className="block text-body-sm font-bold text-ink">Instrumentl</span>
               </th>
               <th scope="col" className="py-4 px-4 text-center align-bottom">
-                <span className="block text-[15px] font-bold text-ink">Submittable</span>
+                <span className="block text-body-sm font-bold text-ink">Submittable</span>
               </th>
               <th scope="col" className="py-4 pl-4 text-center align-bottom">
-                <span className="block text-[15px] font-bold text-ink">Consultants</span>
+                <span className="block text-body-sm font-bold text-ink">Consultants</span>
               </th>
             </tr>
           </thead>
           <tbody>
             {ROWS.map((row, i) => (
               <tr key={row.label} className={i % 2 === 0 ? "bg-bg-soft/30" : ""}>
-                <th scope="row" className="py-3.5 pr-4 text-[14px] font-medium text-ink">{row.label}</th>
+                <th scope="row" className="py-3.5 pr-4 text-small font-medium text-ink">{row.label}</th>
                 <td className="py-3.5 px-4 text-center bg-accent-soft/25"><CellContent value={row.cells[0]} /></td>
                 <td className="py-3.5 px-4 text-center"><CellContent value={row.cells[1]} /></td>
                 <td className="py-3.5 px-4 text-center"><CellContent value={row.cells[2]} /></td>
@@ -75,7 +75,7 @@ export function ComparisonSection() {
         </table>
       </div>
 
-      <p className="mt-4 text-[11px] text-ink-2/70 text-center max-w-3xl mx-auto">
+      <p className="mt-4 text-micro text-ink-2/70 text-center max-w-3xl mx-auto">
         Competitor pricing as of {PRICING_AS_OF}, sourced from each vendor&apos;s public site. Refer to each vendor for current rates.
       </p>
     </section>

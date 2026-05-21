@@ -48,7 +48,7 @@ function FooterColumn({
 }) {
   return (
     <nav aria-label={title}>
-      <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-ink mb-4">
+      <p className="text-micro font-semibold tracking-[0.16em] uppercase text-ink mb-4">
         {title}
       </p>
       <ul className="space-y-2.5">
@@ -56,7 +56,7 @@ function FooterColumn({
           <li key={item.label}>
             {item.disabled ? (
               <span
-                className="text-[14px] text-ink-2/60 cursor-not-allowed"
+                className="text-small text-ink-2/60 cursor-not-allowed"
                 title="Coming soon"
               >
                 {item.label}
@@ -64,7 +64,7 @@ function FooterColumn({
             ) : (
               <Link
                 href={item.href}
-                className="text-[14px] text-ink-2 hover:text-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="text-small text-ink-2 hover:text-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {item.label}
               </Link>
@@ -106,7 +106,7 @@ export function EditorialFooter() {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-10 lg:gap-12 mb-12">
           <div>
             <p className="font-display text-2xl text-ink mb-2">GrantPilot</p>
-            <p className="text-[14px] text-ink-2 max-w-[28ch] mb-6">
+            <p className="text-small text-ink-2 max-w-[28ch] mb-6">
               Win grants and scholarships. Pay 0% upfront.
             </p>
             <form
@@ -124,16 +124,16 @@ export function EditorialFooter() {
                 type="email"
                 required
                 placeholder="you@example.com"
-                className="flex-1 text-[14px] px-3.5 py-2.5 rounded-lg border border-rule bg-surface text-ink placeholder:text-ink-2/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="flex-1 text-small px-3.5 py-2.5 rounded-lg border border-rule bg-surface text-ink placeholder:text-ink-2/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               />
               <button
                 type="submit"
-                className="bg-accent text-surface text-[13px] font-medium tracking-tight rounded-lg px-4 py-2.5 hover:bg-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="bg-accent text-surface text-caption font-medium tracking-tight rounded-lg px-4 py-2.5 hover:bg-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Subscribe
               </button>
             </form>
-            <p className="text-[12px] text-ink-2/70 mt-2 max-w-[360px]">
+            <p className="text-meta text-ink-2/70 mt-2 max-w-[360px]">
               One curated grant in your inbox each week. Unsubscribe anytime.
             </p>
           </div>
@@ -143,14 +143,14 @@ export function EditorialFooter() {
           <FooterColumn title="Legal" items={LEGAL_LINKS} />
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-rule">
-          <p className="text-[12px] text-ink-2">
+          <p className="text-meta text-ink-2">
             © {new Date().getFullYear()} GrantPilot. All rights reserved.
           </p>
           {hydrated && (
             <button
               type="button"
               onClick={handleToggle}
-              className="text-[12px] text-ink-2 hover:text-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="text-meta text-ink-2 hover:text-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {effective === "dark" ? "Switch to light" : "Switch to dark"}
             </button>

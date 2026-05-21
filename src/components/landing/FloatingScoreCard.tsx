@@ -14,10 +14,10 @@ export function FloatingScoreCard() {
         max-[480px]:hidden
         max-[768px]:rotate-0 max-[768px]:translate-x-[6%] max-[768px]:translate-y-[-12%]"
     >
-      <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-ink-2">
+      <p className="text-nano font-semibold tracking-[0.12em] uppercase text-ink-2">
         Score
       </p>
-      <p className="text-[20px] font-mono font-bold text-success leading-none tabular-nums mt-1">
+      <p className="text-heading font-mono font-bold text-success leading-none tabular-nums mt-1">
         94
       </p>
     </div>

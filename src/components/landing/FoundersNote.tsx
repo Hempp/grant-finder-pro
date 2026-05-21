@@ -15,7 +15,7 @@ export function FoundersNote() {
             A note from the founder
           </SmallCapsEyebrow>
 
-          <div className="text-[18px] leading-[1.7] text-ink">
+          <div className="text-body-lg leading-[1.7] text-ink">
             <DropCap>
               When I started coaching families at the Family Source Center,
               I kept seeing the same thing. A nonprofit director would walk

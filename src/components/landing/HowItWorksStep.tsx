@@ -22,13 +22,13 @@ export function HowItWorksStep({
       }`}
     >
       <div>
-        <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-accent mb-4">
+        <p className="text-meta font-semibold tracking-[0.16em] uppercase text-accent mb-4">
           {number}
         </p>
         <h3 className="font-display text-[clamp(24px,3.2vw,36px)] leading-[1.15] tracking-[-0.02em] text-ink mb-4 max-w-[18ch]">
           {title}
         </h3>
-        <div className="text-[16px] leading-[1.65] text-ink-2 max-w-[44ch]">
+        <div className="text-body leading-[1.65] text-ink-2 max-w-[44ch]">
           {body}
         </div>
       </div>

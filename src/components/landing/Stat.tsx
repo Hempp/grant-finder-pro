@@ -14,7 +14,7 @@ export function Stat({ value, label, tone = "default" }: StatProps) {
       >
         {value}
       </dt>
-      <dd className="mt-2 text-[12px] font-semibold tracking-[0.12em] uppercase text-ink-2">
+      <dd className="mt-2 text-meta font-semibold tracking-[0.12em] uppercase text-ink-2">
         {label}
       </dd>
     </dl>
