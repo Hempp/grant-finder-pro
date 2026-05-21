@@ -80,4 +80,14 @@ test.describe("Public surfaces — editorial landing", () => {
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", "/signup");
   });
+
+  test("reveal sections are immediately visible under reduced motion", async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+    await page.goto("/");
+    const firstReveal = page.locator(".reveal").first();
+    // Under reduced motion the hook short-circuits to visible.
+    await expect(firstReveal).toHaveAttribute("data-reveal", "visible");
+    await context.close();
+  });
 });
