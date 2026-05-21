@@ -19,7 +19,7 @@ export function EditorialFAQ({ items }: { items: FAQItem[] }) {
             {items.map((item) => (
               <details
                 key={item.q}
-                className="group rounded-xl border border-[color:var(--glass-border)] bg-[color:var(--glass-bg)] [backdrop-filter:blur(var(--glass-blur))] px-5 py-3 transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]"
+                className="group rounded-2xl border border-[color:var(--glass-border)] bg-[color:var(--glass-bg)] [backdrop-filter:blur(var(--glass-blur))] px-5 py-3 transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]"
               >
                 <summary className="cursor-pointer text-[15px] font-medium text-ink list-none flex items-center justify-between gap-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
                   <span>{item.q}</span>

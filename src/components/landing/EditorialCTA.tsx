@@ -25,7 +25,7 @@ export function EditorialCTA({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-2 bg-accent text-surface px-7 py-3.5 font-medium tracking-tight hover:bg-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
+      className={`inline-flex items-center gap-2 bg-accent text-surface rounded-lg px-7 py-3.5 font-medium tracking-tight hover:bg-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
     >
       {children}
     </Link>

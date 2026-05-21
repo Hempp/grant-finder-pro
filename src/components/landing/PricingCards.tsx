@@ -34,7 +34,7 @@ export function PricingCards({ ctaHref, ctaLabel }: PricingCardsProps) {
         </h2>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        <article className="rounded-3xl border border-rule p-8 lg:p-10 bg-surface">
+        <article className="rounded-2xl border border-rule p-8 lg:p-10 bg-surface">
           <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-accent mb-3">
             Nonprofits · Founders · Grantmakers
           </p>
@@ -63,7 +63,7 @@ export function PricingCards({ ctaHref, ctaLabel }: PricingCardsProps) {
           </EditorialCTA>
         </article>
 
-        <article className="rounded-3xl border border-rule p-8 lg:p-10 bg-surface">
+        <article className="rounded-2xl border border-rule p-8 lg:p-10 bg-surface">
           <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-accent mb-3">
             Scholarship applicants · Undergrad · Grad
           </p>

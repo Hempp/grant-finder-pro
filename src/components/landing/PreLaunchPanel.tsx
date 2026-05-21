@@ -1,7 +1,7 @@
 export function PreLaunchPanel() {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-20 md:py-28">
-      <div className="rounded-3xl border border-[color:var(--section-border-2)] bg-[image:var(--panel-prelaunch)] px-8 py-14 md:px-16 md:py-20 text-center max-w-5xl mx-auto">
+      <div className="rounded-2xl border border-[color:var(--section-border-2)] bg-[image:var(--panel-prelaunch)] px-8 py-14 md:px-16 md:py-20 text-center max-w-5xl mx-auto">
         <p className="text-[12px] font-semibold tracking-[0.16em] uppercase text-success mb-4">
           Pre-launch
         </p>
