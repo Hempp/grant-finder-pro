@@ -763,22 +763,39 @@ body {
 }
 
 /* ============================================
-   EDITORIAL THEME — landing-only token scope
+   V2 DESIGN SYSTEM TOKENS — app-wide base
    ============================================
-   Activated by data-theme="editorial" on a parent
-   (set by <EditorialShell>). Dashboard surfaces
-   keep the original :root tokens unchanged. */
+   The v2 (editorial) design system — marine
+   palette, type scale, radii, glass, motion —
+   is now hoisted to :root so it resolves on
+   EVERY surface (dashboard, auth, account, the
+   ScoreRing signature object), not just the
+   landing page. Per the app-redesign spec §6,
+   the whole app *consumes* this system.
 
-[data-theme="editorial"] {
+   [data-theme="editorial"] (set by <EditorialShell>)
+   is now a thin override — it only remaps the
+   font family to Inter for the marketing scope.
+   The landing page still receives every token
+   below identically; nothing about its rendering
+   changes.
+
+   Dark mode: the editorial dark blocks further
+   below stay scoped to [data-theme="editorial"]
+   on purpose. Dashboard / app surfaces today
+   carry their own dark styling via Tailwind
+   utility classes and do not consume these
+   custom-property tokens, so the light marine
+   values are the correct app-wide base; they
+   are not flipped to dark globally. */
+
+:root {
   /* Zeffy palette — verified against zeffy.com:
      - bg #FFFFFF pure white
      - bg-soft #F5F5F5 for alternating section bands
      - ink #1a1a1a warm near-black (was #111827 cool slate)
      - ink-2 #6B7280 mid-gray (was #4B5563)
-     - accent #0066CC Zeffy's exact marine blue (was #2563EB blue-600)
-     Roboto throughout. */
-  --font-sans: var(--font-inter), Helvetica, Arial, sans-serif;
-  --font-display: var(--font-inter), Helvetica, Arial, sans-serif;
+     - accent #0066CC Zeffy's exact marine blue (was #2563EB blue-600) */
   --bg: #FFFFFF;
   --bg-soft: #F5F5F5;
   --surface: #FFFFFF;
@@ -868,6 +885,14 @@ body {
   --shadow-card: 0 20px 48px -12px rgba(15, 23, 42, 0.18),
     0 4px 12px -2px rgba(15, 23, 42, 0.06);
   --shadow-card-soft: 0 8px 24px -8px rgba(15, 23, 42, 0.12);
+}
+
+/* Editorial scope — the marketing surfaces. Now only the font
+   family genuinely differs from the app default (Geist): the
+   landing uses Inter. Every token above is already global. */
+[data-theme="editorial"] {
+  --font-sans: var(--font-inter), Helvetica, Arial, sans-serif;
+  --font-display: var(--font-inter), Helvetica, Arial, sans-serif;
 }
 
 [data-theme="editorial"] summary::-webkit-details-marker {
