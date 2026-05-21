@@ -98,7 +98,7 @@ function SmartFillProofMockup() {
             ))}
           </div>
           <div className="mt-4 pt-3 border-t border-rule flex items-center justify-between text-micro text-ink-2">
-            <span>5 sections · every criterion mapped</span>
+            <span>3 sections · every criterion mapped</span>
             <span className="font-mono font-semibold text-success tabular-nums">
               47 / 47
             </span>
