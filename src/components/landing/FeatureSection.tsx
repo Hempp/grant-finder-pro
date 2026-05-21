@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useReveal } from "@/lib/landing/useReveal";
 
 type Tint = 1 | 2 | 3 | 4 | 5;
 
@@ -39,8 +42,13 @@ export function FeatureSection({
   mockup,
   reverse = false,
 }: FeatureSectionProps) {
+  const { ref, visible } = useReveal();
   return (
-    <section className="container mx-auto px-4 sm:px-6">
+    <section
+      ref={ref}
+      data-reveal={visible ? "visible" : "hidden"}
+      className="reveal container mx-auto px-4 sm:px-6"
+    >
       <div
         className={`rounded-2xl border ${TINT_BG[tint]} ${TINT_BORDER[tint]} p-10 lg:p-14`}
       >
