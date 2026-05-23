@@ -50,7 +50,7 @@ export function FeatureSection({
       className="reveal container mx-auto px-4 sm:px-6"
     >
       <div
-        className={`rounded-2xl border ${TINT_BG[tint]} ${TINT_BORDER[tint]} p-10 lg:p-14`}
+        className={`rounded-2xl border ${TINT_BG[tint]} ${TINT_BORDER[tint]} p-8 lg:p-10`}
       >
         <div
           className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start ${

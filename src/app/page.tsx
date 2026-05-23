@@ -103,7 +103,7 @@ export default async function LandingPage() {
 
       <section
         id="how-it-works"
-        className="container mx-auto px-4 sm:px-6 py-20 md:py-32"
+        className="container mx-auto px-4 sm:px-6 py-12 md:py-20"
       >
         <HowItWorksStep
           number="01"
@@ -148,7 +148,7 @@ export default async function LandingPage() {
 
       <SmartFillProof />
 
-      <div className="flex flex-col gap-y-12 py-20 md:py-32">
+      <div className="flex flex-col gap-y-8 py-10 md:py-16">
         <FeatureSection
           tint={1}
           eyebrow="Discovery"
