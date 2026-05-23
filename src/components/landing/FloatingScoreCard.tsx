@@ -1,25 +1,24 @@
+import { ScoreRing } from "@/components/ui/ScoreRing";
+
 /**
- * Floating "Score · 94" overlay anchored to the top-right of the hero
- * preview. Decorative — hidden from screen readers (aria-hidden).
+ * Floating ScoreRing overlay anchored to the top-right of the hero
+ * preview. The signature object of the product — animated arc fill +
+ * count-up to 94 on viewport entry, then a single pulse at the
+ * ≥90 high-score tier.
  */
 export function FloatingScoreCard() {
   return (
     <div
-      aria-hidden="true"
-      className="absolute z-10 top-0 right-0 w-[88px] translate-x-[18%] -translate-y-[28%] rotate-2
-        rounded-xl px-3.5 py-2.5
-        bg-white/85 [backdrop-filter:blur(8px)]
-        border border-[color:var(--glass-border)]
-        shadow-[0_8px_22px_-6px_rgba(15,23,42,0.22)]
+      className="absolute z-10 top-0 right-0 translate-x-[14%] -translate-y-[28%] rotate-2
+        drop-shadow-[0_10px_24px_rgba(15,23,42,0.18)]
         max-[480px]:hidden
         max-[768px]:rotate-0 max-[768px]:translate-x-[6%] max-[768px]:translate-y-[-12%]"
     >
-      <p className="text-nano font-semibold tracking-[0.12em] uppercase text-ink-2">
-        Score
-      </p>
-      <p className="text-heading font-mono font-bold text-success leading-none tabular-nums mt-1">
-        94
-      </p>
+      <ScoreRing
+        score={94}
+        size="md"
+        label="Predicted score for top match"
+      />
     </div>
   );
 }

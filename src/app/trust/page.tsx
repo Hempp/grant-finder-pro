@@ -120,21 +120,21 @@ const COMPLIANCE_ITEMS = [
 
 export default function TrustPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-surface">
 
       <main id="main-content" className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-success text-xs font-medium mb-4">
             <Shield className="h-3.5 w-3.5" aria-hidden="true" /> Trust Center
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Security &amp; trust at GrantPilot</h1>
-          <p className="text-slate-400 leading-7 max-w-3xl">
+          <p className="text-ink-2 leading-7 max-w-3xl">
             This page documents how we protect the data nonprofits and grant-seeking teams entrust
             to us. It is maintained as a living record — the claims below map to specific controls
             in our codebase and infrastructure. If you need something we don&apos;t cover, email{" "}
             <a
               href="mailto:security@grantpilot.dev"
-              className="text-emerald-400 hover:text-emerald-300"
+              className="text-success hover:text-emerald-300"
             >
               security@grantpilot.dev
             </a>
@@ -160,15 +160,15 @@ export default function TrustPage() {
               return (
                 <div
                   key={c.title}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-5"
+                  className="rounded-xl border border-rule bg-slate-900/60 p-5"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-success">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <h3 className="font-semibold text-white">{c.title}</h3>
                   </div>
-                  <p className="text-slate-400 text-sm leading-6">{c.body}</p>
+                  <p className="text-ink-2 text-sm leading-6">{c.body}</p>
                 </div>
               );
             })}
@@ -179,15 +179,15 @@ export default function TrustPage() {
           <h2 id="subprocessors" className="text-2xl font-bold text-white mb-3">
             Subprocessors
           </h2>
-          <p className="text-slate-400 leading-7 mb-6 max-w-3xl">
+          <p className="text-ink-2 leading-7 mb-6 max-w-3xl">
             GrantPilot uses the following third-party subprocessors to deliver our service. Each
             has its own Data Processing Agreement (DPA); links below. We notify customers of
             material changes to this list at least 30 days before a new subprocessor begins
             processing personal data.
           </p>
-          <div className="overflow-x-auto rounded-xl border border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-rule">
             <table className="w-full text-sm">
-              <thead className="bg-slate-900/80 text-slate-300">
+              <thead className="bg-slate-900/80 text-ink-2">
                 <tr>
                   <th scope="col" className="text-left font-semibold p-3">
                     Subprocessor
@@ -206,9 +206,9 @@ export default function TrustPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-slate-400">
+              <tbody className="text-ink-2">
                 {SUBPROCESSORS.map((s) => (
-                  <tr key={s.name} className="border-t border-slate-800">
+                  <tr key={s.name} className="border-t border-rule">
                     <td className="p-3 font-medium text-white">{s.name}</td>
                     <td className="p-3">{s.purpose}</td>
                     <td className="p-3 hidden md:table-cell">{s.data}</td>
@@ -218,7 +218,7 @@ export default function TrustPage() {
                         href={s.dpa}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-emerald-400 hover:text-emerald-300"
+                        className="text-success hover:text-emerald-300"
                       >
                         View
                       </a>
@@ -234,7 +234,7 @@ export default function TrustPage() {
           <h2 id="compliance" className="text-2xl font-bold text-white mb-3">
             Compliance posture
           </h2>
-          <p className="text-slate-400 leading-7 mb-6 max-w-3xl">
+          <p className="text-ink-2 leading-7 mb-6 max-w-3xl">
             We distinguish live commitments from work in progress. A status of &quot;Supported&quot;
             means a customer can exercise the right today through our product or a documented
             request process.
@@ -243,12 +243,12 @@ export default function TrustPage() {
             {COMPLIANCE_ITEMS.map((item) => (
               <li
                 key={item.label}
-                className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-900/40 p-3"
+                className="flex items-center justify-between rounded-lg border border-rule bg-slate-900/40 p-3"
               >
-                <span className="text-slate-200">{item.label}</span>
+                <span className="text-ink">{item.label}</span>
                 <span
                   className={`inline-flex items-center gap-1.5 text-sm font-medium ${
-                    item.live ? "text-emerald-400" : "text-amber-400"
+                    item.live ? "text-success" : "text-amber-400"
                   }`}
                 >
                   {item.live && <CheckCircle2 className="h-4 w-4" aria-hidden="true" />}
@@ -263,28 +263,28 @@ export default function TrustPage() {
           <h2 id="data-rights" className="text-2xl font-bold text-white mb-3">
             Your data rights
           </h2>
-          <p className="text-slate-400 leading-7 max-w-3xl mb-4">
+          <p className="text-ink-2 leading-7 max-w-3xl mb-4">
             Every GrantPilot user can exercise the following rights self-service from their account
             settings, no support ticket required:
           </p>
-          <ul className="list-disc list-inside text-slate-400 leading-7 space-y-1 pl-2">
+          <ul className="list-disc list-inside text-ink-2 leading-7 space-y-1 pl-2">
             <li>
-              <strong className="text-slate-200">Export</strong> — download a JSON archive of your
+              <strong className="text-ink">Export</strong> — download a JSON archive of your
               account, organization, applications, documents, and content library.
             </li>
             <li>
-              <strong className="text-slate-200">Delete</strong> — permanently delete your account
+              <strong className="text-ink">Delete</strong> — permanently delete your account
               and associated data (excluding audit log rows retained for legal compliance).
             </li>
             <li>
-              <strong className="text-slate-200">Correct</strong> — edit any profile or
+              <strong className="text-ink">Correct</strong> — edit any profile or
               application record directly in the app.
             </li>
             <li>
-              <strong className="text-slate-200">Object / restrict</strong> — email{" "}
+              <strong className="text-ink">Object / restrict</strong> — email{" "}
               <a
                 href="mailto:privacy@grantpilot.dev"
-                className="text-emerald-400 hover:text-emerald-300"
+                className="text-success hover:text-emerald-300"
               >
                 privacy@grantpilot.dev
               </a>{" "}
@@ -295,27 +295,27 @@ export default function TrustPage() {
 
         <section aria-labelledby="report" className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-6">
           <div className="flex items-start gap-4">
-            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 flex-shrink-0">
+            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-success flex-shrink-0">
               <Mail className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
               <h2 id="report" className="text-xl font-bold text-white mb-2">
                 Report a security issue
               </h2>
-              <p className="text-slate-300 leading-7">
+              <p className="text-ink-2 leading-7">
                 We appreciate responsible disclosure. Email{" "}
                 <a
                   href="mailto:security@grantpilot.dev"
-                  className="text-emerald-400 hover:text-emerald-300"
+                  className="text-success hover:text-emerald-300"
                 >
                   security@grantpilot.dev
                 </a>{" "}
                 with reproduction steps and any supporting evidence. We acknowledge reports within
                 two business days and will coordinate disclosure timelines with you.
               </p>
-              <p className="text-slate-400 text-sm mt-3">
+              <p className="text-ink-2 text-sm mt-3">
                 For customer-specific processing questions, see our{" "}
-                <Link href="/dpa" className="text-emerald-400 hover:text-emerald-300">
+                <Link href="/dpa" className="text-success hover:text-emerald-300">
                   Data Processing Agreement
                 </Link>
                 .

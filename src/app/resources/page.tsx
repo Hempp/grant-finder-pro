@@ -68,7 +68,7 @@ const externalLinks = [
 
 export default function ResourcesPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-surface">
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Hero */}
@@ -76,7 +76,7 @@ export default function ResourcesPage() {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Grant Writing Resources
           </h1>
-          <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+          <p className="text-ink-2 max-w-2xl mx-auto text-lg">
             Everything you need to find, write, and win grant funding for your organization.
           </p>
         </div>
@@ -88,11 +88,11 @@ export default function ResourcesPage() {
             {guides.map((guide) => (
               <div
                 key={guide.title}
-                className="group bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/80 hover:border-emerald-500/30 transition-all duration-300"
+                className="group bg-slate-800/50 border border-rule rounded-2xl p-6 hover:bg-slate-800/80 hover:border-emerald-500/30 transition-all duration-300"
               >
-                <guide.icon className="h-8 w-8 text-emerald-400 mb-4 group-hover:scale-110 transition-transform" />
+                <guide.icon className="h-8 w-8 text-success mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-bold text-white mb-2">{guide.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{guide.desc}</p>
+                <p className="text-ink-2 text-sm leading-relaxed">{guide.desc}</p>
               </div>
             ))}
           </div>
@@ -103,9 +103,9 @@ export default function ResourcesPage() {
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-8">Grant Glossary</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {glossary.map((item) => (
-              <div key={item.term} className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
-                <dt className="text-emerald-400 font-bold text-sm mb-1">{item.term}</dt>
-                <dd className="text-slate-400 text-sm leading-relaxed">{item.def}</dd>
+              <div key={item.term} className="bg-slate-800/30 border border-rule/50 rounded-xl p-4">
+                <dt className="text-success font-bold text-sm mb-1">{item.term}</dt>
+                <dd className="text-ink-2 text-sm leading-relaxed">{item.def}</dd>
               </div>
             ))}
           </div>
@@ -121,11 +121,11 @@ export default function ResourcesPage() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3 bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all group"
+                className="flex items-start gap-3 bg-slate-800/30 border border-rule/50 rounded-xl p-4 hover:border-emerald-500/30 hover:bg-slate-800/60 transition-all group"
               >
-                <ExternalLink className="h-5 w-5 text-slate-500 group-hover:text-emerald-400 mt-0.5 flex-shrink-0 transition-colors" />
+                <ExternalLink className="h-5 w-5 text-slate-500 group-hover:text-success mt-0.5 flex-shrink-0 transition-colors" />
                 <div>
-                  <div className="text-white font-medium text-sm group-hover:text-emerald-400 transition-colors">{link.name}</div>
+                  <div className="text-white font-medium text-sm group-hover:text-success transition-colors">{link.name}</div>
                   <div className="text-slate-500 text-xs mt-0.5">{link.desc}</div>
                 </div>
               </a>
@@ -134,16 +134,16 @@ export default function ResourcesPage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-3xl p-8 sm:p-12 text-center">
+        <section className="bg-gradient-to-r from-accent/20 via-teal-500/20 to-cyan-500/20 border border-emerald-500/30 rounded-3xl p-8 sm:p-12 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
             Ready to Automate Your Grant Applications?
           </h2>
-          <p className="text-slate-300 max-w-xl mx-auto mb-8">
+          <p className="text-ink-2 max-w-xl mx-auto mb-8">
             GrantPilot reads the RFP, maps scoring criteria, and drafts every section from your data — scoring 100/100 on the rubric.
           </p>
           <Link
             href="/signup"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-accent to-accent hover:from-accent hover:to-accent text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
           >
             Get Started Free
             <ArrowRight className="h-5 w-5" />
@@ -151,10 +151,10 @@ export default function ResourcesPage() {
         </section>
       </main>
 
-      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-8 border-t border-slate-800">
+      <footer className="max-w-6xl mx-auto px-4 sm:px-6 py-8 border-t border-rule">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-400" />
+            <Sparkles className="h-5 w-5 text-success" />
             <span className="text-sm font-semibold text-white">GrantPilot</span>
           </div>
           <div className="flex items-center gap-6 text-slate-500 text-sm">

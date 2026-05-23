@@ -76,7 +76,7 @@ const plans = [
     cta: "Start Growing",
     popular: false,
     icon: TrendingUp,
-    gradient: "from-emerald-400 to-cyan-500",
+    gradient: "from-accent to-cyan-500",
     ring: "ring-cyan-500/30",
     iconBg: "bg-cyan-500/10",
   },
@@ -101,7 +101,7 @@ const plans = [
     cta: "Go Pro",
     popular: true,
     icon: Shield,
-    gradient: "from-emerald-500 to-teal-400",
+    gradient: "from-accent to-accent",
     ring: "ring-emerald-500/40",
     iconBg: "bg-emerald-500/10",
   },
@@ -262,7 +262,7 @@ function PricingContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-surface">
       {/* Background effects */}
       <div className="fixed inset-0 bg-grid-pattern opacity-10 pointer-events-none" aria-hidden="true" />
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
@@ -278,35 +278,35 @@ function PricingContent() {
         )}
         {trialStarted && (
           <div className="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-            <p className="text-emerald-400 text-sm">Your 21-day Pro trial has started! Redirecting to dashboard...</p>
+            <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
+            <p className="text-success text-sm">Your 21-day Pro trial has started! Redirecting to dashboard...</p>
           </div>
         )}
 
         {/* Hero */}
         <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-success text-sm font-medium mb-6">
             <Zap className="h-4 w-4" />
             Only pay when you win
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 tracking-tight">
             Plans that{" "}
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-transparent bg-clip-text">
+            <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 text-transparent bg-clip-text">
               grow with you
             </span>
           </h1>
-          <p className="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-ink-2 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
             Start free. Upgrade when you&apos;re ready. Every paid plan includes a 21-day trial.
           </p>
 
           {/* Billing Toggle */}
-          <div className="mt-10 inline-flex items-center bg-slate-900/80 border border-slate-800 rounded-xl p-1">
+          <div className="mt-10 inline-flex items-center bg-slate-900/80 border border-rule rounded-xl p-1">
             <button
               onClick={() => setBillingInterval("monthly")}
               className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
                 billingInterval === "monthly"
                   ? "bg-slate-700 text-white shadow-lg"
-                  : "text-slate-400 hover:text-white"
+                  : "text-ink-2 hover:text-white"
               }`}
               aria-pressed={billingInterval === "monthly"}
             >
@@ -317,12 +317,12 @@ function PricingContent() {
               className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
                 billingInterval === "annual"
                   ? "bg-slate-700 text-white shadow-lg"
-                  : "text-slate-400 hover:text-white"
+                  : "text-ink-2 hover:text-white"
               }`}
               aria-pressed={billingInterval === "annual"}
             >
               Annual
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-success text-xs font-bold">
                 Save up to 34%
               </span>
             </button>
@@ -345,16 +345,16 @@ function PricingContent() {
                 id={`plan-${plan.id}`}
                 className={`relative rounded-2xl border transition-all duration-300 scroll-mt-24 ${
                   isHighlighted
-                    ? "border-emerald-400 bg-gradient-to-b from-emerald-500/[0.12] via-slate-900/80 to-slate-900/60 shadow-2xl shadow-emerald-500/20 ring-2 ring-emerald-400/40 scale-[1.02] lg:scale-105"
+                    ? "border-emerald-400 bg-gradient-to-b from-accent/[0.12] via-slate-900/80 to-slate-900/60 shadow-2xl shadow-emerald-500/20 ring-2 ring-emerald-400/40 scale-[1.02] lg:scale-105"
                     : plan.popular
-                    ? "border-emerald-500/50 bg-gradient-to-b from-emerald-500/[0.08] via-slate-900/80 to-slate-900/60 shadow-xl shadow-emerald-500/10 scale-[1.02] lg:scale-105"
-                    : "border-slate-800 bg-slate-900/60 hover:border-slate-700"
+                    ? "border-emerald-500/50 bg-gradient-to-b from-accent/[0.08] via-slate-900/80 to-slate-900/60 shadow-xl shadow-emerald-500/10 scale-[1.02] lg:scale-105"
+                    : "border-rule bg-slate-900/60 hover:border-rule"
                 }`}
               >
                 {/* Popular badge */}
                 {plan.popular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-white text-xs font-bold shadow-lg shadow-emerald-500/30">
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent to-accent text-white text-xs font-bold shadow-lg shadow-emerald-500/30">
                       <Star className="h-3 w-3 fill-current" />
                       Most Popular
                     </div>
@@ -404,7 +404,7 @@ function PricingContent() {
                           <p className="text-xs text-slate-500 mt-1">
                             ${plan.priceAnnual}/year
                             {savings > 0 && (
-                              <span className="text-emerald-400 font-medium ml-1.5">Save {savings}%</span>
+                              <span className="text-success font-medium ml-1.5">Save {savings}%</span>
                             )}
                           </p>
                         )}
@@ -475,8 +475,8 @@ function PricingContent() {
                   {/* Highlight callout */}
                   {plan.highlight && (
                     <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                      <CheckCircle className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
-                      <span className="text-xs text-emerald-400 font-medium">{plan.highlight}</span>
+                      <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
+                      <span className="text-xs text-success font-medium">{plan.highlight}</span>
                     </div>
                   )}
 
@@ -485,11 +485,11 @@ function PricingContent() {
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-2.5">
                         {feature.included ? (
-                          <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                          <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
                         ) : (
                           <X className="h-4 w-4 text-slate-700 flex-shrink-0 mt-0.5" />
                         )}
-                        <span className={`text-sm leading-5 ${feature.included ? "text-slate-300" : "text-slate-600"}`}>
+                        <span className={`text-sm leading-5 ${feature.included ? "text-ink-2" : "text-slate-600"}`}>
                           {feature.text}
                         </span>
                       </li>
@@ -514,17 +514,17 @@ function PricingContent() {
                 not stress
               </span>
             </h2>
-            <p className="text-slate-400 max-w-lg mx-auto">
+            <p className="text-ink-2 max-w-lg mx-auto">
               141+ scholarships. AI-powered essays. Batch apply in one click.
             </p>
           </div>
 
           <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Student Free */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+            <div className="rounded-2xl border border-rule bg-slate-900/60 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-slate-800">
-                  <GraduationCap className="h-5 w-5 text-slate-400" />
+                  <GraduationCap className="h-5 w-5 text-ink-2" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Student Free</h3>
@@ -550,8 +550,8 @@ function PricingContent() {
               <ul className="space-y-3">
                 {studentPlan.freeFeatures.map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-slate-300">{f}</span>
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-ink-2">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -591,8 +591,8 @@ function PricingContent() {
                 )}
               </div>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10 mb-6">
-                <CheckCircle className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
-                <span className="text-xs text-emerald-400 font-medium">Only 3% success fee — save 63% vs Free</span>
+                <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
+                <span className="text-xs text-success font-medium">Only 3% success fee — save 63% vs Free</span>
               </div>
               <Button
                 className="w-full mb-6"
@@ -611,7 +611,7 @@ function PricingContent() {
                 {studentPlan.proFeatures.map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <Check className="h-4 w-4 text-purple-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-slate-300">{f}</span>
+                    <span className="text-sm text-ink-2">{f}</span>
                   </li>
                 ))}
               </ul>
@@ -623,7 +623,7 @@ function PricingContent() {
         <div className="mb-20">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">How GrantPilot pays for itself</h2>
-            <p className="text-slate-400 text-sm">A single funded grant covers years of subscription. You only owe the success fee when you actually win.</p>
+            <p className="text-ink-2 text-sm">A single funded grant covers years of subscription. You only owe the success fee when you actually win.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {[
@@ -631,10 +631,10 @@ function PricingContent() {
               { value: "Auto → 100", label: "Smart Fill optimizes to top score", icon: Award, sub: "Up to 3 rounds, with diff transparency" },
               { value: "21 days", label: "Free trial, no card required", icon: Clock, sub: "Cancel anytime — keep what you draft" },
             ].map((stat, i) => (
-              <div key={i} className="p-5 rounded-xl bg-slate-900/40 border border-slate-800/50">
-                <stat.icon className="h-5 w-5 text-emerald-400 mb-3" />
+              <div key={i} className="p-5 rounded-xl bg-slate-900/40 border border-rule/50">
+                <stat.icon className="h-5 w-5 text-success mb-3" />
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-sm text-slate-300 mt-1">{stat.label}</p>
+                <p className="text-sm text-ink-2 mt-1">{stat.label}</p>
                 <p className="text-xs text-slate-500 mt-2 leading-relaxed">{stat.sub}</p>
               </div>
             ))}
@@ -642,11 +642,11 @@ function PricingContent() {
         </div>
 
         {/* ═══ Trust Signals ═══ */}
-        <div className="flex items-center justify-center gap-6 sm:gap-10 flex-wrap text-slate-400 text-sm mb-20">
+        <div className="flex items-center justify-center gap-6 sm:gap-10 flex-wrap text-ink-2 text-sm mb-20">
           {[
-            { icon: CheckCircle, text: "Cancel anytime", color: "text-emerald-400" },
-            { icon: CheckCircle, text: "21-day free trial", color: "text-emerald-400" },
-            { icon: Shield, text: "Secure via Stripe", color: "text-emerald-400" },
+            { icon: CheckCircle, text: "Cancel anytime", color: "text-success" },
+            { icon: CheckCircle, text: "21-day free trial", color: "text-success" },
+            { icon: Shield, text: "Secure via Stripe", color: "text-success" },
             { icon: Award, text: "Success fee — we earn when you win", color: "text-amber-400" },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -663,7 +663,7 @@ function PricingContent() {
           </h2>
           <div className="space-y-2">
             {faqs.map((faq, i) => (
-              <div key={i} className="rounded-xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+              <div key={i} className="rounded-xl border border-rule bg-slate-900/40 overflow-hidden">
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-800/30 transition-colors"
@@ -677,7 +677,7 @@ function PricingContent() {
                 </button>
                 {expandedFaq === i && (
                   <div className="px-5 pb-5 -mt-1">
-                    <p className="text-sm text-slate-400 leading-relaxed">{faq.a}</p>
+                    <p className="text-sm text-ink-2 leading-relaxed">{faq.a}</p>
                   </div>
                 )}
               </div>
@@ -686,11 +686,11 @@ function PricingContent() {
         </div>
 
         {/* ═══ Bottom CTA ═══ */}
-        <div className="text-center py-16 px-6 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/50 to-cyan-500/10 border border-emerald-500/20">
+        <div className="text-center py-16 px-6 rounded-2xl bg-gradient-to-br from-accent/10 via-slate-900/50 to-cyan-500/10 border border-emerald-500/20">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
             Ready to win more funding?
           </h2>
-          <p className="text-slate-400 mb-8 max-w-md mx-auto">
+          <p className="text-ink-2 mb-8 max-w-md mx-auto">
             Start free in 30 seconds. Upgrade only when GrantPilot has earned you funding.
           </p>
           <div className="flex items-center justify-center gap-4 flex-wrap">
@@ -722,12 +722,12 @@ function PricingContent() {
           <>
             <dl className="space-y-3 mb-6 text-sm">
               <div className="flex justify-between p-3 rounded-lg bg-slate-800/50">
-                <dt className="text-slate-400">Subscription</dt>
+                <dt className="text-ink-2">Subscription</dt>
                 <dd className="text-white font-medium">
                   ${billingInterval === "monthly" ? pendingPlan.price : Math.round(pendingPlan.priceAnnual / 12)}
                   /month
                   {billingInterval === "annual" && (
-                    <span className="text-xs text-slate-400 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
+                    <span className="text-xs text-ink-2 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
                   )}
                 </dd>
               </div>
@@ -746,14 +746,14 @@ function PricingContent() {
                 <dt className="text-emerald-300">Trial &amp; cancellation</dt>
                 <dd className="text-emerald-200 font-medium text-right">
                   21-day trial
-                  <div className="text-xs text-emerald-400/70 mt-0.5">
+                  <div className="text-xs text-success/70 mt-0.5">
                     Cancel anytime, prorated refund
                   </div>
                 </dd>
               </div>
             </dl>
 
-            <div className="text-xs text-slate-400 mb-5 leading-relaxed">
+            <div className="text-xs text-ink-2 mb-5 leading-relaxed">
               No setup fees. No cancellation fees. No per-application charges. Payments are securely processed by Stripe — your card details never touch GrantPilot servers.
             </div>
 
@@ -786,7 +786,7 @@ function PricingContent() {
       </Dialog>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/60 py-8 mt-8">
+      <footer className="border-t border-rule/60 py-8 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
           <p>&copy; {new Date().getFullYear()} GrantPilot. All rights reserved.</p>
           <div className="flex items-center gap-6">
@@ -802,8 +802,8 @@ function PricingContent() {
 export default function PricingPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-success" />
       </div>
     }>
       <PricingContent />
