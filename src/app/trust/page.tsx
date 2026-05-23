@@ -121,20 +121,6 @@ const COMPLIANCE_ITEMS = [
 export default function TrustPage() {
   return (
     <div className="min-h-screen bg-slate-950">
-      <header className="border-b border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-emerald-400" aria-hidden="true" />
-            <span className="font-bold text-white text-lg">GrantPilot</span>
-          </Link>
-          <Link
-            href="/"
-            className="text-slate-400 hover:text-white text-sm flex items-center gap-1 transition-colors duration-200"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
-          </Link>
-        </div>
-      </header>
 
       <main id="main-content" className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="mb-12">

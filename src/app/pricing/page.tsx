@@ -267,29 +267,6 @@ function PricingContent() {
       <div className="fixed inset-0 bg-grid-pattern opacity-10 pointer-events-none" aria-hidden="true" />
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
 
-      {/* Header */}
-      <header className="relative border-b border-slate-800/60 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <Image src="/logo.svg" alt="GrantPilot" width={32} height={32} className="group-hover:scale-105 transition-transform" priority />
-            <span className="font-bold text-white text-lg">
-              Grant<span className="text-emerald-400">Pilot</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            {session ? (
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">Dashboard</Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
-                <Link href="/signup"><Button size="sm">Sign up free</Button></Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
 
       <main id="main-content" className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Banners */}
