@@ -1,158 +1,167 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "GrantPilot — AI-Powered Grant Intelligence Platform";
+export const alt =
+  "GrantPilot — Win grants and scholarships. Pay 0% upfront.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/**
+ * GrantPilot Open Graph card.
+ *
+ * The Score signature object front-and-center: a large marine ring filled
+ * to a 94 high-score state, with the brand wordmark + tagline below. One
+ * signature across every surface — favicon, OG card, in-app ScoreRing.
+ */
 export default async function Image() {
   return new ImageResponse(
     (
       <div
         style={{
-          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
           width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          background:
+            "linear-gradient(135deg, #FFFFFF 0%, #F2F7FE 50%, #E8F1FC 100%)",
           fontFamily: "system-ui, sans-serif",
-          position: "relative",
         }}
       >
-        {/* Glow effects */}
+        {/* Big ScoreRing — the signature object, 94 (high-score green) */}
         <div
           style={{
-            position: "absolute",
-            top: "-100px",
-            left: "-100px",
-            width: "400px",
-            height: "400px",
-            borderRadius: "50%",
-            background: "rgba(16, 185, 129, 0.15)",
-            filter: "blur(80px)",
+            position: "relative",
+            width: 220,
+            height: 220,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 48,
           }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: "-100px",
-            right: "-100px",
-            width: "350px",
-            height: "350px",
-            borderRadius: "50%",
-            background: "rgba(6, 182, 212, 0.1)",
-            filter: "blur(80px)",
-          }}
-        />
+        >
+          <svg
+            width="220"
+            height="220"
+            viewBox="0 0 220 220"
+            fill="none"
+            style={{ position: "absolute", top: 0, left: 0 }}
+          >
+            <circle
+              cx="110"
+              cy="110"
+              r="92"
+              fill="none"
+              stroke="#0066CC"
+              strokeOpacity="0.18"
+              strokeWidth="18"
+            />
+            <path
+              d="M 110 18 A 92 92 0 1 1 73.55 196.92"
+              fill="none"
+              stroke="#15803D"
+              strokeWidth="18"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span
+            style={{
+              fontSize: 84,
+              fontWeight: 700,
+              color: "#15803D",
+              letterSpacing: "-2px",
+              lineHeight: 1,
+            }}
+          >
+            94
+          </span>
+        </div>
 
-        {/* Logo + wordmark */}
+        {/* Wordmark — ring glyph + GrantPilot */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "20px",
-            marginBottom: "28px",
+            gap: 14,
+            marginBottom: 24,
           }}
         >
-          <div
-            style={{
-              width: "64px",
-              height: "64px",
-              borderRadius: "16px",
-              background: "linear-gradient(135deg, #059669, #10b981, #06b6d4)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-              <path
-                d="M24 6C14.06 6 6 14.06 6 24s8.06 18 18 18c4.97 0 9.5-2.01 12.73-5.27"
-                stroke="white"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M38.73 36.73L38.73 24H26"
-                stroke="white"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-              <path
-                d="M24 20V8"
-                stroke="white"
-                strokeWidth="3.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M20 12L24 5L28 12"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </div>
+          <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+            <circle
+              cx="16"
+              cy="16"
+              r="13"
+              fill="none"
+              stroke="#0066CC"
+              strokeOpacity="0.2"
+              strokeWidth="2.5"
+            />
+            <path
+              d="M 16 3 A 13 13 0 1 1 6.93 25.95"
+              fill="none"
+              stroke="#0066CC"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+            <circle cx="6.93" cy="25.95" r="1.6" fill="#0066CC" />
+          </svg>
           <span
             style={{
-              fontSize: "52px",
-              fontWeight: 800,
-              color: "white",
-              letterSpacing: "-1px",
+              fontSize: 44,
+              fontWeight: 700,
+              color: "#1a1a1a",
+              letterSpacing: "-0.5px",
             }}
           >
-            Grant
-            <span style={{ color: "#10b981" }}>Pilot</span>
+            GrantPilot
           </span>
         </div>
 
-        {/* Tagline */}
-        <p
-          style={{
-            fontSize: "32px",
-            fontWeight: 700,
-            color: "white",
-            marginBottom: "12px",
-            textAlign: "center",
-          }}
-        >
-          Find Grants. Win Funding. Grow Your Mission.
-        </p>
-        <p
-          style={{
-            fontSize: "20px",
-            color: "#94a3b8",
-            textAlign: "center",
-            maxWidth: "700px",
-            lineHeight: 1.5,
-          }}
-        >
-          AI-powered grant matching and application writing.
-          Drop your website, we fill the application.
-        </p>
-
-        {/* Domain */}
+        {/* Tagline (two lines, matching the landing) */}
         <div
           style={{
             display: "flex",
-            marginTop: "36px",
-            padding: "12px 28px",
-            borderRadius: "12px",
-            border: "1px solid rgba(16, 185, 129, 0.3)",
-            background: "rgba(16, 185, 129, 0.08)",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <span style={{ fontSize: "18px", fontWeight: 600, color: "#10b981" }}>
-            grantpilot.dev
-          </span>
+          <p
+            style={{
+              fontSize: 36,
+              fontWeight: 700,
+              color: "#1a1a1a",
+              margin: 0,
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Win grants and scholarships.
+          </p>
+          <p
+            style={{
+              fontSize: 36,
+              fontWeight: 700,
+              color: "#0066CC",
+              margin: 0,
+              marginTop: 4,
+              letterSpacing: "-0.5px",
+            }}
+          >
+            Pay 0% upfront.
+          </p>
         </div>
+
+        {/* Domain */}
+        <p
+          style={{
+            fontSize: 18,
+            color: "#6B7280",
+            marginTop: 36,
+            fontWeight: 500,
+          }}
+        >
+          grantpilot.dev
+        </p>
       </div>
     ),
     { ...size }
