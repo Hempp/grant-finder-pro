@@ -1,5 +1,23 @@
 # App Redesign — Fresh Session Kickoff
 
+## ⚠ Status update — 2026-05-22 (read this first)
+
+The state described below is stale. Actual current state on `origin/main` (HEAD `33fabbc`):
+
+- ✅ **Foundation block merged + pushed.** `ScoreRing` is in `src/components/ui/`. The v2 design tokens are un-fenced to `:root` — app-wide. The worktrees mentioned below are removed.
+- ✅ **Marketing-page chrome shipped.** `/pricing`, `/resources`, `/trust` each have a `layout.tsx` that wraps the page in `<EditorialShell>` + `<EditorialNav>` + `<EditorialFooter>`. They now share the landing chrome. Page BODIES are still old internal styling.
+
+**The fresh session's actual next steps:**
+
+1. **Marketing page bodies** — deeper restyle of `/pricing` (835 lines), `/resources` (180), `/trust` (343) internals to the v2 system. Chrome is already done; this is body-content restyle only.
+2. **Dashboard surface** — restyle `src/app/dashboard/*` to the marine v2 system, wire `ScoreRing` into match/grant lists, build the momentum hero (line + 3 cards) per spec §4. Surface inventory: `src/app/dashboard/page.tsx`, `src/app/dashboard/layout.tsx`, `src/components/dashboard/*`.
+3. **Auth surface** — restyle `src/app/(auth)/{login,signup,forgot-password,reset-password}`. Likely a shared `(auth)/layout.tsx` lets one edit hit all four.
+4. **Settings/billing** — `src/app/student/settings`, `src/app/student/profile`, `src/app/dashboard/settings`. No dedicated `/billing` page; subscription UI lives in settings.
+
+**Skip the "token un-fencing" instruction in the original kickoff message below — that's already done.**
+
+---
+
 ## How to start
 
 ```bash
