@@ -1,4 +1,10 @@
 import { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import {
+  EditorialShell,
+  EditorialNav,
+  EditorialFooter,
+} from "@/components/landing";
 
 export const metadata: Metadata = {
   title: "Pricing — Plans That Pay for Themselves",
@@ -14,6 +20,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PricingLayout({ children }: { children: React.ReactNode }) {
-  return children;
+export default async function PricingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+  return (
+    <EditorialShell>
+      <EditorialNav
+        state={{ loggedIn: isLoggedIn, destinationHref: "/dashboard" }}
+      />
+      {children}
+      <EditorialFooter />
+    </EditorialShell>
+  );
 }
