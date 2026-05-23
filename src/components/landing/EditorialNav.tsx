@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SmallCapsEyebrow } from "./SmallCapsEyebrow";
+import { GrantPilotMark } from "./GrantPilotMark";
 
 interface NavSubscriptionState {
   loggedIn: boolean;
@@ -46,9 +47,10 @@ export function EditorialNav({ state }: { state: NavSubscriptionState }) {
       <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center gap-2 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label="GrantPilot home"
+          className="flex items-center text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent rounded-md"
         >
-          <span className="font-display text-xl">GrantPilot</span>
+          <GrantPilotMark />
         </Link>
 
         <div className="hidden md:flex items-center gap-7 text-small text-ink-2">
