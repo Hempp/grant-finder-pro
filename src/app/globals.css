@@ -828,7 +828,7 @@ body {
 
   /* v2 redesign tokens */
   --ease-soft: cubic-bezier(0.32, 0.72, 0, 1);
-  --dur-reveal: 520ms;
+  --dur-reveal: 380ms;
 
   /* Marine saturation ramp — one hue, deepening pale→deep down the page */
   --section-tint-1: linear-gradient(180deg, #F7FAFE 0%, #F2F7FE 100%);
