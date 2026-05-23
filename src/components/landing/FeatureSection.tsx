@@ -53,7 +53,7 @@ export function FeatureSection({
         className={`rounded-2xl border ${TINT_BG[tint]} ${TINT_BORDER[tint]} p-10 lg:p-14`}
       >
         <div
-          className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center ${
+          className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start ${
             reverse ? "lg:[&>*:first-child]:col-start-2" : ""
           }`}
         >
