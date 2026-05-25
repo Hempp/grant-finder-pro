@@ -4,7 +4,6 @@ import { useEffect, useState, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {
   Check,
   X,
@@ -24,8 +23,10 @@ import {
   Clock,
   Award,
 } from "lucide-react";
-import { Button, Badge } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { Dialog } from "@/components/ui/Dialog";
+import { ScoreRing } from "@/components/ui/ScoreRing";
+import { CtaBanner } from "@/components/landing";
 import { useSubscription } from "@/hooks/useSubscription";
 
 /* ─── Plan data ─── */
@@ -48,12 +49,9 @@ const plans = [
       { text: "Content Library", included: false },
       { text: "Priority support", included: false },
     ],
-    cta: "Get Started Free",
+    cta: "Get started free",
     popular: false,
     icon: Sparkles,
-    gradient: "from-slate-600 to-slate-500",
-    ring: "ring-slate-700",
-    iconBg: "bg-slate-800",
   },
   {
     id: "growth",
@@ -73,12 +71,9 @@ const plans = [
       { text: "No fee on grants under $10K", included: true },
       { text: "Priority support", included: false },
     ],
-    cta: "Start Growing",
+    cta: "Start growing",
     popular: false,
     icon: TrendingUp,
-    gradient: "from-accent to-cyan-500",
-    ring: "ring-cyan-500/30",
-    iconBg: "bg-cyan-500/10",
   },
   {
     id: "pro",
@@ -101,9 +96,6 @@ const plans = [
     cta: "Go Pro",
     popular: true,
     icon: Shield,
-    gradient: "from-accent to-accent",
-    ring: "ring-emerald-500/40",
-    iconBg: "bg-emerald-500/10",
   },
   {
     id: "organization",
@@ -126,9 +118,6 @@ const plans = [
     cta: "Get Organization",
     popular: false,
     icon: Building2,
-    gradient: "from-teal-500 to-emerald-600",
-    ring: "ring-teal-500/30",
-    iconBg: "bg-teal-500/10",
   },
 ];
 
@@ -153,7 +142,6 @@ const studentPlan = {
   ],
 };
 
-/* ─── FAQ data ─── */
 const faqs = [
   {
     q: "Is there a money-back guarantee?",
@@ -203,10 +191,9 @@ function PricingContent() {
   const canceled = searchParams.get("canceled");
   const highlightedPlan = searchParams.get("plan");
 
-  // Scroll the deep-linked plan into view when arriving from the
-  // seat-limit card on /dashboard/team (?plan=pro or ?plan=organization).
-  // Smooth scroll + centered positioning so the ring + CTA are in the
-  // user's primary focus zone.
+  // Scroll the deep-linked plan into view when arriving from /dashboard/team
+  // (?plan=pro or ?plan=organization). Smooth + centered so the CTA is in
+  // the user's primary focus zone.
   useEffect(() => {
     if (!highlightedPlan) return;
     const el = document.getElementById(`plan-${highlightedPlan}`);
@@ -262,341 +249,666 @@ function PricingContent() {
   };
 
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-grid-pattern opacity-10 pointer-events-none" aria-hidden="true" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
-
-
-      <main id="main-content" className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
-        {/* Banners */}
-        {canceled && (
-          <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-400 flex-shrink-0" />
-            <p className="text-amber-400 text-sm">Checkout was canceled. No charges were made.</p>
-          </div>
-        )}
-        {trialStarted && (
-          <div className="mb-8 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-success flex-shrink-0" />
-            <p className="text-success text-sm">Your 21-day Pro trial has started! Redirecting to dashboard...</p>
-          </div>
-        )}
-
-        {/* Hero */}
-        <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-success text-sm font-medium mb-6">
-            <Zap className="h-4 w-4" />
-            Only pay when you win
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-5 tracking-tight">
-            Plans that{" "}
-            <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 text-transparent bg-clip-text">
-              grow with you
-            </span>
-          </h1>
-          <p className="text-ink-2 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-            Start free. Upgrade when you&apos;re ready. Every paid plan includes a 21-day trial.
-          </p>
-
-          {/* Billing Toggle */}
-          <div className="mt-10 inline-flex items-center bg-slate-900/80 border border-rule rounded-xl p-1">
-            <button
-              onClick={() => setBillingInterval("monthly")}
-              className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
-                billingInterval === "monthly"
-                  ? "bg-slate-700 text-white shadow-lg"
-                  : "text-ink-2 hover:text-white"
-              }`}
-              aria-pressed={billingInterval === "monthly"}
+    <main id="main-content">
+      {/* Hero — quiet. Marine eyebrow + display heading. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py)",
+          paddingBottom: "var(--section-py-tight)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          {canceled && (
+            <div
+              className="mb-8 p-4 flex items-start gap-2.5"
+              style={{
+                background: "var(--warn-soft)",
+                border: "1px solid var(--warn)",
+                color: "var(--warn)",
+                borderRadius: "var(--radius-control)",
+              }}
             >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingInterval("annual")}
-              className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 ${
-                billingInterval === "annual"
-                  ? "bg-slate-700 text-white shadow-lg"
-                  : "text-ink-2 hover:text-white"
-              }`}
-              aria-pressed={billingInterval === "annual"}
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <p style={{ fontSize: "var(--text-body-sm)" }}>
+                Checkout was canceled. No charges were made.
+              </p>
+            </div>
+          )}
+          {trialStarted && (
+            <div
+              className="mb-8 p-4 flex items-start gap-2.5"
+              style={{
+                background: "var(--success-soft)",
+                border: "1px solid var(--success)",
+                color: "var(--success)",
+                borderRadius: "var(--radius-control)",
+              }}
             >
-              Annual
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-success text-xs font-bold">
-                Save up to 34%
-              </span>
-            </button>
-          </div>
-          <p className="mt-3 text-xs text-slate-500">
-            Annual plans renew yearly. Cancel any time for a prorated refund of unused months.
-          </p>
-        </div>
+              <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <p style={{ fontSize: "var(--text-body-sm)" }}>
+                Your 21-day Pro trial has started. Redirecting to dashboard…
+              </p>
+            </div>
+          )}
 
-        {/* ═══ Organization Plans ═══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-20">
-          {plans.map((plan) => {
-            const isCurrentPlan = plan.id === subscription?.plan;
-            const savings = annualSavings(plan.price, plan.priceAnnual);
+          <div className="text-center">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+              style={{
+                background: "var(--accent-soft)",
+                color: "var(--accent)",
+                fontSize: "var(--text-meta)",
+                fontWeight: 600,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+              }}
+            >
+              <Zap className="h-3.5 w-3.5" aria-hidden="true" />
+              Only pay when you win
+            </div>
+            <h1
+              className="font-semibold tracking-tight"
+              style={{
+                fontSize: "clamp(36px, 5vw, 60px)",
+                color: "var(--ink)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Plans that grow with you
+            </h1>
+            <p
+              className="mt-5 mx-auto max-w-2xl"
+              style={{
+                fontSize: "var(--text-body-lg)",
+                color: "var(--ink-2)",
+                lineHeight: 1.6,
+              }}
+            >
+              Start free. Upgrade when you&apos;re ready. Every paid plan includes a 21-day trial.
+            </p>
 
-            const isHighlighted = plan.id === highlightedPlan;
-            return (
-              <div
-                key={plan.id}
-                id={`plan-${plan.id}`}
-                className={`relative rounded-2xl border transition-all duration-300 scroll-mt-24 ${
-                  isHighlighted
-                    ? "border-emerald-400 bg-gradient-to-b from-accent/[0.12] via-slate-900/80 to-slate-900/60 shadow-2xl shadow-emerald-500/20 ring-2 ring-emerald-400/40 scale-[1.02] lg:scale-105"
-                    : plan.popular
-                    ? "border-emerald-500/50 bg-gradient-to-b from-accent/[0.08] via-slate-900/80 to-slate-900/60 shadow-xl shadow-emerald-500/10 scale-[1.02] lg:scale-105"
-                    : "border-rule bg-slate-900/60 hover:border-rule"
-                }`}
+            {/* Billing Toggle */}
+            <div
+              className="mt-10 inline-flex items-center p-1"
+              style={{
+                background: "var(--bg-soft)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              <button
+                onClick={() => setBillingInterval("monthly")}
+                className="px-5 py-2.5 rounded-md font-medium transition-all"
+                style={
+                  billingInterval === "monthly"
+                    ? {
+                        background: "var(--surface)",
+                        color: "var(--ink)",
+                        fontSize: "var(--text-body-sm)",
+                        boxShadow: "var(--shadow-card-soft)",
+                      }
+                    : {
+                        background: "transparent",
+                        color: "var(--ink-2)",
+                        fontSize: "var(--text-body-sm)",
+                      }
+                }
+                aria-pressed={billingInterval === "monthly"}
               >
-                {/* Popular badge */}
-                {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-accent to-accent text-white text-xs font-bold shadow-lg shadow-emerald-500/30">
-                      <Star className="h-3 w-3 fill-current" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingInterval("annual")}
+                className="px-5 py-2.5 rounded-md font-medium transition-all inline-flex items-center gap-2"
+                style={
+                  billingInterval === "annual"
+                    ? {
+                        background: "var(--surface)",
+                        color: "var(--ink)",
+                        fontSize: "var(--text-body-sm)",
+                        boxShadow: "var(--shadow-card-soft)",
+                      }
+                    : {
+                        background: "transparent",
+                        color: "var(--ink-2)",
+                        fontSize: "var(--text-body-sm)",
+                      }
+                }
+                aria-pressed={billingInterval === "annual"}
+              >
+                Annual
+                <span
+                  className="px-2 py-0.5 rounded-full font-semibold"
+                  style={{
+                    background: "var(--success-soft)",
+                    color: "var(--success)",
+                    fontSize: "var(--text-micro)",
+                  }}
+                >
+                  Save up to 34%
+                </span>
+              </button>
+            </div>
+            <p
+              className="mt-3"
+              style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+            >
+              Annual plans renew yearly. Cancel any time for a prorated refund of unused months.
+            </p>
+          </div>
+        </div>
+      </section>
 
-                <div className="p-6">
-                  {/* Plan header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`p-2.5 rounded-xl ${plan.iconBg}`}>
-                      <plan.icon
-                        className="h-5 w-5"
+      {/* Org plans — band on tint-1, white cards with accent-soft popular tint. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py-tight)",
+          paddingBottom: "var(--section-py)",
+          background: "var(--bg-soft)",
+          borderTop: "1px solid var(--rule)",
+          borderBottom: "1px solid var(--rule)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {plans.map((plan) => {
+              const isCurrentPlan = plan.id === subscription?.plan;
+              const savings = annualSavings(plan.price, plan.priceAnnual);
+              const isHighlighted = plan.id === highlightedPlan;
+              const isAccented = plan.popular || isHighlighted;
+
+              return (
+                <div
+                  key={plan.id}
+                  id={`plan-${plan.id}`}
+                  className="relative scroll-mt-24 transition-all"
+                  style={{
+                    background: isAccented ? "var(--accent-soft)" : "var(--surface)",
+                    border: `${isAccented ? "2px" : "1px"} solid ${isAccented ? "var(--accent)" : "var(--rule)"}`,
+                    borderRadius: "var(--radius-card)",
+                    boxShadow: "var(--shadow-card-soft)",
+                  }}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                      <div
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full font-semibold"
                         style={{
-                          color: plan.popular
-                            ? "#34d399"
-                            : plan.id === "growth"
-                            ? "#22d3ee"
-                            : plan.id === "organization"
-                            ? "#14b8a6"
-                            : "#94a3b8",
+                          background: "var(--accent)",
+                          color: "white",
+                          fontSize: "var(--text-micro)",
+                          letterSpacing: "0.04em",
+                          textTransform: "uppercase",
                         }}
-                        aria-hidden="true"
-                      />
+                      >
+                        <Star className="h-3 w-3 fill-current" aria-hidden="true" />
+                        Most popular
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-                      <p className="text-xs text-slate-500">{plan.audience}</p>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Price */}
-                  <div className="mb-6">
-                    {billingInterval === "monthly" ? (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-bold text-white">${plan.price}</span>
-                        <span className="text-slate-500 text-sm">/mo</span>
+                  <div className="p-6">
+                    {/* Plan header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className="p-2.5 inline-flex"
+                        style={{
+                          background: isAccented ? "var(--surface)" : "var(--accent-soft)",
+                          color: "var(--accent)",
+                          borderRadius: "var(--radius-control)",
+                        }}
+                      >
+                        <plan.icon className="h-5 w-5" aria-hidden="true" />
+                      </div>
+                      <div>
+                        <h3
+                          className="font-semibold"
+                          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+                        >
+                          {plan.name}
+                        </h3>
+                        <p
+                          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                        >
+                          {plan.audience}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-6">
+                      {billingInterval === "monthly" ? (
+                        <div className="flex items-baseline gap-1">
+                          <span
+                            className="font-mono tabular-nums font-semibold"
+                            style={{ fontSize: "var(--text-display)", color: "var(--ink)" }}
+                          >
+                            ${plan.price}
+                          </span>
+                          <span style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                            /mo
+                          </span>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-baseline gap-1">
+                            <span
+                              className="font-mono tabular-nums font-semibold"
+                              style={{ fontSize: "var(--text-display)", color: "var(--ink)" }}
+                            >
+                              ${plan.priceAnnual > 0 ? Math.round(plan.priceAnnual / 12) : 0}
+                            </span>
+                            <span style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                              /mo
+                            </span>
+                          </div>
+                          {plan.priceAnnual > 0 && (
+                            <p
+                              className="mt-1"
+                              style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                            >
+                              ${plan.priceAnnual}/year
+                              {savings > 0 && (
+                                <span
+                                  className="ml-1.5 font-semibold"
+                                  style={{ color: "var(--success)" }}
+                                >
+                                  Save {savings}%
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {plan.successFee && (
+                        <div
+                          className="mt-3 flex items-center gap-2 px-3 py-2"
+                          style={{
+                            background: "var(--warn-soft)",
+                            border: "1px solid var(--warn)",
+                            borderRadius: "var(--radius-control)",
+                            color: "var(--warn)",
+                            fontSize: "var(--text-caption)",
+                          }}
+                        >
+                          <Award className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                          <span>+ {plan.successFee}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* CTA */}
+                    {plan.id === "pro" && canStartTrial && !isOnTrial ? (
+                      <div className="mb-6">
+                        <Button
+                          className="w-full !text-white"
+                          style={{
+                            background: "var(--accent)",
+                            borderColor: "var(--accent)",
+                            borderRadius: "var(--radius-control)",
+                          }}
+                          size="lg"
+                          disabled={loading !== null}
+                          onClick={handleStartTrial}
+                        >
+                          {loading === "trial" ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Gift className="h-4 w-4" />
+                              Start 21-day free trial
+                            </>
+                          )}
+                        </Button>
+                        <p
+                          className="text-center mt-2"
+                          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                        >
+                          No credit card required
+                        </p>
                       </div>
                     ) : (
-                      <div>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-4xl font-bold text-white">
-                            ${plan.priceAnnual > 0 ? Math.round(plan.priceAnnual / 12) : 0}
-                          </span>
-                          <span className="text-slate-500 text-sm">/mo</span>
-                        </div>
-                        {plan.priceAnnual > 0 && (
-                          <p className="text-xs text-slate-500 mt-1">
-                            ${plan.priceAnnual}/year
-                            {savings > 0 && (
-                              <span className="text-success font-medium ml-1.5">Save {savings}%</span>
-                            )}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Success fee callout */}
-                    {plan.successFee && (
-                      <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/10">
-                        <Award className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
-                        <span className="text-xs text-amber-400/90">+ {plan.successFee}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* CTA */}
-                  {plan.id === "pro" && canStartTrial && !isOnTrial ? (
-                    <div className="mb-6">
-                      <Button
-                        className="w-full"
-                        variant="gradient"
-                        size="lg"
-                        disabled={loading !== null}
-                        onClick={handleStartTrial}
-                      >
-                        {loading === "trial" ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <>
-                            <Gift className="h-4 w-4" />
-                            Start 21-Day Free Trial
-                          </>
-                        )}
-                      </Button>
-                      <p className="text-xs text-slate-500 text-center mt-2">No credit card required</p>
-                    </div>
-                  ) : (
-                    <div className="mb-6">
-                      <Button
-                        className="w-full"
-                        variant={plan.popular ? "primary" : "secondary"}
-                        size="lg"
-                        disabled={loading !== null || isCurrentPlan}
-                        onClick={() => {
-                          if (plan.id === "free") {
-                            if (!session) router.push("/signup");
-                            return;
+                      <div className="mb-6">
+                        <Button
+                          className={`w-full ${plan.popular ? "!text-white" : ""}`}
+                          style={
+                            plan.popular
+                              ? {
+                                  background: "var(--accent)",
+                                  borderColor: "var(--accent)",
+                                  borderRadius: "var(--radius-control)",
+                                }
+                              : {
+                                  background: "var(--surface)",
+                                  color: "var(--ink)",
+                                  border: "1px solid var(--rule)",
+                                  borderRadius: "var(--radius-control)",
+                                }
                           }
-                          handleSubscribe(plan.id);
+                          size="lg"
+                          disabled={loading !== null || isCurrentPlan}
+                          onClick={() => {
+                            if (plan.id === "free") {
+                              if (!session) router.push("/signup");
+                              return;
+                            }
+                            handleSubscribe(plan.id);
+                          }}
+                          aria-label={`${plan.cta} — ${plan.name} plan`}
+                        >
+                          {loading === plan.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : isCurrentPlan ? (
+                            isOnTrial ? "Trial active" : "Current plan"
+                          ) : plan.id === "free" && session && subscription?.plan !== "free" ? (
+                            "Downgrade to Starter"
+                          ) : (
+                            <>
+                              {plan.cta} <ArrowRight className="h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Highlight callout */}
+                    {plan.highlight && (
+                      <div
+                        className="flex items-center gap-2 mb-4 px-3 py-2"
+                        style={{
+                          background: "var(--success-soft)",
+                          border: "1px solid var(--success)",
+                          color: "var(--success)",
+                          borderRadius: "var(--radius-control)",
+                          fontSize: "var(--text-caption)",
+                          fontWeight: 500,
                         }}
-                        aria-label={`${plan.cta} — ${plan.name} plan`}
                       >
-                        {loading === plan.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : isCurrentPlan ? (
-                          isOnTrial ? "Trial Active" : "Current Plan"
-                        ) : plan.id === "free" && session && subscription?.plan !== "free" ? (
-                          "Downgrade to Starter"
-                        ) : (
-                          <>
-                            {plan.cta} <ArrowRight className="h-4 w-4" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                        <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                        <span>{plan.highlight}</span>
+                      </div>
+                    )}
 
-                  {/* Highlight callout */}
-                  {plan.highlight && (
-                    <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
-                      <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
-                      <span className="text-xs text-success font-medium">{plan.highlight}</span>
-                    </div>
-                  )}
-
-                  {/* Features */}
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5">
-                        {feature.included ? (
-                          <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <X className="h-4 w-4 text-slate-700 flex-shrink-0 mt-0.5" />
-                        )}
-                        <span className={`text-sm leading-5 ${feature.included ? "text-ink-2" : "text-slate-600"}`}>
-                          {feature.text}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                    {/* Features */}
+                    <ul className="space-y-3">
+                      {plan.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5">
+                          {feature.included ? (
+                            <Check
+                              className="h-4 w-4 flex-shrink-0 mt-0.5"
+                              style={{ color: "var(--success)" }}
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <X
+                              className="h-4 w-4 flex-shrink-0 mt-0.5"
+                              style={{ color: "var(--rule)" }}
+                              aria-hidden="true"
+                            />
+                          )}
+                          <span
+                            style={{
+                              fontSize: "var(--text-body-sm)",
+                              color: feature.included ? "var(--ink)" : "var(--ink-2)",
+                              lineHeight: 1.5,
+                            }}
+                          >
+                            {feature.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+      </section>
 
-        {/* ═══ Student Plans ═══ */}
-        <div className="mb-20">
+      {/* Student plans — quiet, no purple. Student Pro accents in marine. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py)",
+          paddingBottom: "var(--section-py)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium mb-4">
-              <GraduationCap className="h-4 w-4" />
-              For Students
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
+              style={{
+                background: "var(--accent-soft)",
+                color: "var(--accent)",
+                fontSize: "var(--text-meta)",
+                fontWeight: 600,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+              }}
+            >
+              <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
+              For students
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">
-              Win scholarships,{" "}
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-                not stress
-              </span>
+            <h2
+              className="font-semibold tracking-tight"
+              style={{
+                fontSize: "var(--text-display)",
+                color: "var(--ink)",
+                lineHeight: 1.1,
+              }}
+            >
+              Win scholarships, not stress
             </h2>
-            <p className="text-ink-2 max-w-lg mx-auto">
+            <p
+              className="mt-4 mx-auto max-w-lg"
+              style={{
+                fontSize: "var(--text-body-lg)",
+                color: "var(--ink-2)",
+                lineHeight: 1.6,
+              }}
+            >
               141+ scholarships. AI-powered essays. Batch apply in one click.
             </p>
           </div>
 
           <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Student Free */}
-            <div className="rounded-2xl border border-rule bg-slate-900/60 p-6">
+            <div
+              className="p-6"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-card)",
+                boxShadow: "var(--shadow-card-soft)",
+              }}
+            >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 rounded-xl bg-slate-800">
-                  <GraduationCap className="h-5 w-5 text-ink-2" />
+                <div
+                  className="p-2.5 inline-flex"
+                  style={{
+                    background: "var(--accent-soft)",
+                    color: "var(--accent)",
+                    borderRadius: "var(--radius-control)",
+                  }}
+                >
+                  <GraduationCap className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Student Free</h3>
-                  <p className="text-xs text-slate-500">Get started with scholarships</p>
+                  <h3
+                    className="font-semibold"
+                    style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+                  >
+                    Student Free
+                  </h3>
+                  <p style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
+                    Get started with scholarships
+                  </p>
                 </div>
               </div>
-              <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-4xl font-bold text-white">$0</span>
-                <span className="text-slate-500 text-sm">/mo</span>
+              <div className="flex items-baseline gap-1 mb-3">
+                <span
+                  className="font-mono tabular-nums font-semibold"
+                  style={{ fontSize: "var(--text-display)", color: "var(--ink)" }}
+                >
+                  $0
+                </span>
+                <span style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                  /mo
+                </span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/10 mb-6">
-                <Award className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
-                <span className="text-xs text-amber-400/90">8% success fee on wins</span>
+              <div
+                className="flex items-center gap-2 px-3 py-2 mb-6"
+                style={{
+                  background: "var(--warn-soft)",
+                  border: "1px solid var(--warn)",
+                  color: "var(--warn)",
+                  borderRadius: "var(--radius-control)",
+                  fontSize: "var(--text-caption)",
+                }}
+              >
+                <Award className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                <span>8% success fee on wins</span>
               </div>
               <Button
                 className="w-full mb-6"
-                variant="secondary"
+                style={{
+                  background: "var(--surface)",
+                  color: "var(--ink)",
+                  border: "1px solid var(--rule)",
+                  borderRadius: "var(--radius-control)",
+                }}
                 size="lg"
                 onClick={() => session ? router.push("/student") : router.push("/signup")}
               >
-                Start Free <ArrowRight className="h-4 w-4" />
+                Start free <ArrowRight className="h-4 w-4" />
               </Button>
               <ul className="space-y-3">
                 {studentPlan.freeFeatures.map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-ink-2">{f}</span>
+                    <Check
+                      className="h-4 w-4 flex-shrink-0 mt-0.5"
+                      style={{ color: "var(--success)" }}
+                      aria-hidden="true"
+                    />
+                    <span style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}>
+                      {f}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Student Pro */}
-            <div className="relative rounded-2xl border border-purple-500/40 bg-gradient-to-b from-purple-500/[0.08] via-slate-900/80 to-slate-900/60 p-6 shadow-lg shadow-purple-500/5">
+            <div
+              className="relative p-6"
+              style={{
+                background: "var(--accent-soft)",
+                border: "2px solid var(--accent)",
+                borderRadius: "var(--radius-card)",
+                boxShadow: "var(--shadow-card-soft)",
+              }}
+            >
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                <Badge variant="success">Best for students</Badge>
+                <div
+                  className="px-3 py-1 rounded-full font-semibold"
+                  style={{
+                    background: "var(--accent)",
+                    color: "white",
+                    fontSize: "var(--text-micro)",
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Best for students
+                </div>
               </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 rounded-xl bg-purple-500/10">
-                  <GraduationCap className="h-5 w-5 text-purple-400" />
+                <div
+                  className="p-2.5 inline-flex"
+                  style={{
+                    background: "var(--surface)",
+                    color: "var(--accent)",
+                    borderRadius: "var(--radius-control)",
+                  }}
+                >
+                  <GraduationCap className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Student Pro</h3>
-                  <p className="text-xs text-slate-500">Maximize your scholarship wins</p>
+                  <h3
+                    className="font-semibold"
+                    style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+                  >
+                    Student Pro
+                  </h3>
+                  <p style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
+                    Maximize your scholarship wins
+                  </p>
                 </div>
               </div>
-              <div className="mb-2">
+              <div className="mb-3">
                 {billingInterval === "monthly" ? (
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-white">${studentPlan.price}</span>
-                    <span className="text-slate-500 text-sm">/mo</span>
+                    <span
+                      className="font-mono tabular-nums font-semibold"
+                      style={{ fontSize: "var(--text-display)", color: "var(--ink)" }}
+                    >
+                      ${studentPlan.price}
+                    </span>
+                    <span style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                      /mo
+                    </span>
                   </div>
                 ) : (
                   <div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-white">${Math.round(studentPlan.priceAnnual / 12)}</span>
-                      <span className="text-slate-500 text-sm">/mo</span>
+                      <span
+                        className="font-mono tabular-nums font-semibold"
+                        style={{ fontSize: "var(--text-display)", color: "var(--ink)" }}
+                      >
+                        ${Math.round(studentPlan.priceAnnual / 12)}
+                      </span>
+                      <span style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                        /mo
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p
+                      className="mt-1"
+                      style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                    >
                       ${studentPlan.priceAnnual}/year
-                      <span className="text-purple-400 font-medium ml-1.5">Save 20%</span>
+                      <span
+                        className="ml-1.5 font-semibold"
+                        style={{ color: "var(--accent)" }}
+                      >
+                        Save 20%
+                      </span>
                     </p>
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/5 border border-emerald-500/10 mb-6">
-                <CheckCircle className="h-3.5 w-3.5 text-success flex-shrink-0" />
-                <span className="text-xs text-success font-medium">Only 3% success fee — save 63% vs Free</span>
+              <div
+                className="flex items-center gap-2 px-3 py-2 mb-6"
+                style={{
+                  background: "var(--success-soft)",
+                  border: "1px solid var(--success)",
+                  color: "var(--success)",
+                  borderRadius: "var(--radius-control)",
+                  fontSize: "var(--text-caption)",
+                  fontWeight: 500,
+                }}
+              >
+                <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                <span>Only 3% success fee — save 63% vs Free</span>
               </div>
               <Button
-                className="w-full mb-6"
-                variant="primary"
+                className="w-full mb-6 !text-white"
+                style={{
+                  background: "var(--accent)",
+                  borderColor: "var(--accent)",
+                  borderRadius: "var(--radius-control)",
+                }}
                 size="lg"
                 disabled={loading !== null}
                 onClick={() => handleSubscribe("student_pro")}
@@ -610,107 +922,247 @@ function PricingContent() {
               <ul className="space-y-3">
                 {studentPlan.proFeatures.map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <Check className="h-4 w-4 text-purple-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-ink-2">{f}</span>
+                    <Check
+                      className="h-4 w-4 flex-shrink-0 mt-0.5"
+                      style={{ color: "var(--accent)" }}
+                      aria-hidden="true"
+                    />
+                    <span style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}>
+                      {f}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* ═══ How GrantPilot pays for itself ═══ */}
-        <div className="mb-20">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">How GrantPilot pays for itself</h2>
-            <p className="text-ink-2 text-sm">A single funded grant covers years of subscription. You only owe the success fee when you actually win.</p>
+      {/* How it pays for itself — ScoreRing on the two scored stats. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py-tight)",
+          paddingBottom: "var(--section-py)",
+          background: "var(--bg-soft)",
+          borderTop: "1px solid var(--rule)",
+          borderBottom: "1px solid var(--rule)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10">
+            <h2
+              className="font-semibold tracking-tight"
+              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+            >
+              How GrantPilot pays for itself
+            </h2>
+            <p
+              className="mt-3 mx-auto max-w-2xl"
+              style={{ fontSize: "var(--text-body)", color: "var(--ink-2)", lineHeight: 1.65 }}
+            >
+              A single funded grant covers years of subscription. You only owe the success fee
+              when you actually win.
+            </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {/* Win → 3% — ScoreRing at 97 (the "kept" share of every win). */}
+            <div
+              className="p-6 flex flex-col items-center text-center"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-card)",
+                boxShadow: "var(--shadow-card-soft)",
+              }}
+            >
+              <ScoreRing score={97} size="md" label="You keep 97%" />
+              <p
+                className="mt-4 font-semibold"
+                style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+              >
+                You keep 97%
+              </p>
+              <p
+                className="mt-1"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                Pro success fee on funded grants
+              </p>
+              <p
+                className="mt-3"
+                style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", lineHeight: 1.5 }}
+              >
+                vs. $5K–$15K consultants charge per application
+              </p>
+            </div>
+
+            {/* Auto → 100 — ScoreRing at 100 (the optimization target). */}
+            <div
+              className="p-6 flex flex-col items-center text-center"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-card)",
+                boxShadow: "var(--shadow-card-soft)",
+              }}
+            >
+              <ScoreRing score={100} size="md" label="Auto-optimized to top score" />
+              <p
+                className="mt-4 font-semibold"
+                style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+              >
+                Auto-optimized
+              </p>
+              <p
+                className="mt-1"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                Smart Fill targets a perfect score
+              </p>
+              <p
+                className="mt-3"
+                style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", lineHeight: 1.5 }}
+              >
+                Up to 3 rounds, with diff transparency
+              </p>
+            </div>
+
+            {/* Trial — plain numeral, no score */}
+            <div
+              className="p-6 flex flex-col items-center text-center"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-card)",
+                boxShadow: "var(--shadow-card-soft)",
+              }}
+            >
+              <div className="inline-flex items-center justify-center w-[72px] h-[72px]">
+                <Clock
+                  className="h-9 w-9"
+                  style={{ color: "var(--accent)" }}
+                  aria-hidden="true"
+                />
+              </div>
+              <p
+                className="mt-4 font-semibold"
+                style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+              >
+                21 days free
+              </p>
+              <p
+                className="mt-1"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                No credit card required
+              </p>
+              <p
+                className="mt-3"
+                style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", lineHeight: 1.5 }}
+              >
+                Cancel anytime — keep what you draft
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust signals — quiet row. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py-tight)",
+          paddingBottom: "var(--section-py-tight)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div
+            className="flex items-center justify-center gap-6 sm:gap-10 flex-wrap"
+            style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+          >
             {[
-              { value: "Win → 3%", label: "Pro success fee on funded grants", icon: TrendingUp, sub: "vs. $5K–$15K consultants charge per application" },
-              { value: "Auto → 100", label: "Smart Fill optimizes to top score", icon: Award, sub: "Up to 3 rounds, with diff transparency" },
-              { value: "21 days", label: "Free trial, no card required", icon: Clock, sub: "Cancel anytime — keep what you draft" },
-            ].map((stat, i) => (
-              <div key={i} className="p-5 rounded-xl bg-slate-900/40 border border-rule/50">
-                <stat.icon className="h-5 w-5 text-success mb-3" />
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-sm text-ink-2 mt-1">{stat.label}</p>
-                <p className="text-xs text-slate-500 mt-2 leading-relaxed">{stat.sub}</p>
+              { icon: CheckCircle, text: "Cancel anytime", color: "var(--success)" },
+              { icon: CheckCircle, text: "21-day free trial", color: "var(--success)" },
+              { icon: Shield, text: "Secure via Stripe", color: "var(--success)" },
+              { icon: Award, text: "Success fee — we earn when you win", color: "var(--warn)" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <item.icon className="h-4 w-4" style={{ color: item.color }} aria-hidden="true" />
+                <span>{item.text}</span>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* ═══ Trust Signals ═══ */}
-        <div className="flex items-center justify-center gap-6 sm:gap-10 flex-wrap text-ink-2 text-sm mb-20">
-          {[
-            { icon: CheckCircle, text: "Cancel anytime", color: "text-success" },
-            { icon: CheckCircle, text: "21-day free trial", color: "text-success" },
-            { icon: Shield, text: "Secure via Stripe", color: "text-success" },
-            { icon: Award, text: "Success fee — we earn when you win", color: "text-amber-400" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <item.icon className={`h-4 w-4 ${item.color}`} />
-              <span>{item.text}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* ═══ FAQ ═══ */}
-        <div className="max-w-3xl mx-auto mb-20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-10">
+      {/* FAQ — quiet on white, accordion preserved. */}
+      <section
+        style={{
+          paddingTop: "var(--section-py-tight)",
+          paddingBottom: "var(--section-py)",
+        }}
+      >
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <h2
+            className="font-semibold tracking-tight text-center mb-10"
+            style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+          >
             Frequently asked questions
           </h2>
           <div className="space-y-2">
             {faqs.map((faq, i) => (
-              <div key={i} className="rounded-xl border border-rule bg-slate-900/40 overflow-hidden">
+              <div
+                key={i}
+                className="overflow-hidden"
+                style={{
+                  border: "1px solid var(--rule)",
+                  background: "var(--surface)",
+                  borderRadius: "var(--radius-control)",
+                }}
+              >
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-800/30 transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left transition-colors"
+                  style={{ background: "transparent" }}
+                  aria-expanded={expandedFaq === i}
                 >
-                  <span className="text-sm font-medium text-white pr-4">{faq.q}</span>
+                  <span
+                    className="font-medium pr-4"
+                    style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+                  >
+                    {faq.q}
+                  </span>
                   <ChevronDown
-                    className={`h-4 w-4 text-slate-500 flex-shrink-0 transition-transform duration-200 ${
-                      expandedFaq === i ? "rotate-180" : ""
-                    }`}
+                    className="h-4 w-4 flex-shrink-0 transition-transform"
+                    style={{
+                      color: "var(--ink-2)",
+                      transform: expandedFaq === i ? "rotate(180deg)" : "none",
+                    }}
+                    aria-hidden="true"
                   />
                 </button>
                 {expandedFaq === i && (
                   <div className="px-5 pb-5 -mt-1">
-                    <p className="text-sm text-ink-2 leading-relaxed">{faq.a}</p>
+                    <p
+                      style={{
+                        fontSize: "var(--text-body-sm)",
+                        color: "var(--ink-2)",
+                        lineHeight: 1.65,
+                      }}
+                    >
+                      {faq.a}
+                    </p>
                   </div>
                 )}
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* ═══ Bottom CTA ═══ */}
-        <div className="text-center py-16 px-6 rounded-2xl bg-gradient-to-br from-accent/10 via-slate-900/50 to-cyan-500/10 border border-emerald-500/20">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Ready to win more funding?
-          </h2>
-          <p className="text-ink-2 mb-8 max-w-md mx-auto">
-            Start free in 30 seconds. Upgrade only when GrantPilot has earned you funding.
-          </p>
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link href="/signup">
-              <Button variant="gradient" size="lg">
-                Get started free <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            {canStartTrial && (
-              <Button variant="outline" size="lg" onClick={handleStartTrial} disabled={loading !== null}>
-                {loading === "trial" ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                  <><Gift className="h-4 w-4" /> Start Pro trial</>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
-      </main>
+      {/* CTA peak — landing's CtaBanner. */}
+      <CtaBanner ctaHref="/signup" ctaLabel="Get started free" />
 
-      {/* ═══ Success Fee Disclosure Modal — Radix-backed focus trap ═══ */}
+      {/* Success Fee Disclosure Modal — preserved logic, restyled to marine. */}
       <Dialog
         open={!!pendingPlan}
         onOpenChange={(open) => !open && setPendingPlan(null)}
@@ -720,57 +1172,109 @@ function PricingContent() {
       >
         {pendingPlan && (
           <>
-            <dl className="space-y-3 mb-6 text-sm">
-              <div className="flex justify-between p-3 rounded-lg bg-slate-800/50">
-                <dt className="text-ink-2">Subscription</dt>
-                <dd className="text-white font-medium">
-                  ${billingInterval === "monthly" ? pendingPlan.price : Math.round(pendingPlan.priceAnnual / 12)}
-                  /month
+            <dl className="space-y-3 mb-6">
+              <div
+                className="flex justify-between p-3"
+                style={{
+                  background: "var(--bg-soft)",
+                  borderRadius: "var(--radius-control)",
+                }}
+              >
+                <dt style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                  Subscription
+                </dt>
+                <dd
+                  className="font-medium text-right"
+                  style={{ color: "var(--ink)", fontSize: "var(--text-body-sm)" }}
+                >
+                  ${billingInterval === "monthly" ? pendingPlan.price : Math.round(pendingPlan.priceAnnual / 12)}/month
                   {billingInterval === "annual" && (
-                    <span className="text-xs text-ink-2 ml-1">(billed ${pendingPlan.priceAnnual}/yr)</span>
+                    <span
+                      className="ml-1"
+                      style={{ color: "var(--ink-2)", fontSize: "var(--text-caption)" }}
+                    >
+                      (billed ${pendingPlan.priceAnnual}/yr)
+                    </span>
                   )}
                 </dd>
               </div>
               {pendingPlan.successFee && (
-                <div className="flex justify-between p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                  <dt className="text-amber-300">Success fee</dt>
-                  <dd className="text-amber-200 font-medium text-right">
+                <div
+                  className="flex justify-between p-3"
+                  style={{
+                    background: "var(--warn-soft)",
+                    border: "1px solid var(--warn)",
+                    borderRadius: "var(--radius-control)",
+                  }}
+                >
+                  <dt style={{ color: "var(--warn)", fontSize: "var(--text-body-sm)" }}>
+                    Success fee
+                  </dt>
+                  <dd
+                    className="text-right font-medium"
+                    style={{ color: "var(--warn)", fontSize: "var(--text-body-sm)" }}
+                  >
                     {pendingPlan.successFee}
-                    <div className="text-xs text-amber-400/70 mt-0.5">
+                    <div className="mt-0.5" style={{ fontSize: "var(--text-caption)", opacity: 0.85 }}>
                       Charged only after a grant is awarded
                     </div>
                   </dd>
                 </div>
               )}
-              <div className="flex justify-between p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                <dt className="text-emerald-300">Trial &amp; cancellation</dt>
-                <dd className="text-emerald-200 font-medium text-right">
+              <div
+                className="flex justify-between p-3"
+                style={{
+                  background: "var(--success-soft)",
+                  border: "1px solid var(--success)",
+                  borderRadius: "var(--radius-control)",
+                }}
+              >
+                <dt style={{ color: "var(--success)", fontSize: "var(--text-body-sm)" }}>
+                  Trial &amp; cancellation
+                </dt>
+                <dd
+                  className="text-right font-medium"
+                  style={{ color: "var(--success)", fontSize: "var(--text-body-sm)" }}
+                >
                   21-day trial
-                  <div className="text-xs text-success/70 mt-0.5">
+                  <div className="mt-0.5" style={{ fontSize: "var(--text-caption)", opacity: 0.85 }}>
                     Cancel anytime, prorated refund
                   </div>
                 </dd>
               </div>
             </dl>
 
-            <div className="text-xs text-ink-2 mb-5 leading-relaxed">
-              No setup fees. No cancellation fees. No per-application charges. Payments are securely processed by Stripe — your card details never touch GrantPilot servers.
-            </div>
+            <p
+              className="mb-5"
+              style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", lineHeight: 1.6 }}
+            >
+              No setup fees. No cancellation fees. No per-application charges. Payments are
+              securely processed by Stripe — your card details never touch GrantPilot servers.
+            </p>
 
             <div className="flex gap-3">
               <Button
-                variant="secondary"
                 size="lg"
                 className="flex-1"
+                style={{
+                  background: "var(--surface)",
+                  color: "var(--ink)",
+                  border: "1px solid var(--rule)",
+                  borderRadius: "var(--radius-control)",
+                }}
                 onClick={() => setPendingPlan(null)}
                 disabled={loading !== null}
               >
                 Cancel
               </Button>
               <Button
-                variant="primary"
                 size="lg"
-                className="flex-1"
+                className="flex-1 !text-white"
+                style={{
+                  background: "var(--accent)",
+                  borderColor: "var(--accent)",
+                  borderRadius: "var(--radius-control)",
+                }}
                 onClick={confirmCheckout}
                 disabled={loading !== null}
               >
@@ -784,28 +1288,19 @@ function PricingContent() {
           </>
         )}
       </Dialog>
-
-      {/* Footer */}
-      <footer className="border-t border-rule/60 py-8 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} GrantPilot. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="hover:text-white transition">Terms</Link>
-            <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </main>
   );
 }
 
 export default function PricingPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-success" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--accent)" }} />
+        </div>
+      }
+    >
       <PricingContent />
     </Suspense>
   );
