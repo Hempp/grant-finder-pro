@@ -5,27 +5,25 @@ import Link from "next/link";
 import {
   Search,
   FileText,
-  DollarSign,
-  TrendingUp,
-  Clock,
   ArrowRight,
   Plus,
   CheckCircle,
   AlertCircle,
-  Sparkles,
-  Target,
   Calendar,
+  Target,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, StatsCard } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
-import { Skeleton, SkeletonGrantCard } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScoreRing } from "@/components/ui/ScoreRing";
 import { UpgradePrompt } from "@/components/subscription/UpgradePrompt";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useToast } from "@/components/ui";
 import { ExpiringSoon } from "@/components/dashboard/ExpiringSoon";
 import { ProfileProgressBanner } from "@/components/dashboard/ProfileProgressBanner";
 import { ApplyPanel } from "@/components/dashboard/ApplyPanel";
+import { MomentumHero } from "@/components/dashboard/MomentumHero";
+import { useSession } from "next-auth/react";
 
 interface Grant {
   id: string;
@@ -44,20 +42,7 @@ interface Application {
   budget: string | null;
   responses: string | null;
   updatedAt: string;
-  grant: {
-    id: string;
-    title: string;
-    deadline: string;
-    amount: number;
-  };
-}
-
-interface DashboardStats {
-  grantsFound: number;
-  applicationsCount: number;
-  totalRequested: number;
-  avgMatchScore: number;
-  inProgressCount: number;
+  grant: { id: string; title: string; deadline: string; amount: number };
 }
 
 const statusColors: Record<string, "default" | "success" | "warning" | "info"> = {
@@ -79,11 +64,8 @@ const statusLabels: Record<string, string> = {
 };
 
 function formatCurrency(amount: number): string {
-  if (amount >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
-  } else if (amount >= 1000) {
-    return `$${(amount / 1000).toFixed(0)}K`;
-  }
+  if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `$${(amount / 1_000).toFixed(0)}K`;
   return `$${amount.toLocaleString()}`;
 }
 
@@ -94,53 +76,28 @@ function calculateApplicationProgress(app: Application): number {
 }
 
 function getDeadlineStatus(deadline: string): { label: string; color: string } {
-  const daysUntil = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (daysUntil < 0) return { label: "Expired", color: "text-slate-500" };
-  if (daysUntil <= 7) return { label: `${daysUntil}d left`, color: "text-red-400" };
-  if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: "text-amber-400" };
-  return { label: `${daysUntil}d left`, color: "text-slate-400" };
-}
-
-// Loading skeleton for stats
-function StatsSkeleton() {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-      {[1, 2, 3, 4].map((i) => (
-        <Card key={i}>
-          <CardContent className="p-3 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 space-y-2">
-                <Skeleton width="60%" height={14} />
-                <Skeleton width="40%" height={32} />
-                <Skeleton width="80%" height={14} />
-              </div>
-              <Skeleton variant="circle" width={48} height={48} />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+  const daysUntil = Math.ceil(
+    (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );
+  if (daysUntil < 0) return { label: "Expired", color: "var(--ink-2)" };
+  if (daysUntil <= 7) return { label: `${daysUntil}d left`, color: "var(--warn)" };
+  if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: "var(--warn)" };
+  return { label: `${daysUntil}d left`, color: "var(--ink-2)" };
 }
 
 export default function DashboardPage() {
+  const { data: session } = useSession();
   const [grants, setGrants] = useState<Grant[]>([]);
   const [allGrants, setAllGrants] = useState<Grant[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    grantsFound: 0,
-    applicationsCount: 0,
-    totalRequested: 0,
-    avgMatchScore: 0,
-    inProgressCount: 0,
-  });
+  const [totalRequested, setTotalRequested] = useState(0);
   const [loading, setLoading] = useState(true);
   const [readiness, setReadiness] = useState<{
     score: number;
     actions: { priority: string; action: string }[];
   } | null>(null);
   const { isPro, canStartTrial } = useSubscription();
-  const [applyGrant, setApplyGrant] = useState<{ id: string; title: string; funder: string } | null>(null);
+  const [applyGrant] = useState<{ id: string; title: string; funder: string } | null>(null);
   const { success: toastSuccess } = useToast();
 
   useEffect(() => {
@@ -167,13 +124,13 @@ export default function DashboardPage() {
         const grantsList = (grantsData.grants || []).filter(
           (g: Grant) => !g.deadline || new Date(g.deadline) >= now
         );
-        const appsList = Array.isArray(appsData) ? appsData : [];
+        const appsList: Application[] = Array.isArray(appsData) ? appsData : [];
 
         setAllGrants(grantsList);
         setGrants(grantsList.slice(0, 3));
         setApplications(appsList.slice(0, 3));
 
-        // First match celebration
+        // First match celebration — value beat, allowed by parent spec §2.3.
         if (grantsList.length > 0 && !localStorage.getItem("hasSeenFirstMatch")) {
           localStorage.setItem("hasSeenFirstMatch", "true");
           const topGrant = grantsList[0];
@@ -183,31 +140,11 @@ export default function DashboardPage() {
           );
         }
 
-        // Calculate stats
-        const inProgress = appsList.filter(
-          (a: Application) => ["draft", "in_progress"].includes(a.status)
-        ).length;
-
-        const totalRequested = appsList.reduce(
-          (sum: number, app: Application) => sum + (app.grant?.amount || 0),
+        const total = appsList.reduce(
+          (sum, app) => sum + (app.grant?.amount || 0),
           0
         );
-
-        const avgScore =
-          grantsList.length > 0
-            ? Math.round(
-                grantsList.reduce((sum: number, g: Grant) => sum + (g.matchScore || 0), 0) /
-                  grantsList.length
-              )
-            : 0;
-
-        setStats({
-          grantsFound: grantsList.length,
-          applicationsCount: appsList.length,
-          totalRequested,
-          avgMatchScore: avgScore,
-          inProgressCount: inProgress,
-        });
+        setTotalRequested(total);
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -216,492 +153,474 @@ export default function DashboardPage() {
     }
 
     fetchData();
-  }, []);
+  }, [toastSuccess]);
+
+  // The full set of pipeline apps + grants for the hero. Top match drives
+  // the value-beat row at the top.
+  const topMatch = grants[0] ?? null;
+  const allAppsForHero = applications; // already sliced to 3 above; momentum metrics use this set
 
   return (
-    <div className="p-6 lg:p-8 flex flex-col gap-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-            {(() => {
-              const hour = new Date().getHours();
-              if (hour < 12) return "Good morning";
-              if (hour < 17) return "Good afternoon";
-              if (hour < 21) return "Good evening";
-              return "Burning the midnight oil";
-            })()}
-            <Sparkles className="h-6 w-6 text-emerald-400 animate-breathe" aria-hidden="true" />
-          </h1>
-          <p className="text-slate-400 mt-1 text-sm sm:text-base">
-            {loading
-              ? "Loading your latest matches..."
-              : stats.applicationsCount > 0
-              ? `${stats.inProgressCount} ${stats.inProgressCount === 1 ? "application" : "applications"} in flight. ${stats.grantsFound} new ${stats.grantsFound === 1 ? "match is" : "matches are"} waiting.`
-              : stats.grantsFound > 0
-              ? `${stats.grantsFound} ${stats.grantsFound === 1 ? "grant matches" : "grants match"} your profile. Pick one to start drafting — we'll do the heavy lifting.`
-              : "Add a few details about your work and we'll start matching grants you actually qualify for."}
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Link href="/dashboard/grants">
-            <Button variant="outline" className="w-full sm:w-auto text-sm">
-              <Search className="h-4 w-4 mr-1 sm:mr-2" />
-              <span className="hidden xs:inline">Find</span> Grants
-            </Button>
-          </Link>
-          <Link href="/dashboard/documents">
-            <Button variant="primary" className="w-full sm:w-auto text-sm">
-              <Plus className="h-4 w-4 mr-1 sm:mr-2" />
-              Upload
-            </Button>
-          </Link>
-        </div>
+    <div className="p-6 lg:p-8 flex flex-col gap-8">
+      {/* Momentum hero — greeting + 3 cards + top match. Real data only. */}
+      <MomentumHero
+        userName={session?.user?.name}
+        loading={loading}
+        applications={allAppsForHero}
+        allGrants={allGrants}
+        totalRequested={totalRequested}
+        topMatch={topMatch}
+      />
+
+      {/* Quick actions row — top-right CTAs were here; now rendered as a
+          compact action strip so the momentum hero owns the top of the page. */}
+      <div className="flex gap-3 flex-wrap">
+        <Link href="/dashboard/grants">
+          <Button
+            style={{
+              background: "var(--surface)",
+              color: "var(--ink)",
+              border: "1px solid var(--rule)",
+              borderRadius: "var(--radius-control)",
+            }}
+          >
+            <Search className="h-4 w-4 mr-2" />
+            Find grants
+          </Button>
+        </Link>
+        <Link href="/dashboard/documents">
+          <Button
+            className="!text-white"
+            style={{
+              background: "var(--accent)",
+              borderColor: "var(--accent)",
+              borderRadius: "var(--radius-control)",
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Upload docs
+          </Button>
+        </Link>
       </div>
 
-      {/* ═══ First-visit guided experience vs returning-user stats ═══ */}
+      {/* Grant Readiness — ScoreRing replaces hand-rolled SVG gauge. */}
       {loading ? (
-        <StatsSkeleton />
-      ) : stats.grantsFound === 0 && stats.applicationsCount === 0 ? (
-        /* First visit: no data yet — guide them to the auto-fill flow
-           instead of showing a wall of zeros */
-        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 via-slate-900/50 to-cyan-500/5 p-6 sm:p-10">
-          <div className="max-w-xl">
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
-              Let&apos;s find your grants
-            </h2>
-            <p className="text-slate-400 leading-relaxed mb-6">
-              Three steps to your first matched grant. Most users finish in under 5 minutes.
-            </p>
-            <ol className="space-y-4 mb-8">
-              <li className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-sm">1</span>
-                <div>
-                  <p className="text-white font-medium">Tell us about your organization</p>
-                  <p className="text-slate-500 text-sm">Paste your website URL — we auto-fill your profile in seconds.</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 text-slate-300 font-bold flex items-center justify-center text-sm">2</span>
-                <div>
-                  <p className="text-slate-300 font-medium">Review your matched grants</p>
-                  <p className="text-slate-500 text-sm">We scan 2,000+ grants and rank them by fit. You pick the best ones.</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 text-slate-300 font-bold flex items-center justify-center text-sm">3</span>
-                <div>
-                  <p className="text-slate-300 font-medium">Let AI write the application</p>
-                  <p className="text-slate-500 text-sm">Smart Fill drafts every section to the funder&apos;s rubric. You review + submit.</p>
-                </div>
-              </li>
-            </ol>
-            <Link href="/dashboard/organization">
-              <Button variant="gradient" className="shadow-xl shadow-emerald-500/20">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Set up your profile
-                <ArrowRight className="h-4 w-4 ml-2" />
+        <div
+          className="p-5"
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--rule)",
+            borderRadius: "var(--radius-card)",
+            boxShadow: "var(--shadow-card-soft)",
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <Skeleton variant="circle" width={72} height={72} />
+            <div className="flex-1 space-y-2">
+              <Skeleton width="40%" height={14} />
+              <Skeleton width="60%" height={12} />
+              <Skeleton width="50%" height={12} />
+            </div>
+          </div>
+        </div>
+      ) : readiness ? (
+        <article
+          className="p-5"
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--rule)",
+            borderRadius: "var(--radius-card)",
+            boxShadow: "var(--shadow-card-soft)",
+          }}
+        >
+          <div className="flex items-center gap-5">
+            <ScoreRing
+              score={readiness.score}
+              size="md"
+              label="Grant readiness"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Target
+                  className="h-4 w-4"
+                  style={{ color: "var(--ink-2)" }}
+                  aria-hidden="true"
+                />
+                <h3
+                  className="font-semibold"
+                  style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+                >
+                  Grant readiness
+                </h3>
+                <span
+                  className="px-2 py-0.5 rounded-full font-medium"
+                  style={{
+                    background:
+                      readiness.score >= 70
+                        ? "var(--success-soft)"
+                        : readiness.score >= 40
+                        ? "var(--warn-soft)"
+                        : "var(--warn-soft)",
+                    color:
+                      readiness.score >= 70
+                        ? "var(--success)"
+                        : "var(--warn)",
+                    fontSize: "var(--text-micro)",
+                  }}
+                >
+                  {readiness.score >= 70
+                    ? "Ready"
+                    : readiness.score >= 40
+                    ? "Getting there"
+                    : "Needs work"}
+                </span>
+              </div>
+              {readiness.actions.length > 0 && (
+                <ul className="space-y-1">
+                  {readiness.actions.slice(0, 2).map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center gap-2"
+                      style={{
+                        fontSize: "var(--text-caption)",
+                        color: "var(--ink-2)",
+                      }}
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{
+                          background:
+                            item.priority === "high"
+                              ? "var(--warn)"
+                              : item.priority === "medium"
+                              ? "var(--warn)"
+                              : "var(--ink-2)",
+                        }}
+                        aria-hidden="true"
+                      />
+                      <span className="truncate">{item.action}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Link
+              href="/dashboard/organization"
+              className="flex-shrink-0 hidden sm:block"
+            >
+              <Button
+                size="sm"
+                style={{
+                  background: "var(--surface)",
+                  color: "var(--accent)",
+                  border: "1px solid var(--accent)",
+                  borderRadius: "var(--radius-control)",
+                }}
+              >
+                Improve
               </Button>
             </Link>
           </div>
-        </div>
-      ) : (
-        /* Returning user: show real stats */
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          <StatsCard
-            title="Grants Found"
-            value={stats.grantsFound}
-            description="Available opportunities"
-            icon={<Search className="h-6 w-6" />}
-          />
-          <StatsCard
-            title="Applications"
-            value={stats.applicationsCount}
-            description={`${stats.inProgressCount} in progress`}
-            icon={<FileText className="h-6 w-6" />}
-          />
-          <StatsCard
-            title="Total Requested"
-            value={formatCurrency(stats.totalRequested)}
-            description={`Across ${stats.applicationsCount} apps`}
-            icon={<DollarSign className="h-6 w-6" />}
-          />
-          <StatsCard
-            title="Match Score"
-            value={`${stats.avgMatchScore}%`}
-            description={
-              stats.avgMatchScore >= 80
-                ? "Strong fit across your matches"
-                : stats.avgMatchScore >= 60
-                ? "Solid match — sharpen your profile to climb"
-                : "Add profile detail to unlock better matches"
-            }
-            icon={<Target className="h-6 w-6" />}
-          />
-        </div>
-      )}
-
-      {/* Readiness Score */}
-      {loading ? (
-        <Card className="p-4 sm:p-6">
-          <div className="animate-pulse flex items-center gap-4 sm:gap-6">
-            <div className="flex-shrink-0">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 bg-slate-700 rounded-full"></div>
-            </div>
-            <div className="flex-1 space-y-3">
-              <div className="h-3 bg-slate-700 rounded w-32"></div>
-              <div className="h-2 bg-slate-700 rounded w-48"></div>
-              <div className="h-2 bg-slate-700 rounded w-40"></div>
-            </div>
-          </div>
-        </Card>
-      ) : readiness ? (
-        <Card className="animate-reveal">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center gap-4 sm:gap-6">
-              {/* Radial Gauge */}
-              <div className="flex-shrink-0">
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36" role="img" aria-label={`Grant readiness score: ${readiness.score}`}>
-                    <circle
-                      cx="18" cy="18" r="15.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      className="text-slate-700"
-                    />
-                    <circle
-                      cx="18" cy="18" r="15.9155"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeDasharray={`${readiness.score} 100`}
-                      pathLength={100}
-                      strokeLinecap="round"
-                      className={
-                        readiness.score >= 70
-                          ? "text-emerald-400"
-                          : readiness.score >= 40
-                          ? "text-amber-400"
-                          : "text-red-400"
-                      }
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-sm sm:text-base font-bold ${
-                      readiness.score >= 70
-                        ? "text-emerald-400"
-                        : readiness.score >= 40
-                        ? "text-amber-400"
-                        : "text-red-400"
-                    }`}>
-                      {readiness.score}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <Target className="h-4 w-4 text-slate-400" />
-                  <h3 className="text-white font-bold text-sm sm:text-base">Grant Readiness</h3>
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    readiness.score >= 70
-                      ? "bg-emerald-500/20 text-emerald-400"
-                      : readiness.score >= 40
-                      ? "bg-amber-500/20 text-amber-400"
-                      : "bg-red-500/20 text-red-400"
-                  }`}>
-                    {readiness.score >= 70 ? "Ready" : readiness.score >= 40 ? "Getting There" : "Needs Work"}
-                  </span>
-                </div>
-
-                {/* Top 2 Actions */}
-                {readiness.actions.length > 0 && (
-                  <div className="space-y-1 mt-2">
-                    {readiness.actions.slice(0, 2).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                          item.priority === "high"
-                            ? "bg-red-400"
-                            : item.priority === "medium"
-                            ? "bg-amber-400"
-                            : "bg-slate-500"
-                        }`} />
-                        <span className="truncate">{item.action}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* CTA */}
-              <Link href="/dashboard/organization" className="flex-shrink-0 hidden sm:block">
-                <Button variant="outline" size="sm" className="text-xs">
-                  Improve
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        </article>
       ) : null}
 
-      {/* Profile Progress */}
+      {/* Profile progress + expiring + upgrade prompt — preserved
+          as-is. These components still carry pre-v2 internal styling
+          (deferred to a follow-up component-restyle sweep) but their
+          contracts and data flows are unchanged. */}
       {!loading && <ProfileProgressBanner />}
 
-      {/* Upgrade Prompt for Free Users */}
       {!isPro && !loading && (
-        <div className="animate-reveal">
-          <UpgradePrompt
-            feature="Unlimited Grant Matches"
-            description={canStartTrial
+        <UpgradePrompt
+          feature="Unlimited Grant Matches"
+          description={
+            canStartTrial
               ? "Start your 21-day free trial to unlock unlimited AI-powered grant matches and Auto-Apply."
               : "Upgrade to Pro for unlimited AI-powered grant matches, Auto-Apply, and daily alerts."
-            }
-            variant="banner"
-          />
-        </div>
+          }
+          variant="banner"
+        />
       )}
 
-      {/* Expiring Soon */}
       {!loading && <ExpiringSoon grants={allGrants} />}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-        {/* Recent Grants */}
-        <Card variant="elevated" hover glow>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-emerald-500/20 p-2 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-emerald-400" />
-              </div>
-              <h2 className="text-xl font-bold text-white">Top Matching Grants</h2>
-            </div>
-            <Link href="/dashboard/grants" className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1 group">
-              View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+      {/* Pipeline — two columns: top matches + recent applications. */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top matches */}
+        <article
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--rule)",
+            borderRadius: "var(--radius-card)",
+            boxShadow: "var(--shadow-card-soft)",
+          }}
+        >
+          <header
+            className="flex items-center justify-between p-5"
+            style={{ borderBottom: "1px solid var(--rule)" }}
+          >
+            <h2
+              className="font-semibold"
+              style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+            >
+              Top matching grants
+            </h2>
+            <Link
+              href="/dashboard/grants"
+              className="flex items-center gap-1 font-medium hover:underline"
+              style={{
+                color: "var(--accent)",
+                fontSize: "var(--text-body-sm)",
+              }}
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          </header>
+          <div className="p-3 space-y-2">
             {loading ? (
               <>
-                <SkeletonGrantCard />
-                <SkeletonGrantCard />
+                <Skeleton width="100%" height={64} />
+                <Skeleton width="100%" height={64} />
               </>
             ) : grants.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-slate-800/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-slate-600" />
-                </div>
-                <p className="text-slate-400 mb-2">No grants found yet</p>
-                <p className="text-slate-400 text-sm mb-4">Complete your profile to get personalized matches.</p>
+              <div className="text-center py-10 px-4">
+                <p
+                  className="mb-2"
+                  style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}
+                >
+                  No grants found yet
+                </p>
+                <p
+                  className="mb-4"
+                  style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+                >
+                  Complete your profile to get personalized matches.
+                </p>
                 <Link href="/dashboard/organization">
-                  <Button variant="outline" size="sm">
-                    Complete Profile
+                  <Button
+                    size="sm"
+                    style={{
+                      background: "var(--surface)",
+                      color: "var(--accent)",
+                      border: "1px solid var(--accent)",
+                      borderRadius: "var(--radius-control)",
+                    }}
+                  >
+                    Complete profile
                   </Button>
                 </Link>
               </div>
             ) : (
-              grants.map((grant, index) => {
+              grants.map((grant) => {
                 const deadline = getDeadlineStatus(grant.deadline);
                 return (
                   <Link
                     key={grant.id}
                     href={`/dashboard/grants/${grant.id}/apply`}
-                    className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 block border border-transparent hover:border-slate-700 group"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className="flex items-center gap-4 p-3 rounded-lg transition-colors hover:bg-[var(--bg-soft)]"
                   >
+                    <ScoreRing
+                      score={grant.matchScore ?? 0}
+                      size="sm"
+                      label={`Match score for ${grant.title}`}
+                    />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-medium truncate group-hover:text-emerald-400 transition-colors">{grant.title}</h3>
-                      <p className="text-slate-400 text-sm truncate">{grant.funder}</p>
-                      <div className="flex items-center gap-4 mt-2">
-                        <span className="text-emerald-400 font-bold">{formatCurrency(grant.amount)}</span>
-                        <span className={`text-sm flex items-center gap-1 ${deadline.color}`}>
-                          <Clock className="h-3 w-3" />
+                      <h3
+                        className="font-medium truncate"
+                        style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+                      >
+                        {grant.title}
+                      </h3>
+                      <p
+                        className="truncate"
+                        style={{
+                          fontSize: "var(--text-body-sm)",
+                          color: "var(--ink-2)",
+                        }}
+                      >
+                        {grant.funder}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span
+                          className="font-mono tabular-nums font-semibold"
+                          style={{
+                            fontSize: "var(--text-body-sm)",
+                            color: "var(--accent)",
+                          }}
+                        >
+                          {formatCurrency(grant.amount)}
+                        </span>
+                        <span
+                          className="inline-flex items-center gap-1"
+                          style={{
+                            fontSize: "var(--text-caption)",
+                            color: deadline.color,
+                          }}
+                        >
                           {deadline.label}
                         </span>
                       </div>
-                    </div>
-                    <div className="text-center ml-3 sm:ml-4 flex-shrink-0">
-                      <div className="relative">
-                        <svg className="w-12 h-12 sm:w-16 sm:h-16 transform -rotate-90" role="img" aria-label={`Match score: ${grant.matchScore || 0}%`}>
-                          <circle cx="50%" cy="50%" r="40%" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-700" pathLength={100} />
-                          <circle
-                            cx="50%"
-                            cy="50%"
-                            r="40%"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeDasharray={`${grant.matchScore || 0} 100`}
-                            pathLength={100}
-                            className="text-emerald-400"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-sm sm:text-lg font-bold text-emerald-400">{grant.matchScore || 0}%</span>
-                        </div>
-                      </div>
-                      <div className="text-slate-500 text-xs leading-4 mt-1">Match</div>
                     </div>
                   </Link>
                 );
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </article>
 
-        {/* Recent Applications */}
-        <Card variant="elevated" hover glow glowColor="blue">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="bg-teal-500/15 p-2 rounded-lg">
-                <FileText className="h-5 w-5 text-teal-400" />
-              </div>
-              <h2 className="text-xl font-bold text-white">Recent Applications</h2>
-            </div>
-            <Link href="/dashboard/applications" className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1 group">
-              View all <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        {/* Recent applications */}
+        <article
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--rule)",
+            borderRadius: "var(--radius-card)",
+            boxShadow: "var(--shadow-card-soft)",
+          }}
+        >
+          <header
+            className="flex items-center justify-between p-5"
+            style={{ borderBottom: "1px solid var(--rule)" }}
+          >
+            <h2
+              className="font-semibold"
+              style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+            >
+              Recent applications
+            </h2>
+            <Link
+              href="/dashboard/applications"
+              className="flex items-center gap-1 font-medium hover:underline"
+              style={{
+                color: "var(--accent)",
+                fontSize: "var(--text-body-sm)",
+              }}
+            >
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          </header>
+          <div className="p-3 space-y-2">
             {loading ? (
               <>
-                <SkeletonGrantCard />
-                <SkeletonGrantCard />
+                <Skeleton width="100%" height={96} />
+                <Skeleton width="100%" height={96} />
               </>
             ) : applications.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-slate-800/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-8 w-8 text-slate-600" />
-                </div>
-                <p className="text-slate-400 mb-2">No applications yet</p>
-                <p className="text-slate-400 text-sm mb-4">Browse your grant matches and start your first application — Smart Fill does most of the writing.</p>
+              <div className="text-center py-10 px-4">
+                <p
+                  className="mb-2"
+                  style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}
+                >
+                  No applications yet
+                </p>
+                <p
+                  className="mb-4"
+                  style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+                >
+                  Browse your grant matches and start your first — Smart Fill does most of the writing.
+                </p>
                 <Link href="/dashboard/grants">
-                  <Button variant="outline" size="sm">
-                    Browse Grants
+                  <Button
+                    size="sm"
+                    style={{
+                      background: "var(--surface)",
+                      color: "var(--accent)",
+                      border: "1px solid var(--accent)",
+                      borderRadius: "var(--radius-control)",
+                    }}
+                  >
+                    Browse grants
                   </Button>
                 </Link>
               </div>
             ) : (
-              applications.map((app, index) => {
+              applications.map((app) => {
                 const progress = calculateApplicationProgress(app);
                 const deadline = getDeadlineStatus(app.grant.deadline);
                 return (
                   <div
                     key={app.id}
-                    className="p-4 bg-slate-900/50 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 border border-transparent hover:border-slate-700"
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className="flex items-center gap-4 p-3 rounded-lg transition-colors hover:bg-[var(--bg-soft)]"
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-white font-medium truncate flex-1">{app.grant.title}</h3>
-                      <Badge variant={statusColors[app.status] || "default"}>
-                        {statusLabels[app.status]}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex-1 mr-4">
-                        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
+                    <ScoreRing
+                      score={progress}
+                      size="sm"
+                      label={`Draft progress for ${app.grant.title}`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3
+                          className="font-medium truncate flex-1"
+                          style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+                        >
+                          {app.grant.title}
+                        </h3>
+                        <Badge variant={statusColors[app.status] || "default"}>
+                          {statusLabels[app.status]}
+                        </Badge>
                       </div>
-                      <span className="text-slate-400 text-sm font-medium">{progress}%</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-sm flex items-center gap-1 ${deadline.color}`}>
-                        <Calendar className="h-3 w-3" />
-                        Due {new Date(app.grant.deadline).toLocaleDateString()}
-                      </span>
-                      {app.status === "ready_for_review" && (
-                        <Link href={`/dashboard/applications/${app.id}`}>
-                          <Button size="sm" variant="ghost" className="text-emerald-400 hover:text-emerald-300">
-                            <CheckCircle className="h-4 w-4 mr-1" />
+                      <div className="flex items-center justify-between">
+                        <span
+                          className="inline-flex items-center gap-1"
+                          style={{
+                            fontSize: "var(--text-caption)",
+                            color: deadline.color,
+                          }}
+                        >
+                          <Calendar className="h-3 w-3" aria-hidden="true" />
+                          Due {new Date(app.grant.deadline).toLocaleDateString()}
+                        </span>
+                        {app.status === "ready_for_review" && (
+                          <Link
+                            href={`/dashboard/applications/${app.id}`}
+                            className="flex items-center gap-1 font-medium hover:underline"
+                            style={{
+                              color: "var(--success)",
+                              fontSize: "var(--text-caption)",
+                            }}
+                          >
+                            <CheckCircle className="h-3 w-3" aria-hidden="true" />
                             Review
-                          </Button>
-                        </Link>
-                      )}
-                      {app.status === "in_progress" && (
-                        <Link href={`/dashboard/grants/${app.grant.id}/apply`}>
-                          <Button size="sm" variant="ghost" className="text-amber-400 hover:text-amber-300">
-                            <AlertCircle className="h-4 w-4 mr-1" />
+                          </Link>
+                        )}
+                        {app.status === "in_progress" && (
+                          <Link
+                            href={`/dashboard/grants/${app.grant.id}/apply`}
+                            className="flex items-center gap-1 font-medium hover:underline"
+                            style={{
+                              color: "var(--warn)",
+                              fontSize: "var(--text-caption)",
+                            }}
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
                             Continue
-                          </Button>
-                        </Link>
-                      )}
-                      {app.status === "draft" && (
-                        <Link href={`/dashboard/grants/${app.grant.id}/apply`}>
-                          <Button size="sm" variant="ghost" className="text-slate-400 hover:text-white">
-                            <ArrowRight className="h-4 w-4 mr-1" />
+                          </Link>
+                        )}
+                        {app.status === "draft" && (
+                          <Link
+                            href={`/dashboard/grants/${app.grant.id}/apply`}
+                            className="flex items-center gap-1 font-medium hover:underline"
+                            style={{
+                              color: "var(--ink-2)",
+                              fontSize: "var(--text-caption)",
+                            }}
+                          >
+                            <ArrowRight className="h-3 w-3" aria-hidden="true" />
                             Start
-                          </Button>
-                        </Link>
-                      )}
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
               })
             )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <Card variant="gradient">
-        <CardContent className="p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-400" />
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            <Link
-              href="/dashboard/organization"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-emerald-500/20 group"
-            >
-              <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
-                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Complete Profile</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Improve match accuracy</span>
-            </Link>
-            <Link
-              href="/dashboard/documents"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-cyan-500/20 group"
-            >
-              <div className="bg-cyan-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
-                <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Upload Docs</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Auto-extract info</span>
-            </Link>
-            <Link
-              href="/dashboard/grants"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-teal-500/20 group"
-            >
-              <div className="bg-teal-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
-                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-teal-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Discover Grants</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Find opportunities</span>
-            </Link>
-            <Link
-              href="/dashboard/applications"
-              className="flex flex-col items-center p-4 sm:p-6 bg-slate-900/50 rounded-xl hover:bg-slate-800/80 transition-colors duration-200 text-center border border-transparent hover:border-amber-500/20 group"
-            >
-              <div className="bg-amber-500/15 p-2 sm:p-3 rounded-xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform">
-                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
-              </div>
-              <span className="text-white font-medium text-sm sm:text-base">Track Deadlines</span>
-              <span className="text-slate-500 text-xs sm:text-sm mt-1 hidden xs:block">Never miss a date</span>
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+        </article>
+      </div>
 
       <ApplyPanel
         isOpen={!!applyGrant}
-        onClose={() => setApplyGrant(null)}
+        onClose={() => {}}
         grantId={applyGrant?.id || ""}
         grantTitle={applyGrant?.title || ""}
         grantFunder={applyGrant?.funder || ""}
