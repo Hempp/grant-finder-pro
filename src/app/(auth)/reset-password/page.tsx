@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Button, Input, Card } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { Lock, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 
 function ResetPasswordForm() {
@@ -63,32 +63,65 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
-        <div className="text-center space-y-4">
-          <AlertCircle className="h-12 w-12 text-red-400 mx-auto" />
-          <h1 className="text-xl font-bold text-white">Invalid Reset Link</h1>
-          <p className="text-slate-400">This password reset link is invalid or has expired.</p>
-          <Link href="/forgot-password" className="text-emerald-400 hover:text-emerald-300 font-medium">
-            Request a new reset link
-          </Link>
-        </div>
-      </Card>
+      <div className="w-full text-center space-y-5">
+        <AlertCircle
+          className="h-10 w-10 mx-auto"
+          style={{ color: "var(--warn)" }}
+          aria-hidden="true"
+        />
+        <h1
+          className="font-semibold tracking-tight"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          Invalid reset link
+        </h1>
+        <p style={{ fontSize: "var(--text-body-lg)", color: "var(--ink-2)" }}>
+          This password reset link is invalid or has expired.
+        </p>
+        <Link
+          href="/forgot-password"
+          className="inline-block font-medium transition-colors hover:underline"
+          style={{ color: "var(--accent)" }}
+        >
+          Request a new reset link
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
-      <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Set New Password</h1>
-        <p className="text-slate-400">Choose a strong password for your account</p>
+    <div className="w-full">
+      <div className="mb-8">
+        <h1
+          className="font-semibold tracking-tight"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          Set a new password
+        </h1>
+        <p
+          className="mt-2"
+          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink-2)" }}
+        >
+          Choose a strong password for your account.
+        </p>
       </div>
 
       {success ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-            <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-            <p className="text-emerald-300 text-sm">Password reset. Redirecting you to sign in.</p>
-          </div>
+        <div
+          className="flex items-start gap-2.5 p-4 rounded-lg"
+          style={{
+            background: "var(--success-soft)",
+            border: "1px solid var(--success)",
+          }}
+        >
+          <CheckCircle
+            className="h-4 w-4 mt-0.5 flex-shrink-0"
+            style={{ color: "var(--success)" }}
+            aria-hidden="true"
+          />
+          <p style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}>
+            Password reset. Redirecting you to sign in.
+          </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -96,17 +129,29 @@ function ResetPasswordForm() {
             <div
               role="alert"
               aria-live="assertive"
-              className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm animate-shake"
+              className="flex items-start gap-2.5 p-3 rounded-lg"
+              style={{
+                background: "var(--warn-soft)",
+                border: "1px solid var(--warn)",
+                color: "var(--warn)",
+                fontSize: "var(--text-body-sm)",
+              }}
             >
-              <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-              {error}
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+              <span>{error}</span>
             </div>
           )}
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-slate-300">New Password</label>
+            <label htmlFor="password" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+              New password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+              <Lock
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--ink-2)" }}
+                aria-hidden="true"
+              />
               <Input
                 id="password"
                 type="password"
@@ -114,20 +159,21 @@ function ResetPasswordForm() {
                 placeholder="Create a new password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 glass-input text-white placeholder:text-slate-500"
+                className="pl-10"
+                style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
                 required
               />
             </div>
             {password && (
               <div className="space-y-1 mt-2">
                 {passwordRequirements.map((req, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs">
+                  <div key={i} className="flex items-center gap-2" style={{ fontSize: "var(--text-caption)" }}>
                     {req.met ? (
-                      <CheckCircle className="h-3 w-3 text-emerald-400" />
+                      <CheckCircle className="h-3 w-3" style={{ color: "var(--success)" }} aria-hidden="true" />
                     ) : (
-                      <div className="h-3 w-3 rounded-full border border-slate-600" />
+                      <div className="h-3 w-3 rounded-full" style={{ border: "1px solid var(--rule)" }} aria-hidden="true" />
                     )}
-                    <span className={req.met ? "text-emerald-400" : "text-slate-500"}>{req.text}</span>
+                    <span style={{ color: req.met ? "var(--success)" : "var(--ink-2)" }}>{req.text}</span>
                   </div>
                 ))}
               </div>
@@ -135,9 +181,15 @@ function ResetPasswordForm() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">Confirm Password</label>
+            <label htmlFor="confirmPassword" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+              Confirm password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+              <Lock
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--ink-2)" }}
+                aria-hidden="true"
+              />
               <Input
                 id="confirmPassword"
                 type="password"
@@ -145,38 +197,55 @@ function ResetPasswordForm() {
                 placeholder="Confirm your new password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10 glass-input text-white placeholder:text-slate-500"
+                className="pl-10"
+                style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
                 required
               />
             </div>
             {confirmPassword && password !== confirmPassword && (
-              <p className="text-xs text-red-400">Passwords do not match</p>
+              <p style={{ fontSize: "var(--text-caption)", color: "var(--warn)" }}>
+                Passwords do not match
+              </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full btn-magnetic" variant="gradient" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full !text-white"
+            style={{
+              background: "var(--accent)",
+              borderColor: "var(--accent)",
+              fontSize: "var(--text-body)",
+              padding: "12px 16px",
+              height: "auto",
+              borderRadius: "var(--radius-control)",
+            }}
+            disabled={loading}
+          >
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Resetting...
               </>
             ) : (
-              "Reset Password"
+              "Reset password"
             )}
           </Button>
         </form>
       )}
-    </Card>
+    </div>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <Card className="w-full max-w-md p-5 sm:p-8 glass-card flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
-      </Card>
-    }>
+    <Suspense
+      fallback={
+        <div className="w-full flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--accent)" }} />
+        </div>
+      }
+    >
       <ResetPasswordForm />
     </Suspense>
   );

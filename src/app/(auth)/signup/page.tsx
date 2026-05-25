@@ -4,10 +4,8 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Button, Input, Card } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { Mail, Lock, User, Loader2, AlertCircle, CheckCircle, Gift, Building2, GraduationCap } from "lucide-react";
-
-// OAuth providers removed — credentials-only auth for now.
 
 function SignupForm() {
   const router = useRouter();
@@ -40,7 +38,6 @@ function SignupForm() {
     setLoading(true);
 
     try {
-      // Register user
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,7 +52,6 @@ function SignupForm() {
         return;
       }
 
-      // Auto sign in after registration
       const signInResult = await signIn("credentials", {
         email,
         password,
@@ -91,49 +87,108 @@ function SignupForm() {
   ];
 
   return (
-    <Card className="w-full max-w-md p-5 sm:p-8 glass-card animate-reveal">
-      {/* Referral Banner */}
+    <div className="w-full">
       {referralCode && (
-        <div className="mb-4 sm:mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center gap-3 animate-fade-in-down">
-          <Gift className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-          <p className="text-sm text-emerald-300">
-            You were referred! <span className="font-semibold">5 bonus grant matches</span> are added to your account on signup — they expire 30 days from today.
+        <div
+          className="mb-6 p-3 rounded-lg flex items-start gap-2.5"
+          style={{
+            background: "var(--accent-soft)",
+            border: "1px solid var(--accent)",
+          }}
+        >
+          <Gift className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: "var(--accent)" }} aria-hidden="true" />
+          <p style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}>
+            You were referred.{" "}
+            <span className="font-semibold">5 bonus grant matches</span> are added on signup — they expire 30 days from today.
           </p>
         </div>
       )}
 
-      <div className="text-center mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">Start winning grants today</h1>
-        <p className="text-slate-400 text-sm">Free to start. No credit card. AI-powered matching and drafting from your first session.</p>
+      <div className="mb-8">
+        <h1
+          className="font-semibold tracking-tight"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          Create your account
+        </h1>
+        <p
+          className="mt-2"
+          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink-2)" }}
+        >
+          Free to start. AI-powered matching from your first session.
+        </p>
       </div>
 
-      {/* User Type Selector */}
-      <div className="flex gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-6">
         <button
           type="button"
           onClick={() => setUserType("organization")}
-          className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border transition-colors ${
+          className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors"
+          style={
             userType === "organization"
-              ? "border-emerald-500/50 bg-emerald-500/10"
-              : "border-slate-700 hover:border-slate-600"
-          }`}
+              ? {
+                  background: "var(--accent-soft)",
+                  border: "1.5px solid var(--accent)",
+                }
+              : {
+                  background: "var(--bg)",
+                  border: "1px solid var(--rule)",
+                }
+          }
+          aria-pressed={userType === "organization"}
         >
-          <Building2 className="h-6 w-6 text-slate-300" />
-          <span className="text-sm font-medium text-white">Organization</span>
-          <span className="text-xs text-slate-400 text-center">Nonprofits, startups, research</span>
+          <Building2
+            className="h-5 w-5"
+            style={{ color: userType === "organization" ? "var(--accent)" : "var(--ink-2)" }}
+            aria-hidden="true"
+          />
+          <span
+            className="font-medium"
+            style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}
+          >
+            Organization
+          </span>
+          <span
+            className="text-center"
+            style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+          >
+            Nonprofits, startups, research
+          </span>
         </button>
         <button
           type="button"
           onClick={() => setUserType("student")}
-          className={`flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border transition-colors ${
+          className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors"
+          style={
             userType === "student"
-              ? "border-emerald-500/50 bg-emerald-500/10"
-              : "border-slate-700 hover:border-slate-600"
-          }`}
+              ? {
+                  background: "var(--accent-soft)",
+                  border: "1.5px solid var(--accent)",
+                }
+              : {
+                  background: "var(--bg)",
+                  border: "1px solid var(--rule)",
+                }
+          }
+          aria-pressed={userType === "student"}
         >
-          <GraduationCap className="h-6 w-6 text-slate-300" />
-          <span className="text-sm font-medium text-white">Student</span>
-          <span className="text-xs text-slate-400 text-center">Undergrad, graduate, medical, law</span>
+          <GraduationCap
+            className="h-5 w-5"
+            style={{ color: userType === "student" ? "var(--accent)" : "var(--ink-2)" }}
+            aria-hidden="true"
+          />
+          <span
+            className="font-medium"
+            style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}
+          >
+            Student
+          </span>
+          <span
+            className="text-center"
+            style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+          >
+            Undergrad, grad, medical, law
+          </span>
         </button>
       </div>
 
@@ -142,17 +197,25 @@ function SignupForm() {
           <div
             role="alert"
             aria-live="assertive"
-            className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-sm animate-shake"
+            className="flex items-start gap-2.5 p-3 rounded-lg"
+            style={{
+              background: "var(--warn-soft)",
+              border: "1px solid var(--warn)",
+              color: "var(--warn)",
+              fontSize: "var(--text-body-sm)",
+            }}
           >
-            <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-            {error}
+            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <span>{error}</span>
           </div>
         )}
 
         <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium text-slate-300">Name</label>
+          <label htmlFor="name" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+            Name
+          </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--ink-2)" }} aria-hidden="true" />
             <Input
               id="name"
               type="text"
@@ -160,7 +223,8 @@ function SignupForm() {
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="pl-10 glass-input text-white placeholder:text-slate-500"
+              className="pl-10"
+              style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
               required
               aria-required="true"
             />
@@ -168,9 +232,11 @@ function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-slate-300">Email</label>
+          <label htmlFor="email" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+            Email
+          </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--ink-2)" }} aria-hidden="true" />
             <Input
               id="email"
               type="email"
@@ -178,7 +244,8 @@ function SignupForm() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 glass-input text-white placeholder:text-slate-500"
+              className="pl-10"
+              style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
               required
               aria-required="true"
             />
@@ -186,9 +253,11 @@ function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-slate-300">Password</label>
+          <label htmlFor="password" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+            Password
+          </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--ink-2)" }} aria-hidden="true" />
             <Input
               id="password"
               type="password"
@@ -196,7 +265,8 @@ function SignupForm() {
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 glass-input text-white placeholder:text-slate-500"
+              className="pl-10"
+              style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
               required
               aria-required="true"
               aria-describedby="password-requirements"
@@ -210,15 +280,21 @@ function SignupForm() {
               className="space-y-1 mt-2"
             >
               {passwordRequirements.map((req, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
+                <div
+                  key={i}
+                  className="flex items-center gap-2"
+                  style={{ fontSize: "var(--text-caption)" }}
+                >
                   {req.met ? (
-                    <CheckCircle className="h-3 w-3 text-emerald-400" aria-hidden="true" />
+                    <CheckCircle className="h-3 w-3" style={{ color: "var(--success)" }} aria-hidden="true" />
                   ) : (
-                    <div className="h-3 w-3 rounded-full border border-slate-600" aria-hidden="true" />
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ border: "1px solid var(--rule)" }}
+                      aria-hidden="true"
+                    />
                   )}
-                  <span className={req.met ? "text-emerald-400" : "text-slate-400"}>
-                    {req.text}
-                  </span>
+                  <span style={{ color: req.met ? "var(--success)" : "var(--ink-2)" }}>{req.text}</span>
                 </div>
               ))}
             </div>
@@ -226,9 +302,11 @@ function SignupForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">Confirm Password</label>
+          <label htmlFor="confirmPassword" className="block font-medium" style={{ fontSize: "var(--text-small)", color: "var(--ink)" }}>
+            Confirm password
+          </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" aria-hidden="true" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "var(--ink-2)" }} aria-hidden="true" />
             <Input
               id="confirmPassword"
               type="password"
@@ -236,27 +314,45 @@ function SignupForm() {
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 glass-input text-white placeholder:text-slate-500"
+              className="pl-10"
+              style={{ background: "var(--bg)", border: "1px solid var(--rule)", color: "var(--ink)" }}
               required
               aria-required="true"
             />
           </div>
           {confirmPassword && password !== confirmPassword && (
-            <p className="text-xs text-red-400">Passwords do not match</p>
+            <p style={{ fontSize: "var(--text-caption)", color: "var(--warn)" }}>
+              Passwords do not match
+            </p>
           )}
         </div>
 
-        <p className="text-xs text-slate-500 text-center">
+        <p
+          className="text-center"
+          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+        >
           By signing up, you agree to our{" "}
-          <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">Terms of Service</Link>
+          <Link href="/terms" className="hover:underline" style={{ color: "var(--accent)" }}>
+            Terms of Service
+          </Link>
           {" "}and{" "}
-          <Link href="/privacy" className="text-emerald-400 hover:text-emerald-300">Privacy Policy</Link>.
+          <Link href="/privacy" className="hover:underline" style={{ color: "var(--accent)" }}>
+            Privacy Policy
+          </Link>
+          .
         </p>
 
         <Button
           type="submit"
-          className="w-full btn-magnetic"
-          variant="gradient"
+          className="w-full !text-white"
+          style={{
+            background: "var(--accent)",
+            borderColor: "var(--accent)",
+            fontSize: "var(--text-body)",
+            padding: "12px 16px",
+            height: "auto",
+            borderRadius: "var(--radius-control)",
+          }}
           disabled={loading}
         >
           {loading ? (
@@ -265,31 +361,37 @@ function SignupForm() {
               Creating account...
             </>
           ) : (
-            "Create Account"
+            "Create account"
           )}
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-slate-400">
+      <p
+        className="mt-8 text-center"
+        style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+      >
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+          className="font-medium transition-colors hover:underline"
+          style={{ color: "var(--accent)" }}
         >
           Sign in
         </Link>
-      </div>
-    </Card>
+      </p>
+    </div>
   );
 }
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={
-      <Card className="w-full max-w-md p-5 sm:p-8 glass-card flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
-      </Card>
-    }>
+    <Suspense
+      fallback={
+        <div className="w-full flex items-center justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: "var(--accent)" }} />
+        </div>
+      }
+    >
       <SignupForm />
     </Suspense>
   );
