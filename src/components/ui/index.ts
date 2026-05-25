@@ -21,3 +21,4 @@ export {
 } from "./skeleton";
 export { ToastProvider, useToast } from "./toast";
 export { ScoreRing } from "./ScoreRing";
+export { ThemeToggle } from "./ThemeToggle";

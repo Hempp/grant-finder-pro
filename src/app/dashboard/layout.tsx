@@ -24,7 +24,7 @@ import { TrialBanner } from "@/components/subscription/TrialBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { NotificationBell } from "@/components/dashboard/NotificationBell";
-import { ToastProvider } from "@/components/ui";
+import { ToastProvider, ThemeToggle } from "@/components/ui";
 
 // Core nav — always visible. New users see these four.
 const coreNavItems = [
@@ -341,11 +341,14 @@ export default function DashboardLayout({
             ))}
         </nav>
 
-        {/* Sign out */}
-        <div className="p-3" style={{ borderTop: "1px solid var(--rule)" }}>
+        {/* Footer — sign out + theme toggle */}
+        <div
+          className="p-3 flex items-center gap-2"
+          style={{ borderTop: "1px solid var(--rule)" }}
+        >
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors w-full focus-visible:outline-none focus-visible:ring-2"
+            className="flex-1 flex items-center gap-3 px-4 py-3 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2"
             style={{
               color: "var(--ink-2)",
               fontSize: "var(--text-body-sm)",
@@ -354,6 +357,7 @@ export default function DashboardLayout({
             <LogOut className="h-5 w-5" />
             <span className="font-medium">Sign out</span>
           </button>
+          <ThemeToggle variant="inline" />
         </div>
       </aside>
 
