@@ -32,8 +32,8 @@ export default function AuthLayout({
             <img
               src="/logo.svg"
               alt=""
-              width={32}
-              height={32}
+              height={28}
+              style={{ height: 28, width: "auto" }}
               className="transition-transform group-hover:scale-105"
             />
             <span

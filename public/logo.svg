@@ -1,17 +1,27 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="gp-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#059669"/>
-      <stop offset="0.5" stop-color="#10b981"/>
-      <stop offset="1" stop-color="#06b6d4"/>
-    </linearGradient>
-  </defs>
-  <rect width="48" height="48" rx="12" fill="url(#gp-grad)"/>
-  <!-- Compass-G: open circle forming a G letterform -->
-  <path d="M24 6C14.06 6 6 14.06 6 24s8.06 18 18 18c4.97 0 9.5-2.01 12.73-5.27" stroke="white" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <!-- G crossbar -->
-  <path d="M38.73 36.73L38.73 24H26" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <!-- Compass needle pointing up (the Pilot) -->
-  <path d="M24 20V8" stroke="white" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-  <path d="M20 12L24 5L28 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<svg width="48" height="32" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GrantPilot">
+  <title>GrantPilot</title>
+
+  <!-- LEFT WING: three feathers, tapered from root to tip, swept slightly down -->
+  <g fill="#0066CC">
+    <path d="M16 11 L1 13.2 L1 13.9 L16 13 Z" />
+    <path d="M16 14.5 L4 16.5 L4 17.2 L16 16.5 Z" />
+    <path d="M16 18 L8 19.7 L8 20.4 L16 20 Z" />
+  </g>
+
+  <!-- RIGHT WING: mirror -->
+  <g fill="#0066CC">
+    <path d="M32 11 L47 13.2 L47 13.9 L32 13 Z" />
+    <path d="M32 14.5 L44 16.5 L44 17.2 L32 16.5 Z" />
+    <path d="M32 18 L40 19.7 L40 20.4 L32 20 Z" />
+  </g>
+
+  <!-- CENTRAL G: capital letterform, opening on the right, crossbar inward -->
+  <path
+    d="M 30 11.5 A 7.5 7.5 0 1 1 30 20.5 L 30 16 L 25 16"
+    stroke="#0066CC"
+    stroke-width="2.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
 </svg>
