@@ -1,19 +1,8 @@
 "use client";
 
-import { Fragment } from "react";
 import { useReveal } from "@/lib/landing/useReveal";
 import { Stat } from "./Stat";
-
-const INDEXED_FUNDERS = [
-  "Grants.gov",
-  "SAM.gov",
-  "NIH",
-  "NSF",
-  "USDA",
-  "SBIR",
-  "DOE",
-  "Foundation Directory",
-];
+import { FunderLogos } from "./FunderLogos";
 
 export function TrustBar() {
   const { ref, visible } = useReveal();
@@ -24,24 +13,13 @@ export function TrustBar() {
       className="reveal container mx-auto px-4 sm:px-6 py-14 md:py-20 border-t border-rule"
     >
       <div className="text-center mb-10">
-        <p className="text-meta font-semibold tracking-[0.14em] uppercase text-ink-2 mb-5">
+        <p className="text-meta font-semibold tracking-[0.14em] uppercase text-ink-2 mb-7">
           Indexing funding from
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5 max-w-3xl mx-auto">
-          {INDEXED_FUNDERS.map((funder, i) => (
-            <Fragment key={funder}>
-              <span className="text-small md:text-body-sm font-medium tracking-tight text-ink hover:text-accent transition-colors">
-                {funder}
-              </span>
-              {i < INDEXED_FUNDERS.length - 1 && (
-                <span className="text-ink-2/40" aria-hidden="true">·</span>
-              )}
-            </Fragment>
-          ))}
-        </div>
+        <FunderLogos />
       </div>
 
-      <div className="pt-10 border-t border-rule/60 max-w-5xl mx-auto">
+      <div className="pt-10 mt-10 border-t border-rule/60 max-w-5xl mx-auto">
         <p className="text-meta font-semibold tracking-[0.14em] uppercase text-ink-2 mb-7 text-center">
           What we&apos;ve indexed so far
         </p>
