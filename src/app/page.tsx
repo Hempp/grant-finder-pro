@@ -18,7 +18,6 @@ import {
   PricingCards,
   FeatureSection,
   DiscoveryMockup,
-  SmartFillMockup,
   ScorePredictionMockup,
   BatchSubmissionMockup,
   BillingMockup,
@@ -137,9 +136,8 @@ export default async function LandingPage() {
           title="We draft against the rubric."
           body={
             <p>
-              Smart Fill reads the complete RFP, maps every scoring criterion
-              to your data, drafts each section, and auto-optimizes up to
-              three rounds until every criterion scores maximum points.
+              Smart Fill scores every section against the funder&apos;s rubric
+              and re-optimizes until every criterion clears its maximum.
             </p>
           }
           mockup={<HowItWorksMockup3 />}
@@ -160,41 +158,32 @@ export default async function LandingPage() {
         />
         <FeatureSection
           tint={2}
-          eyebrow="Smart Fill"
-          headline="Draft against the rubric, not the prompt."
-          body="Smart Fill reads the full RFP, maps every scoring criterion to your data, drafts each section, and auto-optimizes up to three rounds until every criterion scores maximum points."
-          ctaLabel="Watch Smart Fill draft"
-          ctaHref="/#smart-fill"
-          mockup={<SmartFillMockup />}
-          reverse
-        />
-        <FeatureSection
-          tint={3}
           eyebrow="Score prediction"
           headline="See your predicted score before you submit."
           body="Every paragraph is graded against the funder's criteria as you write. Watch the score change live, fix the lowest-scoring criterion first, submit with confidence."
           ctaLabel="See score breakdown"
           ctaHref="/#score-prediction"
           mockup={<ScorePredictionMockup />}
+          reverse
         />
         <FeatureSection
-          tint={4}
+          tint={3}
           eyebrow="Batch submission"
           headline="Apply to many scholarships in one click."
           body="Build your profile once. We draft a personalized essay for each scholarship using your story and activities. Review the queue, approve in bulk, submit."
           ctaLabel="Apply to many at once"
           ctaHref="/#batch"
           mockup={<BatchSubmissionMockup />}
-          reverse
         />
         <FeatureSection
-          tint={5}
+          tint={4}
           eyebrow="Success-fee billing"
           headline="You only pay when you win."
-          body="Organizations pay 2–5 % of grants won. Students pay 3–8 % of scholarships won. No upfront cost, no monthly cost on the free plans, no charge if you don't win."
+          body="Organizations pay 2–5% of grants won. Students pay 3–8% of scholarships won. No upfront cost, no monthly cost on the free plans, no charge if you don't win."
           ctaLabel="See pricing"
           ctaHref="/pricing"
           mockup={<BillingMockup />}
+          reverse
         />
       </div>
 
