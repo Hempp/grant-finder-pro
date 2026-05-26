@@ -7,14 +7,11 @@ import {
   File,
   Trash2,
   CheckCircle,
-  AlertCircle,
   Loader2,
   Download,
   Eye,
 } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui";
 import { Button } from "@/components/ui";
-import { Badge } from "@/components/ui";
 
 interface Document {
   id: string;
@@ -29,10 +26,10 @@ interface Document {
 }
 
 const documentTypes: Record<string, { label: string; color: string }> = {
-  pitch_deck: { label: "Pitch Deck", color: "text-emerald-400" },
-  financials: { label: "Financials", color: "text-emerald-400" },
-  business_plan: { label: "Business Plan", color: "text-blue-400" },
-  other: { label: "Other", color: "text-slate-400" },
+  pitch_deck: { label: "Pitch Deck", color: "var(--accent)" },
+  financials: { label: "Financials", color: "var(--success)" },
+  business_plan: { label: "Business Plan", color: "var(--accent)" },
+  other: { label: "Other", color: "var(--ink-2)" },
 };
 
 function formatFileSize(bytes: number): string {
@@ -47,14 +44,12 @@ export default function DocumentsPage() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Fetch documents on mount
   useEffect(() => {
     async function fetchDocuments() {
       try {
         const res = await fetch("/api/documents");
         if (res.ok) {
           const data = await res.json();
-          // Map API response to our Document interface
           const docs = data.map((d: Record<string, unknown>) => ({
             id: d.id,
             name: d.name,
@@ -101,14 +96,10 @@ export default function DocumentsPage() {
 
   const handleFiles = async (files: globalThis.File[]) => {
     setUploading(true);
-
     for (const file of files) {
       try {
-        // Read file content
         const content = await readFileContent(file);
         const docType = detectDocumentType(file.name);
-
-        // Upload to API
         const res = await fetch("/api/documents", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -119,37 +110,35 @@ export default function DocumentsPage() {
             content: content,
           }),
         });
-
         if (res.ok) {
           const newDoc = await res.json();
-          setDocuments((prev) => [...prev, {
-            id: newDoc.id,
-            name: newDoc.name,
-            type: newDoc.type || docType,
-            size: newDoc.size || file.size,
-            uploadedAt: newDoc.createdAt || new Date().toISOString(),
-            parsed: true,
-            parsedData: "Document uploaded successfully",
-          }]);
+          setDocuments((prev) => [
+            ...prev,
+            {
+              id: newDoc.id,
+              name: newDoc.name,
+              type: newDoc.type || docType,
+              size: newDoc.size || file.size,
+              uploadedAt: newDoc.createdAt || new Date().toISOString(),
+              parsed: true,
+              parsedData: "Document uploaded successfully",
+            },
+          ]);
         }
       } catch (error) {
         console.error("Failed to upload file:", error);
       }
     }
-
     setUploading(false);
   };
 
   const readFileContent = (file: globalThis.File): Promise<string> => {
     return new Promise((resolve) => {
-      // For text-based files, read content; otherwise just use filename as placeholder
       if (file.type.includes("text") || file.name.endsWith(".txt") || file.name.endsWith(".md")) {
         const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string || "");
+        reader.onload = (e) => resolve((e.target?.result as string) || "");
         reader.readAsText(file);
       } else {
-        // For binary files, we'd need a file upload service
-        // For now, store metadata about the file
         resolve(`[Binary file: ${file.name}, Size: ${file.size} bytes, Type: ${file.type}]`);
       }
     });
@@ -165,9 +154,7 @@ export default function DocumentsPage() {
 
   const deleteDocument = async (id: string) => {
     try {
-      const res = await fetch(`/api/documents?id=${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`/api/documents?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         setDocuments((prev) => prev.filter((d) => d.id !== id));
       }
@@ -178,178 +165,304 @@ export default function DocumentsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      <div className="p-6 lg:p-8 flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--accent)" }} />
       </div>
     );
   }
 
+  const cardStyle: React.CSSProperties = {
+    background: "var(--surface)",
+    border: "1px solid var(--rule)",
+    borderRadius: "var(--radius-card)",
+    boxShadow: "var(--shadow-card-soft)",
+  };
+
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">Documents</h1>
-        <p className="text-slate-400 mt-1 text-sm sm:text-base">
-          Upload your pitch deck, financials, and other documents. We&apos;ll extract key information for grant applications.
+    <div className="p-6 lg:p-8 flex flex-col gap-6">
+      <header>
+        <h1
+          className="font-semibold tracking-tight"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          Documents
+        </h1>
+        <p
+          className="mt-2 max-w-2xl"
+          style={{ fontSize: "var(--text-body)", color: "var(--ink-2)", lineHeight: 1.55 }}
+        >
+          Upload your pitch deck, financials, and other documents. We extract key information for grant applications and use them to learn your voice for Smart Fill.
         </p>
-      </div>
+      </header>
 
       {/* Upload Area */}
-      <Card className="mb-6 sm:mb-8">
-        <CardContent className="p-4 sm:p-8">
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-6 sm:p-12 text-center transition ${
-              isDragging
-                ? "border-emerald-500 bg-emerald-500/10"
-                : "border-slate-600 hover:border-slate-500"
-            }`}
-          >
-            {uploading ? (
-              <div className="flex flex-col items-center">
-                <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-400 animate-spin mb-4" />
-                <p className="text-white font-medium text-sm sm:text-base">Processing document...</p>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">Extracting information with AI</p>
-              </div>
-            ) : (
-              <>
-                <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-slate-500 mx-auto mb-4" />
-                <p className="text-white font-medium mb-2 text-sm sm:text-base">
-                  Drag and drop files here, or click to browse
-                </p>
-                <p className="text-slate-400 text-xs sm:text-sm mb-4">
-                  Supports PDF, DOCX, XLSX, PPTX up to 50MB
-                </p>
-                <input
-                  type="file"
-                  multiple
-                  accept=".pdf,.docx,.xlsx,.pptx,.doc,.xls,.ppt"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label htmlFor="file-upload" className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer transition text-sm sm:text-base">
-                  Select Files
-                </label>
-              </>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <article className="p-6" style={cardStyle}>
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className="p-10 text-center transition"
+          style={{
+            background: isDragging ? "var(--accent-soft)" : "var(--bg-soft)",
+            border: `2px dashed ${isDragging ? "var(--accent)" : "var(--rule)"}`,
+            borderRadius: "var(--radius-card)",
+          }}
+        >
+          {uploading ? (
+            <div className="flex flex-col items-center">
+              <Loader2
+                className="h-10 w-10 animate-spin mb-4"
+                style={{ color: "var(--accent)" }}
+                aria-hidden="true"
+              />
+              <p
+                className="font-semibold"
+                style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+              >
+                Processing document…
+              </p>
+              <p
+                className="mt-1"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                Extracting information with AI
+              </p>
+            </div>
+          ) : (
+            <>
+              <Upload
+                className="h-10 w-10 mx-auto mb-4"
+                style={{ color: "var(--ink-2)" }}
+                aria-hidden="true"
+              />
+              <p
+                className="font-semibold mb-1"
+                style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+              >
+                Drag and drop files here, or click to browse
+              </p>
+              <p
+                className="mb-5"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                Supports PDF, DOCX, XLSX, PPTX up to 50MB
+              </p>
+              <input
+                type="file"
+                multiple
+                accept=".pdf,.docx,.xlsx,.pptx,.doc,.xls,.ppt"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-upload"
+              />
+              <label
+                htmlFor="file-upload"
+                className="inline-flex items-center gap-2 px-4 py-2 font-medium cursor-pointer transition !text-white"
+                style={{
+                  background: "var(--accent)",
+                  fontSize: "var(--text-body-sm)",
+                  borderRadius: "var(--radius-control)",
+                }}
+              >
+                Select files
+              </label>
+            </>
+          )}
+        </div>
+      </article>
 
-      {/* Document Types Guide */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <Card className="bg-emerald-500/10 border-emerald-500/20">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-            <div className="bg-emerald-500/15 p-2 sm:p-3 rounded-lg flex-shrink-0">
-              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
+      {/* Document Type Guide */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {[
+          { icon: FileText, label: "Pitch Deck", body: "Company overview, market, financials" },
+          { icon: File, label: "Financial Statements", body: "Revenue, P&L, balance sheet" },
+          { icon: FileText, label: "Business Plan", body: "Strategy, projections, team" },
+        ].map((t) => (
+          <article key={t.label} className="p-4 flex items-center gap-3" style={cardStyle}>
+            <div
+              className="p-2.5 inline-flex flex-shrink-0"
+              style={{
+                background: "var(--accent-soft)",
+                color: "var(--accent)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              <t.icon className="h-5 w-5" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-white font-medium text-sm sm:text-base">Pitch Deck</h3>
-              <p className="text-slate-400 text-xs sm:text-sm truncate">Company overview, market, financials</p>
+              <h3
+                className="font-medium"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+              >
+                {t.label}
+              </h3>
+              <p
+                className="truncate"
+                style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+              >
+                {t.body}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-emerald-500/10 border-emerald-500/30">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-            <div className="bg-emerald-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
-              <File className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-white font-medium text-sm sm:text-base">Financial Statements</h3>
-              <p className="text-slate-400 text-xs sm:text-sm truncate">Revenue, P&L, balance sheet</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-blue-500/10 border-blue-500/30">
-          <CardContent className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-            <div className="bg-blue-500/20 p-2 sm:p-3 rounded-lg flex-shrink-0">
-              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-white font-medium text-sm sm:text-base">Business Plan</h3>
-              <p className="text-slate-400 text-xs sm:text-sm truncate">Strategy, projections, team</p>
-            </div>
-          </CardContent>
-        </Card>
+          </article>
+        ))}
       </div>
 
       {/* Documents List */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-white">Uploaded Documents</h2>
-          <span className="text-slate-400 text-xs sm:text-sm">{documents.length} documents</span>
-        </CardHeader>
-        <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+      <article style={cardStyle}>
+        <header
+          className="flex items-center justify-between p-5"
+          style={{ borderBottom: "1px solid var(--rule)" }}
+        >
+          <h2
+            className="font-semibold"
+            style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+          >
+            Uploaded documents
+          </h2>
+          <span style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
+            {documents.length} {documents.length === 1 ? "document" : "documents"}
+          </span>
+        </header>
+        <div className="p-5">
           {documents.length === 0 ? (
-            <div className="text-center py-8 sm:py-12">
-              <FileText className="h-10 w-10 sm:h-12 sm:w-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 text-sm sm:text-base">Upload your first document to get started</p>
-              <p className="text-slate-400 text-xs sm:text-sm">We extract your mission, team, and impact so Smart Fill draws from real content, not templates.</p>
+            <div className="text-center py-10">
+              <FileText
+                className="h-10 w-10 mx-auto mb-4"
+                style={{ color: "var(--ink-2)" }}
+                aria-hidden="true"
+              />
+              <p
+                className="mb-1"
+                style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}
+              >
+                Upload your first document to get started
+              </p>
+              <p
+                className="max-w-md mx-auto"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)", opacity: 0.8 }}
+              >
+                We extract your mission, team, and impact so Smart Fill draws from real content, not templates.
+              </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-slate-900/50 rounded-lg hover:bg-slate-900 transition gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 transition gap-3"
+                  style={{
+                    background: "var(--bg-soft)",
+                    borderRadius: "var(--radius-control)",
+                  }}
                 >
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg flex-shrink-0">
-                      <FileText className={`h-5 w-5 sm:h-6 sm:w-6 ${documentTypes[doc.type]?.color || "text-slate-400"}`} />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="p-2.5 flex-shrink-0"
+                      style={{
+                        background: "var(--surface)",
+                        color: documentTypes[doc.type]?.color || "var(--ink-2)",
+                        borderRadius: "var(--radius-control)",
+                      }}
+                    >
+                      <FileText className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-white font-medium text-sm sm:text-base truncate">{doc.name}</h3>
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
-                        <Badge variant="default">
+                      <h3
+                        className="font-medium truncate"
+                        style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+                      >
+                        {doc.name}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <span
+                          className="px-2 py-0.5 font-medium"
+                          style={{
+                            background: "var(--accent-soft)",
+                            color: "var(--accent)",
+                            fontSize: "var(--text-micro)",
+                            borderRadius: 999,
+                          }}
+                        >
                           {documentTypes[doc.type]?.label || "Document"}
-                        </Badge>
-                        <span className="text-slate-500 text-xs sm:text-sm">
+                        </span>
+                        <span style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
                           {formatFileSize(doc.size)}
                         </span>
-                        <span className="text-slate-500 text-xs sm:text-sm hidden xs:inline">
+                        <span
+                          className="hidden xs:inline"
+                          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                        >
                           {new Date(doc.uploadedAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-2 sm:pt-0 border-t border-slate-700/50 sm:border-0">
+                  <div className="flex items-center justify-end gap-2">
                     {doc.parsed ? (
-                      <Badge variant="success" className="flex-shrink-0">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        <span className="hidden xs:inline">Parsed</span>
-                      </Badge>
-                    ) : (
-                      <Badge variant="warning" className="flex-shrink-0">
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        <span className="hidden xs:inline">Processing</span>
-                      </Badge>
-                    )}
-                    <div className="flex items-center gap-1 sm:gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteDocument(doc.id)}
-                        className="text-red-400 hover:text-red-300"
+                      <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 font-medium"
+                        style={{
+                          background: "var(--success-soft)",
+                          color: "var(--success)",
+                          fontSize: "var(--text-micro)",
+                          borderRadius: 999,
+                        }}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                        <CheckCircle className="h-3 w-3" aria-hidden="true" />
+                        <span className="hidden xs:inline">Parsed</span>
+                      </span>
+                    ) : (
+                      <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 font-medium"
+                        style={{
+                          background: "var(--warn-soft)",
+                          color: "var(--warn)",
+                          fontSize: "var(--text-micro)",
+                          borderRadius: 999,
+                        }}
+                      >
+                        <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                        <span className="hidden xs:inline">Processing</span>
+                      </span>
+                    )}
+                    <Button
+                      size="sm"
+                      style={{
+                        background: "transparent",
+                        color: "var(--ink-2)",
+                        borderRadius: "var(--radius-control)",
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      style={{
+                        background: "transparent",
+                        color: "var(--ink-2)",
+                        borderRadius: "var(--radius-control)",
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => deleteDocument(doc.id)}
+                      style={{
+                        background: "transparent",
+                        color: "var(--warn)",
+                        borderRadius: "var(--radius-control)",
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </article>
     </div>
   );
 }
