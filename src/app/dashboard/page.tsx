@@ -33,6 +33,7 @@ interface Grant {
   deadline: string;
   matchScore: number | null;
   status: string;
+  url?: string | null;
 }
 
 interface Application {
@@ -97,7 +98,7 @@ export default function DashboardPage() {
     actions: { priority: string; action: string }[];
   } | null>(null);
   const { isPro, canStartTrial } = useSubscription();
-  const [applyGrant] = useState<{ id: string; title: string; funder: string } | null>(null);
+  const [applyGrant, setApplyGrant] = useState<{ id: string; title: string; funder: string; url?: string | null } | null>(null);
   const { success: toastSuccess } = useToast();
 
   useEffect(() => {
@@ -170,6 +171,7 @@ export default function DashboardPage() {
         allGrants={allGrants}
         totalRequested={totalRequested}
         topMatch={topMatch}
+        onDraftTopMatch={(g) => setApplyGrant({ id: g.id, title: g.title, funder: g.funder, url: g.url })}
       />
 
       {/* Quick actions row — top-right CTAs were here; now rendered as a
@@ -620,10 +622,11 @@ export default function DashboardPage() {
 
       <ApplyPanel
         isOpen={!!applyGrant}
-        onClose={() => {}}
+        onClose={() => setApplyGrant(null)}
         grantId={applyGrant?.id || ""}
         grantTitle={applyGrant?.title || ""}
         grantFunder={applyGrant?.funder || ""}
+        grantUrl={applyGrant?.url}
       />
     </div>
   );

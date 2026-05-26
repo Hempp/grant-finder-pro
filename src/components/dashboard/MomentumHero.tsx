@@ -21,6 +21,7 @@ interface Grant {
   deadline: string;
   matchScore: number | null;
   status: string;
+  url?: string | null;
 }
 
 interface MomentumHeroProps {
@@ -30,6 +31,10 @@ interface MomentumHeroProps {
   allGrants: Grant[];
   totalRequested: number;
   topMatch?: Grant | null;
+  /** When provided, the top-match row becomes a button that triggers
+   *  Smart Fill via the ApplyPanel instead of linking to the manual
+   *  wizard. Falls back to the link if omitted. */
+  onDraftTopMatch?: (grant: Grant) => void;
 }
 
 const ONE_DAY = 86_400_000;
@@ -91,6 +96,7 @@ export function MomentumHero({
   allGrants,
   totalRequested,
   topMatch,
+  onDraftTopMatch,
 }: MomentumHeroProps) {
   // Real metrics — never faked. If a metric is genuinely zero, the empty
   // state below renders instead of "0 deadlines this week" theater.
@@ -282,60 +288,91 @@ export function MomentumHero({
         </div>
       )}
 
-      {/* Top match today — the value beat at the top of the dashboard. */}
+      {/* Top match today — the value beat at the top of the dashboard.
+          When onDraftTopMatch is provided, clicking triggers Smart Fill
+          via the ApplyPanel (the actual auto-apply engine). Falls back
+          to the manual wizard link if no handler is provided. */}
       {!loading && topMatch && (
-        <Link
-          href={`/dashboard/grants/${topMatch.id}/apply`}
-          className="group flex items-center gap-4 p-5 transition-colors"
-          style={{
-            background: "var(--accent-soft)",
-            border: "1.5px solid var(--accent)",
-            borderRadius: "var(--radius-card)",
-          }}
-        >
-          <ScoreRing
-            score={topMatch.matchScore ?? 0}
-            size="lg"
-            label={`Top match: ${topMatch.title}`}
-          />
-          <div className="flex-1 min-w-0">
-            <p
-              style={{
-                color: "var(--accent)",
-                fontSize: "var(--text-meta)",
-                fontWeight: 600,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-              }}
-            >
-              Top match today
-            </p>
-            <h2
-              className="mt-1 font-semibold truncate"
-              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
-            >
-              {topMatch.title}
-            </h2>
-            <p
-              className="mt-1"
-              style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}
-            >
-              {topMatch.funder} ·{" "}
-              <span
-                className="font-mono tabular-nums font-semibold"
-                style={{ color: "var(--ink)" }}
-              >
-                {formatCurrency(topMatch.amount)}
-              </span>
-            </p>
-          </div>
-          <span
-            className="font-medium hidden sm:inline-flex items-center gap-1"
-            style={{ color: "var(--accent)", fontSize: "var(--text-body-sm)" }}
+        onDraftTopMatch ? (
+          <button
+            type="button"
+            onClick={() => onDraftTopMatch(topMatch)}
+            className="group flex items-center gap-4 p-5 transition-colors text-left w-full"
+            style={{
+              background: "var(--accent-soft)",
+              border: "1.5px solid var(--accent)",
+              borderRadius: "var(--radius-card)",
+            }}
           >
-            Draft it →
-          </span>
-        </Link>
+            <ScoreRing
+              score={topMatch.matchScore ?? 0}
+              size="lg"
+              label={`Top match: ${topMatch.title}`}
+            />
+            <div className="flex-1 min-w-0">
+              <p
+                style={{
+                  color: "var(--accent)",
+                  fontSize: "var(--text-meta)",
+                  fontWeight: 600,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Top match today
+              </p>
+              <h2
+                className="mt-1 font-semibold truncate"
+                style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+              >
+                {topMatch.title}
+              </h2>
+              <p
+                className="mt-1"
+                style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}
+              >
+                {topMatch.funder} ·{" "}
+                <span
+                  className="font-mono tabular-nums font-semibold"
+                  style={{ color: "var(--ink)" }}
+                >
+                  {formatCurrency(topMatch.amount)}
+                </span>
+              </p>
+            </div>
+            <span
+              className="font-medium hidden sm:inline-flex items-center gap-1"
+              style={{ color: "var(--accent)", fontSize: "var(--text-body-sm)" }}
+            >
+              Smart Fill →
+            </span>
+          </button>
+        ) : (
+          <Link
+            href={`/dashboard/grants/${topMatch.id}/apply`}
+            className="group flex items-center gap-4 p-5 transition-colors"
+            style={{
+              background: "var(--accent-soft)",
+              border: "1.5px solid var(--accent)",
+              borderRadius: "var(--radius-card)",
+            }}
+          >
+            <ScoreRing
+              score={topMatch.matchScore ?? 0}
+              size="lg"
+              label={`Top match: ${topMatch.title}`}
+            />
+            <div className="flex-1 min-w-0">
+              <p style={{ color: "var(--accent)", fontSize: "var(--text-meta)", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>Top match today</p>
+              <h2 className="mt-1 font-semibold truncate" style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}>{topMatch.title}</h2>
+              <p className="mt-1" style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}>
+                {topMatch.funder} ·{" "}
+                <span className="font-mono tabular-nums font-semibold" style={{ color: "var(--ink)" }}>{formatCurrency(topMatch.amount)}</span>
+              </p>
+            </div>
+            <span className="font-medium hidden sm:inline-flex items-center gap-1" style={{ color: "var(--accent)", fontSize: "var(--text-body-sm)" }}>Draft it →</span>
+          </Link>
+        )
       )}
     </section>
   );
