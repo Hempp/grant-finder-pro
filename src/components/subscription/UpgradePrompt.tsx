@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Zap, Lock, Sparkles, ArrowRight } from "lucide-react";
-import { Card, CardContent, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface UpgradePromptProps {
@@ -26,12 +26,13 @@ export function UpgradePrompt({
 
   if (variant === "inline") {
     return (
-      <div className="flex items-center gap-2 text-sm">
-        <Lock className="h-4 w-4 text-slate-500" />
-        <span className="text-slate-400">{feature} requires Pro</span>
+      <div className="flex items-center gap-2" style={{ fontSize: "var(--text-body-sm)" }}>
+        <Lock className="h-4 w-4" style={{ color: "var(--ink-2)" }} aria-hidden="true" />
+        <span style={{ color: "var(--ink-2)" }}>{feature} requires Pro</span>
         <Link
           href="/pricing"
-          className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1"
+          className="font-medium flex items-center gap-1 hover:underline"
+          style={{ color: "var(--accent)" }}
         >
           {canStartTrial ? "Start free trial" : "Upgrade"}
           <ArrowRight className="h-3 w-3" />
@@ -42,23 +43,48 @@ export function UpgradePrompt({
 
   if (variant === "banner") {
     return (
-      <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
+      <div
+        className="p-4"
+        style={{
+          background: "var(--accent-soft)",
+          border: "1px solid var(--accent)",
+          borderRadius: "var(--radius-card)",
+        }}
+      >
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-emerald-500/15 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-emerald-400" />
+            <div
+              className="h-10 w-10 rounded-full flex items-center justify-center"
+              style={{ background: "var(--surface)", color: "var(--accent)" }}
+            >
+              <Sparkles className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="font-medium text-white">{feature}</p>
+              <p
+                className="font-semibold"
+                style={{ fontSize: "var(--text-body)", color: "var(--ink)" }}
+              >
+                {feature}
+              </p>
               {description && (
-                <p className="text-sm text-slate-400">{description}</p>
+                <p style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}>
+                  {description}
+                </p>
               )}
             </div>
           </div>
           <Link href="/pricing">
-            <Button variant="primary" size="sm">
-              <Zap className="h-4 w-4 mr-1" />
-              {canStartTrial ? "Start Free Trial" : "Upgrade to Pro"}
+            <Button
+              size="sm"
+              className="!text-white"
+              style={{
+                background: "var(--accent)",
+                borderColor: "var(--accent)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              <Zap className="h-4 w-4 mr-1" aria-hidden="true" />
+              {canStartTrial ? "Start free trial" : "Upgrade to Pro"}
             </Button>
           </Link>
         </div>
@@ -68,36 +94,63 @@ export function UpgradePrompt({
 
   // Default: card variant
   return (
-    <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-emerald-500/5">
-      <CardContent className="p-6 text-center">
-        <div className="h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto mb-4">
-          <Zap className="h-6 w-6 text-emerald-400" />
-        </div>
-        <h3 className="text-lg font-semibold text-white mb-2">
-          Unlock {feature}
-        </h3>
-        <p className="text-slate-400 text-sm mb-4">
-          {description || `Upgrade to Pro to access ${feature.toLowerCase()} and more powerful features.`}
+    <article
+      className="text-center p-6"
+      style={{
+        background: "var(--accent-soft)",
+        border: "1px solid var(--accent)",
+        borderRadius: "var(--radius-card)",
+        boxShadow: "var(--shadow-card-soft)",
+      }}
+    >
+      <div
+        className="h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-4"
+        style={{ background: "var(--surface)", color: "var(--accent)" }}
+      >
+        <Zap className="h-6 w-6" aria-hidden="true" />
+      </div>
+      <h3
+        className="font-semibold mb-2"
+        style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+      >
+        Unlock {feature}
+      </h3>
+      <p
+        className="mb-4"
+        style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)", lineHeight: 1.6 }}
+      >
+        {description || `Upgrade to Pro to access ${feature.toLowerCase()} and more powerful features.`}
+      </p>
+      <Link href="/pricing" className="block">
+        <Button
+          className="w-full !text-white"
+          style={{
+            background: "var(--accent)",
+            borderColor: "var(--accent)",
+            borderRadius: "var(--radius-control)",
+          }}
+        >
+          {canStartTrial ? (
+            <>
+              <Sparkles className="h-4 w-4 mr-2" aria-hidden="true" />
+              Start 21-day free trial
+            </>
+          ) : (
+            <>
+              <Zap className="h-4 w-4 mr-2" aria-hidden="true" />
+              Upgrade to Pro
+            </>
+          )}
+        </Button>
+      </Link>
+      {canStartTrial && (
+        <p
+          className="mt-2"
+          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+        >
+          No credit card required
         </p>
-        <Link href="/pricing" className="block">
-          <Button variant="primary" className="w-full">
-            {canStartTrial ? (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                Start 14-Day Free Trial
-              </>
-            ) : (
-              <>
-                <Zap className="h-4 w-4 mr-2" />
-                Upgrade to Pro
-              </>
-            )}
-          </Button>
-        </Link>
-        {canStartTrial && (
-          <p className="text-xs text-slate-500 mt-2">No credit card required</p>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </article>
   );
 }

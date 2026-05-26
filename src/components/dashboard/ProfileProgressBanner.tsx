@@ -59,36 +59,67 @@ export function ProfileProgressBanner() {
   const nextAction = fields.find((f) => !f.filled);
 
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+    <div
+      className="p-4"
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--rule)",
+        borderRadius: "var(--radius-card)",
+        boxShadow: "var(--shadow-card-soft)",
+      }}
+    >
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
-            <p className="text-sm font-bold text-white">Profile: {percentage}% complete</p>
+            <p
+              className="font-semibold"
+              style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+            >
+              Profile: {percentage}% complete
+            </p>
             <button
               onClick={() => setDismissed(true)}
-              className="text-slate-600 hover:text-slate-400 transition-colors duration-200"
+              className="transition-colors hover:opacity-80"
+              style={{ color: "var(--ink-2)" }}
               aria-label="Dismiss profile banner"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden mb-2">
+          <div
+            className="h-1.5 rounded-full overflow-hidden mb-2"
+            style={{ background: "var(--bg-soft)" }}
+          >
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-              style={{ width: `${percentage}%` }}
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${percentage}%`, background: "var(--accent)" }}
             />
           </div>
           {nextAction && (
-            <p className="text-xs text-slate-400 leading-4">
+            <p
+              style={{
+                fontSize: "var(--text-caption)",
+                color: "var(--ink-2)",
+                lineHeight: 1.5,
+              }}
+            >
               Next: Add your {nextAction.label.toLowerCase()} to improve match accuracy
             </p>
           )}
         </div>
         {nextAction && (
           <Link href={nextAction.href} className="flex-shrink-0">
-            <Button size="sm" variant="outline">
+            <Button
+              size="sm"
+              style={{
+                background: "var(--surface)",
+                color: "var(--accent)",
+                border: "1px solid var(--accent)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
               Complete
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-3 w-3 ml-1" />
             </Button>
           </Link>
         )}

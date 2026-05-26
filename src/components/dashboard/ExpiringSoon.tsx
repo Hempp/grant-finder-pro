@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Clock, ArrowRight, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui";
 
 interface ExpiringGrant {
   id: string;
@@ -29,45 +28,80 @@ export function ExpiringSoon({ grants }: ExpiringSoonProps) {
   if (expiring.length === 0) return null;
 
   return (
-    <Card className="border-amber-500/20">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="bg-amber-500/20 p-2 rounded-lg">
-            <AlertTriangle className="h-5 w-5 text-amber-400" />
+    <article
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--warn)",
+        borderRadius: "var(--radius-card)",
+        boxShadow: "var(--shadow-card-soft)",
+      }}
+    >
+      <header
+        className="flex items-center justify-between p-4"
+        style={{ borderBottom: "1px solid var(--rule)" }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div
+            className="p-2 inline-flex"
+            style={{
+              background: "var(--warn-soft)",
+              color: "var(--warn)",
+              borderRadius: "var(--radius-control)",
+            }}
+          >
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
           </div>
-          <h2 className="text-lg font-bold text-white">Expiring Soon</h2>
+          <h2
+            className="font-semibold"
+            style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+          >
+            Expiring soon
+          </h2>
         </div>
         <Link
           href="/dashboard/grants?sort=deadline"
-          className="text-amber-400 hover:text-amber-300 text-sm flex items-center gap-1 group"
+          className="flex items-center gap-1 font-medium transition-colors hover:underline"
+          style={{ color: "var(--accent)", fontSize: "var(--text-body-sm)" }}
         >
-          View all <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+          View all <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </Link>
-      </CardHeader>
-      <CardContent className="space-y-3">
+      </header>
+      <div className="p-3 space-y-2">
         {expiring.map((grant) => {
           const days = daysUntil(grant.deadline);
-          const urgencyColor = days <= 3 ? "text-red-400" : days <= 7 ? "text-amber-400" : "text-slate-400";
+          const urgencyColor =
+            days <= 3 ? "var(--warn)" : days <= 7 ? "var(--warn)" : "var(--ink-2)";
           return (
             <Link
               key={grant.id}
               href={`/dashboard/grants/${grant.id}/apply`}
-              className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 border border-transparent hover:border-slate-700 group"
+              className="flex items-center justify-between p-3 rounded-lg transition-colors hover:bg-[var(--bg-soft)]"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm text-white font-medium leading-5 truncate group-hover:text-emerald-400 transition-colors duration-200">
+                <h3
+                  className="font-medium truncate"
+                  style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+                >
                   {grant.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-4 truncate">{grant.funder}</p>
+                <p
+                  className="truncate"
+                  style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                >
+                  {grant.funder}
+                </p>
               </div>
-              <div className={`flex items-center gap-1 text-sm font-medium ml-4 flex-shrink-0 ${urgencyColor}`}>
-                <Clock className="h-3.5 w-3.5" />
+              <div
+                className="flex items-center gap-1 font-medium ml-4 flex-shrink-0"
+                style={{ fontSize: "var(--text-body-sm)", color: urgencyColor }}
+              >
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
                 {days === 0 ? "Today" : days === 1 ? "Tomorrow" : `${days}d left`}
               </div>
             </Link>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }

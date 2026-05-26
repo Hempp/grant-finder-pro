@@ -52,27 +52,38 @@ export function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" className="px-6 lg:px-8 pt-4">
-      <ol className="flex items-center gap-2 text-sm">
+      <ol
+        className="flex items-center gap-2"
+        style={{ fontSize: "var(--text-body-sm)" }}
+      >
         <li>
           <Link
             href="/dashboard"
-            className="text-slate-500 hover:text-white transition-colors duration-200"
+            className="transition-colors hover:underline"
+            style={{ color: "var(--ink-2)" }}
           >
             Dashboard
           </Link>
         </li>
         {crumbs.map((crumb, i) => (
           <li key={i} className="flex items-center gap-2">
-            <ChevronRight className="h-3 w-3 text-slate-600" aria-hidden="true" />
+            <ChevronRight
+              className="h-3 w-3"
+              style={{ color: "var(--ink-2)" }}
+              aria-hidden="true"
+            />
             {crumb.href ? (
               <Link
                 href={crumb.href}
-                className="text-slate-500 hover:text-white transition-colors duration-200"
+                className="transition-colors hover:underline"
+                style={{ color: "var(--ink-2)" }}
               >
                 {crumb.label}
               </Link>
             ) : (
-              <span className="text-slate-300 font-medium">{crumb.label}</span>
+              <span className="font-medium" style={{ color: "var(--ink)" }}>
+                {crumb.label}
+              </span>
             )}
           </li>
         ))}
