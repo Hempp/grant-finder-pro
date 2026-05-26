@@ -8,35 +8,21 @@ import {
   type ThemeMode,
 } from "@/lib/theme-mode";
 
+/**
+ * Footer links — only surfaces that actually exist. Disabled
+ * placeholders were pruned per the honesty constraint (don't promise
+ * pages we haven't built). When a new surface ships, add it here.
+ */
 const PRODUCT_LINKS = [
   { label: "Pricing", href: "/pricing" },
-  { label: "For organizations", href: "/#for-orgs", disabled: true },
-  { label: "For students", href: "/#for-students", disabled: true },
-  { label: "API", href: "/api-docs", disabled: true },
-  { label: "Status", href: "/status", disabled: true },
-];
-
-const RESOURCE_LINKS = [
-  { label: "Grant index", href: "/grants", disabled: true },
-  { label: "Scholarship index", href: "/scholarships", disabled: true },
-  { label: "Blog", href: "/blog", disabled: true },
-  { label: "Help center", href: "/help", disabled: true },
-  { label: "Smart Fill rubric", href: "/smart-fill", disabled: true },
-];
-
-const COMPANY_LINKS = [
-  { label: "About", href: "/about", disabled: true },
-  { label: "Careers", href: "/careers", disabled: true },
-  { label: "Press", href: "/press", disabled: true },
-  { label: "Contact", href: "/contact", disabled: true },
+  { label: "Resources", href: "/resources" },
 ];
 
 const LEGAL_LINKS = [
   { label: "Trust", href: "/trust" },
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
-  { label: "Security", href: "/security", disabled: true },
-  { label: "DPA", href: "/dpa", disabled: true },
+  { label: "DPA", href: "/dpa" },
 ];
 
 function FooterColumn({
@@ -44,7 +30,7 @@ function FooterColumn({
   items,
 }: {
   title: string;
-  items: { label: string; href: string; disabled?: boolean }[];
+  items: { label: string; href: string }[];
 }) {
   return (
     <nav aria-label={title}>
@@ -54,21 +40,12 @@ function FooterColumn({
       <ul className="space-y-2.5">
         {items.map((item) => (
           <li key={item.label}>
-            {item.disabled ? (
-              <span
-                className="text-small text-ink-2/60 cursor-not-allowed"
-                title="Coming soon"
-              >
-                {item.label}
-              </span>
-            ) : (
-              <Link
-                href={item.href}
-                className="text-small text-ink-2 hover:text-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                {item.label}
-              </Link>
-            )}
+            <Link
+              href={item.href}
+              className="text-small text-ink-2 hover:text-ink transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {item.label}
+            </Link>
           </li>
         ))}
       </ul>
@@ -103,7 +80,7 @@ export function EditorialFooter() {
   return (
     <footer className="border-t border-rule">
       <div className="container mx-auto px-4 sm:px-6 py-14 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-10 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-10 lg:gap-12 mb-12">
           <div>
             <p className="font-display text-2xl text-ink mb-2">GrantPilot</p>
             <p className="text-small text-ink-2 max-w-[28ch] mb-6">
@@ -136,10 +113,17 @@ export function EditorialFooter() {
             <p className="text-meta text-ink-2/70 mt-2 max-w-[360px]">
               One curated grant in your inbox each week. Unsubscribe anytime.
             </p>
+            <p className="text-meta text-ink-2/70 mt-4 max-w-[360px]">
+              Questions?{" "}
+              <a
+                href="mailto:hello@grantpilot.dev"
+                className="text-accent hover:underline"
+              >
+                hello@grantpilot.dev
+              </a>
+            </p>
           </div>
           <FooterColumn title="Product" items={PRODUCT_LINKS} />
-          <FooterColumn title="Resources" items={RESOURCE_LINKS} />
-          <FooterColumn title="Company" items={COMPANY_LINKS} />
           <FooterColumn title="Legal" items={LEGAL_LINKS} />
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-rule">

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -10,133 +10,219 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-slate-950">
-      <header className="border-b border-slate-800">
+    <div
+      data-theme="editorial"
+      style={{ background: "var(--bg)", color: "var(--ink)", minHeight: "100vh" }}
+    >
+      <header style={{ borderBottom: "1px solid var(--rule)" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-emerald-400" />
-            <span className="font-bold text-white text-lg">GrantPilot</span>
+          <Link href="/" className="flex items-center gap-2.5" aria-label="GrantPilot home">
+            <img src="/logo.svg" alt="" height={24} style={{ height: 24, width: "auto" }} />
+            <span
+              className="font-semibold"
+              style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+            >
+              GrantPilot
+            </span>
           </Link>
-          <Link href="/" className="text-slate-400 hover:text-white text-sm flex items-center gap-1 transition-colors duration-200">
-            <ArrowLeft className="h-4 w-4" /> Back
+          <Link
+            href="/"
+            className="flex items-center gap-1 transition-colors hover:underline"
+            style={{ color: "var(--ink-2)", fontSize: "var(--text-body-sm)" }}
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
           </Link>
         </div>
       </header>
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-        <h1 className="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
-        <div className="prose prose-invert prose-slate max-w-none space-y-6">
-          <p className="text-slate-400 leading-7">
-            Last updated: {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
-          </p>
 
-          <h2 className="text-xl font-bold text-white mt-8">1. Information We Collect</h2>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Account Data:</strong> Name, email address, password (hashed), and authentication tokens when you create an account or sign in via Google/GitHub OAuth.
-          </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Organization Data:</strong> Organization name, mission, EIN, address, team size, annual budget, and other profile details you provide.
-          </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Documents & Content:</strong> Files you upload, Content Library entries, grant application drafts, and any text you enter into the platform.
-          </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Usage Data:</strong> Pages visited, features used, application outcomes you report, timestamps, browser type, IP address, and device information.
-          </p>
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+        <h1
+          className="font-semibold tracking-tight mb-3"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          Privacy Policy
+        </h1>
+        <p
+          className="mb-10"
+          style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+        >
+          Last updated:{" "}
+          {new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </p>
 
-          <h2 className="text-xl font-bold text-white mt-8">2. How We Use Your Information</h2>
-          <p className="text-slate-400 leading-7">
+        <LegalSection title="1. Information we collect">
+          <p>
+            <Strong>Account data:</Strong> name, email address, password (hashed), and authentication tokens when you create an account or sign in.
+          </p>
+          <p>
+            <Strong>Organization data:</Strong> organization name, mission, EIN, address, team size, annual budget, and other profile details you provide.
+          </p>
+          <p>
+            <Strong>Documents &amp; content:</Strong> files you upload, Content Library entries, grant application drafts, and any text you enter into the platform.
+          </p>
+          <p>
+            <Strong>Usage data:</Strong> pages visited, features used, application outcomes you report, timestamps, browser type, IP address, and device information.
+          </p>
+        </LegalSection>
+
+        <LegalSection title="2. How we use your information">
+          <p>
             We use your data to: (a) match you with relevant grant opportunities, (b) generate and optimize grant applications using AI, (c) populate your Content Library for reuse across applications, (d) send grant alerts and deadline reminders, (e) process payments and manage your subscription, (f) improve our algorithms and platform features, and (g) communicate product updates and support responses.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">We never sell your personal data to third parties.</strong>
+          <p>
+            <Strong>We never sell your personal data to third parties.</Strong>
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">3. AI Processing</h2>
-          <p className="text-slate-400 leading-7">
-            Your Content Library data, uploaded documents, and organization profile are processed by Anthropic&apos;s Claude API to generate and optimize grant applications. This data is sent to Anthropic&apos;s servers for processing. Per Anthropic&apos;s data policy, API inputs are <strong className="text-slate-200">not used to train AI models</strong>. Data is retained by Anthropic for up to 30 days for safety monitoring, then deleted. See <a href="https://www.anthropic.com/privacy" className="text-emerald-400 hover:text-emerald-300" target="_blank" rel="noopener noreferrer">Anthropic&apos;s privacy policy</a> for details.
+        <LegalSection title="3. AI processing">
+          <p>
+            Your Content Library data, uploaded documents, and organization profile are processed by Anthropic&apos;s Claude API to generate and optimize grant applications. This data is sent to Anthropic&apos;s servers for processing. Per Anthropic&apos;s data policy, API inputs are <Strong>not used to train AI models</Strong>. Data is retained by Anthropic for up to 30 days for safety monitoring, then deleted. See{" "}
+            <ExtLink href="https://www.anthropic.com/privacy">Anthropic&apos;s privacy policy</ExtLink>{" "}
+            for details.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">4. Cookies & Tracking</h2>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Essential Cookies:</strong> Session authentication tokens and CSRF protection. Required for the platform to function.
+        <LegalSection title="4. Cookies &amp; tracking">
+          <p>
+            <Strong>Essential cookies:</Strong> session authentication tokens and CSRF protection. Required for the platform to function.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Preference Cookies:</strong> UI settings such as sidebar state and notification preferences.
+          <p>
+            <Strong>Preference cookies:</Strong> UI settings such as sidebar state and notification preferences.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Analytics:</strong> We use privacy-respecting analytics to understand feature usage and improve the platform. We do not use third-party advertising trackers.
+          <p>
+            <Strong>Analytics:</Strong> we use privacy-respecting analytics to understand feature usage and improve the platform. We do not use third-party advertising trackers.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">5. Data Sharing & Third Parties</h2>
-          <p className="text-slate-400 leading-7">
-            We share data only with the following service providers, solely for the purposes described:
-          </p>
-          <ul className="text-slate-400 leading-7 list-disc pl-6 space-y-2">
-            <li><strong className="text-slate-200">Anthropic</strong> — AI processing for grant application generation</li>
-            <li><strong className="text-slate-200">Stripe</strong> — Payment processing and subscription management</li>
-            <li><strong className="text-slate-200">Vercel</strong> — Application hosting and edge delivery</li>
-            <li><strong className="text-slate-200">Supabase/PostgreSQL</strong> — Database hosting</li>
+        <LegalSection title="5. Data sharing &amp; third parties">
+          <p>We share data only with the following service providers, solely for the purposes described:</p>
+          <ul className="list-disc pl-6 space-y-1.5" style={{ color: "var(--ink-2)" }}>
+            <li>
+              <Strong>Anthropic</Strong> — AI processing for grant application generation
+            </li>
+            <li>
+              <Strong>Stripe</Strong> — payment processing and subscription management
+            </li>
+            <li>
+              <Strong>Vercel</Strong> — application hosting and edge delivery
+            </li>
+            <li>
+              <Strong>Supabase / PostgreSQL</Strong> — database hosting
+            </li>
           </ul>
-          <p className="text-slate-400 leading-7">
+          <p>
             We may disclose data if required by law, subpoena, or court order, or to protect the rights and safety of our users.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">6. Data Security</h2>
-          <p className="text-slate-400 leading-7">
-            We use industry-standard encryption: <strong className="text-slate-200">TLS 1.3</strong> for data in transit and <strong className="text-slate-200">AES-256</strong> for data at rest. Passwords are hashed with bcrypt (12 rounds). Payment information is processed by Stripe and never stored on our servers. We conduct regular security reviews and maintain access controls that limit employee access to user data on a need-to-know basis.
+        <LegalSection title="6. Data security">
+          <p>
+            We use industry-standard encryption: <Strong>TLS 1.3</Strong> for data in transit and <Strong>AES-256</Strong> for data at rest. Passwords are hashed with bcrypt (12 rounds). Payment information is processed by Stripe and never stored on our servers. We conduct regular security reviews and maintain access controls that limit employee access to user data on a need-to-know basis.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">7. Data Retention</h2>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Active accounts:</strong> We retain your data for as long as your account is active.
+        <LegalSection title="7. Data retention">
+          <p>
+            <Strong>Active accounts:</Strong> we retain your data for as long as your account is active.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Account deletion:</strong> When you delete your account, we permanently remove your personal data, documents, and Content Library within 30 days. Anonymized usage analytics may be retained.
+          <p>
+            <Strong>Account deletion:</Strong> when you delete your account, we permanently remove your personal data, documents, and Content Library within 30 days. Anonymized usage analytics may be retained.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">Legal obligations:</strong> We may retain certain records as required by law (e.g., payment records for tax compliance, typically 7 years).
+          <p>
+            <Strong>Legal obligations:</Strong> we may retain certain records as required by law (e.g., payment records for tax compliance, typically 7 years).
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">8. Your Rights</h2>
-          <p className="text-slate-400 leading-7">
-            Depending on your jurisdiction, you may have the following rights:
+        <LegalSection title="8. Your rights">
+          <p>Depending on your jurisdiction, you may have the following rights:</p>
+          <p>
+            <Strong>GDPR (EU/EEA residents):</Strong> right to access, rectify, erase, restrict processing, data portability, and object to processing. You may also lodge a complaint with your local data protection authority.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">GDPR (EU/EEA residents):</strong> Right to access, rectify, erase, restrict processing, data portability, and object to processing. You may also lodge a complaint with your local data protection authority.
+          <p>
+            <Strong>CCPA (California residents):</Strong> right to know what data we collect, right to delete, right to opt out of sale (we do not sell data), and right to non-discrimination for exercising your rights.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">CCPA (California residents):</strong> Right to know what data we collect, right to delete, right to opt out of sale (we do not sell data), and right to non-discrimination for exercising your rights.
+          <p>
+            <Strong>All users:</Strong> you can export your data, update your profile, or delete your account from your dashboard settings at any time.
           </p>
-          <p className="text-slate-400 leading-7">
-            <strong className="text-slate-200">All users:</strong> You can export your data, update your profile, or delete your account from your dashboard settings at any time.
-          </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">9. How to Exercise Your Rights</h2>
-          <p className="text-slate-400 leading-7">
-            Email <a href="mailto:privacy@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.dev</a> with your request. We will respond within <strong className="text-slate-200">30 days</strong>. We may ask you to verify your identity before processing requests.
+        <LegalSection title="9. How to exercise your rights">
+          <p>
+            Email <ExtLink href="mailto:privacy@grantpilot.dev">privacy@grantpilot.dev</ExtLink> with your request. We will respond within <Strong>30 days</Strong>. We may ask you to verify your identity before processing requests.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">10. International Data Transfers</h2>
-          <p className="text-slate-400 leading-7">
+        <LegalSection title="10. International data transfers">
+          <p>
             GrantPilot is based in the United States. If you access our platform from outside the US, your data will be transferred to and processed in the US. We rely on Standard Contractual Clauses (SCCs) and other lawful transfer mechanisms to ensure adequate protection of your data.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">11. Children&apos;s Privacy</h2>
-          <p className="text-slate-400 leading-7">
+        <LegalSection title="11. Children's privacy">
+          <p>
             GrantPilot is not intended for individuals under 16 years of age. We do not knowingly collect data from children. If you believe a child has provided us with personal data, contact us and we will delete it promptly.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">12. Changes to This Policy</h2>
-          <p className="text-slate-400 leading-7">
+        <LegalSection title="12. Changes to this policy">
+          <p>
             We may update this policy from time to time. For material changes, we will notify you by email or through the platform at least 30 days before the changes take effect. Continued use after changes constitutes acceptance.
           </p>
+        </LegalSection>
 
-          <h2 className="text-xl font-bold text-white mt-8">13. Contact Us</h2>
-          <p className="text-slate-400 leading-7">
-            For privacy questions or data requests, contact us at <a href="mailto:privacy@grantpilot.dev" className="text-emerald-400 hover:text-emerald-300">privacy@grantpilot.dev</a>.
+        <LegalSection title="13. Contact us">
+          <p>
+            For privacy questions or data requests, contact us at{" "}
+            <ExtLink href="mailto:privacy@grantpilot.dev">privacy@grantpilot.dev</ExtLink>.
           </p>
-        </div>
+        </LegalSection>
       </main>
     </div>
+  );
+}
+
+function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-10">
+      <h2
+        className="font-semibold tracking-tight mb-4"
+        style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+      >
+        {title}
+      </h2>
+      <div
+        className="space-y-4"
+        style={{ fontSize: "var(--text-body)", color: "var(--ink-2)", lineHeight: 1.7 }}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function Strong({ children }: { children: React.ReactNode }) {
+  return (
+    <strong className="font-semibold" style={{ color: "var(--ink)" }}>
+      {children}
+    </strong>
+  );
+}
+
+function ExtLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const isMailto = href.startsWith("mailto:");
+  return (
+    <a
+      href={href}
+      target={isMailto ? undefined : "_blank"}
+      rel={isMailto ? undefined : "noopener noreferrer"}
+      className="hover:underline"
+      style={{ color: "var(--accent)" }}
+    >
+      {children}
+    </a>
   );
 }
