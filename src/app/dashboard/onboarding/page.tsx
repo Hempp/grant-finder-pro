@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft, CheckCircle, Upload, Sparkles } from "lucide-react";
-import { Button, Card, CardContent, Input, Textarea, Select } from "@/components/ui";
+import { Button, Input, Textarea, Select } from "@/components/ui";
 
 const grantTypes = [
   { value: "federal", label: "Federal grants (SBIR, NIH, NSF)" },
@@ -81,158 +81,276 @@ export default function OnboardingPage() {
     }
   }
 
+  const cardStyle: React.CSSProperties = {
+    background: "var(--surface)",
+    border: "1px solid var(--rule)",
+    borderRadius: "var(--radius-card)",
+    boxShadow: "var(--shadow-card-soft)",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    background: "var(--bg)",
+    border: "1px solid var(--rule)",
+    color: "var(--ink)",
+  };
+
   return (
-    <div className="flex flex-col gap-8">
+    <div className="p-6 lg:p-8 max-w-2xl mx-auto flex flex-col gap-8">
       {/* Progress dots */}
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3].map((s) => (
           <div
             key={s}
-            className={`h-2 rounded-full transition-all duration-200 ${
-              s === step ? "w-8 bg-emerald-500" : s < step ? "w-2 bg-emerald-500/50" : "w-2 bg-slate-700"
-            }`}
+            className="h-2 rounded-full transition-all duration-200"
+            style={{
+              width: s === step ? 32 : 8,
+              background:
+                s === step
+                  ? "var(--accent)"
+                  : s < step
+                  ? "var(--accent-soft)"
+                  : "var(--rule)",
+            }}
           />
         ))}
       </div>
 
       {step === 1 && (
-        <Card>
-          <CardContent className="p-8 flex flex-col gap-6">
-            <div className="text-center">
-              <Sparkles className="h-12 w-12 text-emerald-400 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-white mb-2">Welcome to GrantPilot</h1>
-              <p className="text-slate-400">What kind of grants are you looking for?</p>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              {grantTypes.map((type) => (
+        <article className="p-8 flex flex-col gap-6" style={cardStyle}>
+          <div className="text-center">
+            <Sparkles
+              className="h-10 w-10 mx-auto mb-4"
+              style={{ color: "var(--accent)" }}
+              aria-hidden="true"
+            />
+            <h1
+              className="font-semibold tracking-tight mb-2"
+              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+            >
+              Welcome to GrantPilot
+            </h1>
+            <p style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}>
+              What kind of grants are you looking for?
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-3">
+            {grantTypes.map((type) => {
+              const selected =
+                selectedTypes.includes(type.value) ||
+                (type.value === "all" && selectedTypes.length >= 3);
+              return (
                 <button
                   key={type.value}
                   onClick={() => toggleType(type.value)}
-                  className={`flex items-center gap-3 p-4 rounded-lg border text-left transition-colors duration-200 ${
-                    selectedTypes.includes(type.value) || (type.value === "all" && selectedTypes.length >= 3)
-                      ? "border-emerald-500/50 bg-emerald-500/10 text-white"
-                      : "border-slate-800 bg-slate-900/50 text-slate-300 hover:border-slate-700"
-                  }`}
+                  className="flex items-center gap-3 p-4 text-left transition-colors"
+                  style={
+                    selected
+                      ? {
+                          background: "var(--accent-soft)",
+                          border: "1.5px solid var(--accent)",
+                          color: "var(--ink)",
+                          borderRadius: "var(--radius-control)",
+                        }
+                      : {
+                          background: "var(--bg)",
+                          border: "1px solid var(--rule)",
+                          color: "var(--ink)",
+                          borderRadius: "var(--radius-control)",
+                        }
+                  }
+                  aria-pressed={selected}
                 >
                   <div
-                    className={`h-5 w-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
-                      selectedTypes.includes(type.value) || (type.value === "all" && selectedTypes.length >= 3)
-                        ? "border-emerald-500 bg-emerald-500"
-                        : "border-slate-600"
-                    }`}
+                    className="h-5 w-5 flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: selected ? "var(--accent)" : "transparent",
+                      border: `2px solid ${selected ? "var(--accent)" : "var(--rule)"}`,
+                      borderRadius: 4,
+                    }}
                   >
-                    {(selectedTypes.includes(type.value) || (type.value === "all" && selectedTypes.length >= 3)) && (
-                      <CheckCircle className="h-3 w-3 text-white" />
+                    {selected && (
+                      <CheckCircle className="h-3 w-3" style={{ color: "white" }} aria-hidden="true" />
                     )}
                   </div>
-                  <span className="text-sm font-medium leading-5">{type.label}</span>
+                  <span
+                    className="font-medium"
+                    style={{ fontSize: "var(--text-body-sm)" }}
+                  >
+                    {type.label}
+                  </span>
                 </button>
-              ))}
-            </div>
-            <Button
-              variant="primary"
-              onClick={() => setStep(2)}
-              disabled={selectedTypes.length === 0}
-              className="w-full"
-            >
-              Continue
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </CardContent>
-        </Card>
+              );
+            })}
+          </div>
+          <Button
+            onClick={() => setStep(2)}
+            disabled={selectedTypes.length === 0}
+            className="w-full !text-white"
+            style={{
+              background: "var(--accent)",
+              borderColor: "var(--accent)",
+              borderRadius: "var(--radius-control)",
+            }}
+          >
+            Continue
+            <ArrowRight className="h-4 w-4 ml-1.5" />
+          </Button>
+        </article>
       )}
 
       {step === 2 && (
-        <Card>
-          <CardContent className="p-8 flex flex-col gap-6">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-white mb-2">Quick Profile</h1>
-              <p className="text-slate-400">Help us find grants that match your organization</p>
-            </div>
-            <div className="flex flex-col gap-4">
-              <Input
-                label="Organization Name"
-                placeholder="e.g., Acme Research Labs"
-                value={profile.name}
-                onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
-              />
-              <Select
-                label="Organization Type"
-                options={orgTypes}
-                value={profile.type}
-                onChange={(e) => setProfile((p) => ({ ...p, type: (e.target as HTMLSelectElement).value }))}
-              />
-              <Select
-                label="State"
-                options={states}
-                value={profile.state}
-                onChange={(e) => setProfile((p) => ({ ...p, state: (e.target as HTMLSelectElement).value }))}
-              />
-              <Textarea
-                label="One-sentence mission"
-                placeholder="What does your organization do?"
-                maxLength={200}
-                value={profile.mission}
-                onChange={(e) => setProfile((p) => ({ ...p, mission: e.target.value }))}
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button variant="ghost" onClick={() => setStep(1)}>
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => setStep(3)}
-                disabled={!profile.name}
-                className="flex-1"
-              >
-                Continue
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <article className="p-8 flex flex-col gap-6" style={cardStyle}>
+          <div className="text-center">
+            <h1
+              className="font-semibold tracking-tight mb-2"
+              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+            >
+              Quick profile
+            </h1>
+            <p style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}>
+              Help us find grants that match your organization
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <Input
+              label="Organization name"
+              placeholder="e.g., Acme Research Labs"
+              value={profile.name}
+              onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
+              style={inputStyle}
+            />
+            <Select
+              label="Organization type"
+              options={orgTypes}
+              value={profile.type}
+              onChange={(e) =>
+                setProfile((p) => ({ ...p, type: (e.target as HTMLSelectElement).value }))
+              }
+              style={inputStyle}
+            />
+            <Select
+              label="State"
+              options={states}
+              value={profile.state}
+              onChange={(e) =>
+                setProfile((p) => ({ ...p, state: (e.target as HTMLSelectElement).value }))
+              }
+              style={inputStyle}
+            />
+            <Textarea
+              label="One-sentence mission"
+              placeholder="What does your organization do?"
+              maxLength={200}
+              value={profile.mission}
+              onChange={(e) => setProfile((p) => ({ ...p, mission: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setStep(1)}
+              style={{
+                background: "transparent",
+                color: "var(--ink-2)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+            <Button
+              onClick={() => setStep(3)}
+              disabled={!profile.name}
+              className="flex-1 !text-white"
+              style={{
+                background: "var(--accent)",
+                borderColor: "var(--accent)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              Continue
+              <ArrowRight className="h-4 w-4 ml-1.5" />
+            </Button>
+          </div>
+        </article>
       )}
 
       {step === 3 && (
-        <Card>
-          <CardContent className="p-8 flex flex-col gap-6">
-            <div className="text-center">
-              <Upload className="h-12 w-12 text-emerald-400 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-white mb-2">Upload a Document</h1>
-              <p className="text-slate-400">
-                Upload a pitch deck or business plan to supercharge your matches
-              </p>
-            </div>
-            <div className="border-2 border-dashed border-slate-700 rounded-2xl p-8 text-center hover:border-slate-600 transition-colors duration-200">
-              <p className="text-slate-400 text-sm">Drag and drop a PDF, or click to browse</p>
-              <p className="text-slate-600 text-xs mt-2">You can always add documents later</p>
-            </div>
-            <div className="flex gap-3">
-              <Button variant="ghost" onClick={() => setStep(2)}>
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Button
-                variant="primary"
-                onClick={completeOnboarding}
-                isLoading={saving}
-                loadingText="Setting up..."
-                className="flex-1"
-              >
-                Get Started
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <button
-              onClick={completeOnboarding}
-              className="text-sm text-slate-500 hover:text-slate-300 transition-colors duration-200 text-center"
+        <article className="p-8 flex flex-col gap-6" style={cardStyle}>
+          <div className="text-center">
+            <Upload
+              className="h-10 w-10 mx-auto mb-4"
+              style={{ color: "var(--accent)" }}
+              aria-hidden="true"
+            />
+            <h1
+              className="font-semibold tracking-tight mb-2"
+              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
             >
-              Skip for now
-            </button>
-          </CardContent>
-        </Card>
+              Upload a document
+            </h1>
+            <p
+              className="max-w-md mx-auto"
+              style={{ fontSize: "var(--text-body)", color: "var(--ink-2)", lineHeight: 1.55 }}
+            >
+              Upload a pitch deck or business plan to supercharge your matches and feed your voice profile.
+            </p>
+          </div>
+          <div
+            className="p-8 text-center transition-colors"
+            style={{
+              background: "var(--bg-soft)",
+              border: "2px dashed var(--rule)",
+              borderRadius: "var(--radius-card)",
+            }}
+          >
+            <p style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}>
+              Drag and drop a PDF, or click to browse
+            </p>
+            <p
+              className="mt-2"
+              style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", opacity: 0.7 }}
+            >
+              You can always add documents later
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setStep(2)}
+              style={{
+                background: "transparent",
+                color: "var(--ink-2)",
+                border: "1px solid var(--rule)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+            <Button
+              onClick={completeOnboarding}
+              isLoading={saving}
+              loadingText="Setting up..."
+              className="flex-1 !text-white"
+              style={{
+                background: "var(--accent)",
+                borderColor: "var(--accent)",
+                borderRadius: "var(--radius-control)",
+              }}
+            >
+              Get started
+              <ArrowRight className="h-4 w-4 ml-1.5" />
+            </Button>
+          </div>
+          <button
+            onClick={completeOnboarding}
+            className="transition-colors text-center hover:underline"
+            style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+          >
+            Skip for now
+          </button>
+        </article>
       )}
     </div>
   );

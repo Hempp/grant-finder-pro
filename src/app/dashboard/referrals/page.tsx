@@ -6,7 +6,6 @@ import {
   Copy,
   Check,
   Users,
-  Sparkles,
   Share2,
   Mail,
   Twitter,
@@ -100,187 +99,299 @@ export default function ReferralsPage() {
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-8 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
+      <div className="p-6 lg:p-8 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--accent)" }} />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="p-4 sm:p-8">
-        <p className="text-slate-400">Failed to load referral data.</p>
+      <div className="p-6 lg:p-8">
+        <p style={{ color: "var(--ink-2)", fontSize: "var(--text-body)" }}>
+          Failed to load referral data.
+        </p>
       </div>
     );
   }
 
-  return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2 sm:gap-3">
-          <Gift className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-400" />
-          Referral Program
-        </h1>
-        <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">
-          Invite friends and earn bonus grant matches for both of you
-        </p>
-      </div>
+  const cardStyle: React.CSSProperties = {
+    background: "var(--surface)",
+    border: "1px solid var(--rule)",
+    borderRadius: "var(--radius-card)",
+    boxShadow: "var(--shadow-card-soft)",
+  };
 
-      {/* Reward Banner with Hero Illustration */}
-      <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-cyan-500/20 border border-emerald-500/30 rounded-xl overflow-hidden relative">
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-30 hidden lg:block">
+  const sharedShareButton: React.CSSProperties = {
+    background: "var(--surface)",
+    color: "var(--ink-2)",
+    border: "1px solid var(--rule)",
+    fontSize: "var(--text-body-sm)",
+    borderRadius: "var(--radius-control)",
+  };
+
+  return (
+    <div className="p-6 lg:p-8 flex flex-col gap-6">
+      <header>
+        <h1
+          className="font-semibold tracking-tight flex items-center gap-3"
+          style={{ fontSize: "var(--text-display)", color: "var(--ink)", lineHeight: 1.1 }}
+        >
+          <Gift className="h-7 w-7" style={{ color: "var(--accent)" }} aria-hidden="true" />
+          Referral program
+        </h1>
+        <p
+          className="mt-2"
+          style={{ fontSize: "var(--text-body)", color: "var(--ink-2)", lineHeight: 1.55 }}
+        >
+          Invite friends and earn bonus grant matches for both of you.
+        </p>
+      </header>
+
+      {/* Reward Banner */}
+      <article
+        className="p-6 relative overflow-hidden"
+        style={{
+          background: "var(--accent-soft)",
+          border: "1.5px solid var(--accent)",
+          borderRadius: "var(--radius-card)",
+        }}
+      >
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-25 hidden lg:block pointer-events-none">
           <ReferralHeroIllustration className="w-80 h-60" />
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <RewardBadgeIllustration className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0" />
+          <div className="flex items-center gap-4">
+            <RewardBadgeIllustration className="w-14 h-14 flex-shrink-0" />
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-white">Give {data.rewards.refereeReward}, Get {data.rewards.referrerReward}</h2>
-              <p className="text-slate-300 text-sm sm:text-base">
-                Your friend gets {data.rewards.refereeReward} bonus matches, you get {data.rewards.referrerReward}!
+              <h2
+                className="font-semibold"
+                style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
+              >
+                Give {data.rewards.refereeReward}, get {data.rewards.referrerReward}
+              </h2>
+              <p
+                className="mt-1"
+                style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)" }}
+              >
+                Your friend gets {data.rewards.refereeReward} bonus matches; you get {data.rewards.referrerReward}.
               </p>
             </div>
           </div>
-          <div className="text-left sm:text-right bg-slate-900/50 rounded-lg px-3 py-2 sm:px-4 sm:py-3">
-            <p className="text-xs sm:text-sm text-slate-400">Your available credits</p>
-            <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{data.stats.creditsAvailable}</p>
+          <div
+            className="text-left sm:text-right px-4 py-3"
+            style={{
+              background: "var(--surface)",
+              borderRadius: "var(--radius-control)",
+            }}
+          >
+            <p style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
+              Your available credits
+            </p>
+            <p
+              className="font-mono tabular-nums font-semibold"
+              style={{ fontSize: "var(--text-display)", color: "var(--accent)", lineHeight: 1.1 }}
+            >
+              {data.stats.creditsAvailable}
+            </p>
           </div>
         </div>
-      </div>
+      </article>
 
       {/* Share Section */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden">
-        <div className="absolute right-4 top-4 opacity-20 hidden md:block">
-          <ShareIllustration className="w-32 h-28" />
+      <article className="p-6 relative overflow-hidden" style={cardStyle}>
+        <div className="absolute right-4 top-4 opacity-20 hidden md:block pointer-events-none">
+          <ShareIllustration className="w-28 h-24" />
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
-          <Share2 className="h-5 w-5 text-emerald-400" />
-          Share Your Referral Link
+        <h3
+          className="font-semibold mb-4 flex items-center gap-2"
+          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+        >
+          <Share2 className="h-5 w-5" style={{ color: "var(--accent)" }} aria-hidden="true" />
+          Share your referral link
         </h3>
 
-        {/* Referral Link */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6 relative z-10">
+        <div className="flex flex-col sm:flex-row gap-3 mb-5 relative z-10">
           <input
             type="text"
             value={data.referralLink}
             readOnly
-            className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white font-mono text-xs sm:text-sm truncate"
+            className="flex-1 px-3 py-2.5 font-mono truncate"
+            style={{
+              background: "var(--bg-soft)",
+              border: "1px solid var(--rule)",
+              color: "var(--ink)",
+              fontSize: "var(--text-body-sm)",
+              borderRadius: "var(--radius-control)",
+            }}
           />
           <button
             onClick={copyToClipboard}
-            className="px-4 py-2.5 sm:py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
+            className="px-4 py-2.5 transition flex items-center justify-center gap-2 font-medium !text-white"
+            style={{
+              background: "var(--accent)",
+              fontSize: "var(--text-body-sm)",
+              borderRadius: "var(--radius-control)",
+            }}
           >
             {copied ? (
               <>
-                <Check className="h-5 w-5" />
-                Copied!
+                <Check className="h-4 w-4" /> Copied!
               </>
             ) : (
               <>
-                <Copy className="h-5 w-5" />
-                Copy
+                <Copy className="h-4 w-4" /> Copy
               </>
             )}
           </button>
         </div>
 
-        {/* Share Buttons */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => shareVia("email")}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition flex items-center gap-2"
+            className="px-3 py-1.5 transition flex items-center gap-1.5 hover:bg-[var(--bg-soft)]"
+            style={sharedShareButton}
           >
-            <Mail className="h-4 w-4" />
-            Email
+            <Mail className="h-3.5 w-3.5" /> Email
           </button>
           <button
             onClick={() => shareVia("twitter")}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition flex items-center gap-2"
+            className="px-3 py-1.5 transition flex items-center gap-1.5 hover:bg-[var(--bg-soft)]"
+            style={sharedShareButton}
           >
-            <Twitter className="h-4 w-4" />
-            Twitter
+            <Twitter className="h-3.5 w-3.5" /> Twitter
           </button>
           <button
             onClick={() => shareVia("linkedin")}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition flex items-center gap-2"
+            className="px-3 py-1.5 transition flex items-center gap-1.5 hover:bg-[var(--bg-soft)]"
+            style={sharedShareButton}
           >
-            <Linkedin className="h-4 w-4" />
-            LinkedIn
+            <Linkedin className="h-3.5 w-3.5" /> LinkedIn
           </button>
         </div>
 
-        {/* Referral Code */}
-        <div className="mt-6 pt-6 border-t border-slate-700">
-          <p className="text-sm text-slate-400 mb-2">Your referral code</p>
-          <p className="text-xl sm:text-2xl font-bold font-mono text-emerald-400 tracking-wider">
+        <div className="mt-5 pt-5" style={{ borderTop: "1px solid var(--rule)" }}>
+          <p style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}>
+            Your referral code
+          </p>
+          <p
+            className="font-mono tabular-nums font-semibold tracking-wider mt-1"
+            style={{ fontSize: "var(--text-title)", color: "var(--accent)" }}
+          >
             {data.referralCode}
           </p>
         </div>
-      </div>
+      </article>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 mb-1">Total Referrals</p>
-          <p className="text-xl sm:text-2xl font-bold text-white">{data.stats.totalReferrals}</p>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 mb-1">Completed</p>
-          <p className="text-xl sm:text-2xl font-bold text-emerald-400">{data.stats.completedReferrals}</p>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 mb-1">Pending</p>
-          <p className="text-xl sm:text-2xl font-bold text-yellow-400">{data.stats.pendingReferrals}</p>
-        </div>
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-3 sm:p-4">
-          <p className="text-xs sm:text-sm text-slate-400 mb-1">Matches Earned</p>
-          <p className="text-xl sm:text-2xl font-bold text-cyan-400">{data.stats.totalEarned}</p>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: "Total referrals", value: data.stats.totalReferrals, color: "var(--ink)" },
+          { label: "Completed", value: data.stats.completedReferrals, color: "var(--success)" },
+          { label: "Pending", value: data.stats.pendingReferrals, color: "var(--warn)" },
+          { label: "Matches earned", value: data.stats.totalEarned, color: "var(--accent)" },
+        ].map((s) => (
+          <article key={s.label} className="p-4" style={cardStyle}>
+            <p
+              style={{
+                fontSize: "var(--text-meta)",
+                color: "var(--ink-2)",
+                fontWeight: 600,
+                letterSpacing: "0.04em",
+                textTransform: "uppercase",
+              }}
+            >
+              {s.label}
+            </p>
+            <p
+              className="mt-2 font-mono tabular-nums font-semibold"
+              style={{ fontSize: "var(--text-title)", color: s.color }}
+            >
+              {s.value}
+            </p>
+          </article>
+        ))}
       </div>
 
       {/* Referrals List */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
-          <Users className="h-5 w-5 text-cyan-400" />
-          Your Referrals
+      <article className="p-6" style={cardStyle}>
+        <h3
+          className="font-semibold mb-4 flex items-center gap-2"
+          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+        >
+          <Users className="h-5 w-5" style={{ color: "var(--accent)" }} aria-hidden="true" />
+          Your referrals
         </h3>
 
         {data.referrals.length === 0 ? (
-          <div className="text-center py-12">
-            <EmptyReferralsIllustration className="w-48 h-40 mx-auto mb-4" />
-            <p className="text-slate-400 mb-2">No referrals yet</p>
-            <p className="text-sm text-slate-500">
-              Share your link to start earning bonus matches!
+          <div className="text-center py-10">
+            <EmptyReferralsIllustration className="w-40 h-32 mx-auto mb-4 opacity-80" />
+            <p
+              className="mb-2"
+              style={{ fontSize: "var(--text-body)", color: "var(--ink-2)" }}
+            >
+              No referrals yet
+            </p>
+            <p style={{ fontSize: "var(--text-body-sm)", color: "var(--ink-2)", opacity: 0.7 }}>
+              Share your link to start earning bonus matches.
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {data.referrals.map((referral) => (
               <div
                 key={referral.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-slate-700/30 rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3"
+                style={{
+                  background: "var(--bg-soft)",
+                  borderRadius: "var(--radius-control)",
+                }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-medium text-sm sm:text-base">
-                      {referral.refereeName[0]?.toUpperCase() || "?"}
-                    </span>
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: "var(--accent-soft)",
+                      color: "var(--accent)",
+                      fontSize: "var(--text-body-sm)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {referral.refereeName[0]?.toUpperCase() || "?"}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-medium text-sm sm:text-base truncate">{referral.refereeName}</p>
-                    <p className="text-xs sm:text-sm text-slate-400 truncate">{referral.refereeEmail}</p>
+                    <p
+                      className="font-medium truncate"
+                      style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+                    >
+                      {referral.refereeName}
+                    </p>
+                    <p
+                      className="truncate"
+                      style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)" }}
+                    >
+                      {referral.refereeEmail}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 sm:gap-4 ml-11 sm:ml-0">
+                <div className="flex items-center gap-3 ml-13 sm:ml-0">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      referral.status === "rewarded"
-                        ? "bg-emerald-500/20 text-emerald-400"
-                        : referral.status === "completed"
-                        ? "bg-blue-500/20 text-blue-400"
-                        : "bg-yellow-500/20 text-yellow-400"
-                    }`}
+                    className="px-2.5 py-1 rounded-full font-medium"
+                    style={{
+                      fontSize: "var(--text-micro)",
+                      background:
+                        referral.status === "rewarded"
+                          ? "var(--success-soft)"
+                          : referral.status === "completed"
+                          ? "var(--accent-soft)"
+                          : "var(--warn-soft)",
+                      color:
+                        referral.status === "rewarded"
+                          ? "var(--success)"
+                          : referral.status === "completed"
+                          ? "var(--accent)"
+                          : "var(--warn)",
+                    }}
                   >
                     {referral.status === "rewarded"
                       ? `+${referral.reward} matches`
@@ -288,53 +399,66 @@ export default function ReferralsPage() {
                       ? "Completed"
                       : "Pending"}
                   </span>
-                  <ChevronRight className="h-4 w-4 text-slate-500" />
+                  <ChevronRight
+                    className="h-4 w-4"
+                    style={{ color: "var(--ink-2)" }}
+                    aria-hidden="true"
+                  />
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </article>
 
       {/* How it Works */}
-      <div className="mt-6 sm:mt-8 bg-slate-800/50 rounded-xl border border-slate-700 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">How It Works</h3>
-        <div className="grid sm:grid-cols-3 gap-4 sm:gap-6">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-emerald-400 font-bold">1</span>
+      <article className="p-6" style={cardStyle}>
+        <h3
+          className="font-semibold mb-4"
+          style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
+        >
+          How it works
+        </h3>
+        <div className="grid sm:grid-cols-3 gap-5">
+          {[
+            { n: 1, title: "Share your link", body: "Send your unique referral link to friends and colleagues." },
+            { n: 2, title: "They sign up", body: "When they create an account using your link." },
+            {
+              n: 3,
+              title: "You both earn",
+              body: `You get ${data.rewards.referrerReward} bonus matches, they get ${data.rewards.refereeReward}.`,
+            },
+          ].map((s) => (
+            <div key={s.n} className="flex items-start gap-3">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: "var(--accent-soft)",
+                  color: "var(--accent)",
+                  fontSize: "var(--text-body-sm)",
+                  fontWeight: 700,
+                }}
+              >
+                {s.n}
+              </div>
+              <div>
+                <p
+                  className="font-medium"
+                  style={{ fontSize: "var(--text-body-sm)", color: "var(--ink)" }}
+                >
+                  {s.title}
+                </p>
+                <p
+                  className="mt-1"
+                  style={{ fontSize: "var(--text-caption)", color: "var(--ink-2)", lineHeight: 1.55 }}
+                >
+                  {s.body}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-white font-medium">Share your link</p>
-              <p className="text-sm text-slate-400">
-                Send your unique referral link to friends and colleagues
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-emerald-400 font-bold">2</span>
-            </div>
-            <div>
-              <p className="text-white font-medium">They sign up</p>
-              <p className="text-sm text-slate-400">
-                When they create an account using your link
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-emerald-400 font-bold">3</span>
-            </div>
-            <div>
-              <p className="text-white font-medium">You both earn</p>
-              <p className="text-sm text-slate-400">
-                You get {data.rewards.referrerReward} bonus matches, they get {data.rewards.refereeReward}
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
-      </div>
+      </article>
     </div>
   );
 }
