@@ -13,6 +13,7 @@ import {
 } from "./types";
 import { optimizeSections } from "./optimizer";
 import { generateDiffs } from "./diff-generator";
+import { getVoiceProfile, formatVoiceForPrompt } from "@/lib/voice-profile/extract";
 
 const anthropic = new Anthropic();
 
@@ -72,6 +73,14 @@ export async function runSmartFill(
   const funderType = determineFunderType(grantContext);
   const toneConfig = FUNDER_TONE_CONFIG[funderType];
 
+  // Load user voice profile — extracted from org fields + uploaded
+  // pitch decks / business plans + content blocks. Empty string when
+  // no profile exists (Smart Fill still works, just without voice
+  // match). User onboarding should prompt voice extraction once the
+  // user has uploaded enough source material.
+  const voiceProfile = await getVoiceProfile(userId);
+  const voicePromptFragment = formatVoiceForPrompt(voiceProfile);
+
   let scoringCriteria: ScoringCriterion[] = [];
   let requiredSections: RequiredSection[] = [];
 
@@ -130,17 +139,18 @@ FUNDER VALUES:
 - Tone: ${toneConfig.tone}
 - Emphasize: ${toneConfig.emphasis.join(", ")}
 - Avoid: ${toneConfig.avoid.join(", ")}
-
+${voicePromptFragment}
 COMPANY DATA:
 ${blocksText || "No company data available for this section."}
 
 RULES:
 1. MAXIMIZE score on every criterion
 2. Use specific numbers and metrics from company data
-3. Match funder tone
-4. Address every criterion explicitly
-5. Flag missing data as gaps — NEVER fabricate
-6. Stay within word limit
+3. Match funder tone AT THE SECTION LEVEL — what the funder expects to read
+4. Mirror the USER VOICE inside the funder tone — output should feel like the user wrote it, not generic AI prose
+5. Address every criterion explicitly
+6. Flag missing data as gaps — NEVER fabricate
+7. Stay within word limit
 
 Return ONLY valid JSON:
 {"content":"written section","score":8,"maxScore":10,"criteriaScores":[{"criterion":"...","score":5,"max":5,"note":"..."}],"gaps":[{"field":"...","reason":"...","suggestion":"...","impact":"high"}]}`,
