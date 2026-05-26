@@ -5,11 +5,9 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 /**
- * GrantPilot favicon — 32x32.
- *
- * The Score signature in miniature: a marine progress ring with a small
- * dot at the tip. Same shape as the in-app ScoreRing and the brand mark
- * — one signature, every scale.
+ * GrantPilot favicon — pixel pilot wings + G, scaled to fit 32×32.
+ * Mirrors /public/logo.svg geometry (viewBox 88×28). preserveAspectRatio
+ * "meet" lets the wider mark sit centered with whitespace top/bottom.
  */
 export default function Icon() {
   return new ImageResponse(
@@ -25,24 +23,27 @@ export default function Icon() {
           borderRadius: "7px",
         }}
       >
-        <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-          <circle
-            cx="16"
-            cy="16"
-            r="13"
-            fill="none"
-            stroke="#0066CC"
-            strokeOpacity="0.2"
-            strokeWidth="3"
-          />
-          <path
-            d="M 16 3 A 13 13 0 1 1 6.93 25.95"
-            fill="none"
-            stroke="#0066CC"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <circle cx="6.93" cy="25.95" r="2" fill="#0066CC" />
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 88 28"
+          fill="none"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <g fill="#0066CC" shape-rendering="crispEdges">
+            <rect x="36" y="0" width="12" height="4" />
+            <rect x="32" y="4" width="4" height="20" />
+            <rect x="48" y="4" width="4" height="4" />
+            <rect x="44" y="12" width="8" height="4" />
+            <rect x="48" y="16" width="4" height="8" />
+            <rect x="36" y="24" width="12" height="4" />
+            <rect x="0" y="8" width="32" height="4" />
+            <rect x="4" y="12" width="28" height="4" />
+            <rect x="8" y="16" width="24" height="4" />
+            <rect x="56" y="8" width="32" height="4" />
+            <rect x="56" y="12" width="28" height="4" />
+            <rect x="56" y="16" width="24" height="4" />
+          </g>
         </svg>
       </div>
     ),
