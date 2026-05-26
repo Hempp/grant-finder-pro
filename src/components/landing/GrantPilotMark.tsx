@@ -1,47 +1,47 @@
 /**
- * GrantPilot brand mark — a capital G centered in classic pilot wings.
+ * GrantPilot brand mark — chunky 8-bit pixel G centered in pilot wings.
  *
- * The wings read instantly as aviation/flight crew identity (every
- * passenger has seen them on a uniform); the central G locks the brand
- * name in. Marine monochrome — no gradient, no glow. The wings have
- * tapered swept feathers, three per side, mirrored.
+ * 22-column × 7-row pixel grid, each pixel rendered as a 4×4 SVG square
+ * with shape-rendering="crispEdges" so it stays sharp at any size. Wings
+ * sweep down-and-out in 3 staircased feathers per side; G is a 5-column
+ * pixel letterform with the opening on the right and an inside crossbar.
  *
- * The mark is intrinsically wider than tall (48:32 = 3:2). Renders at
- * h=28 with width auto so the aspect ratio is preserved everywhere it
- * appears (marketing nav, dashboard sidebar, auth chrome).
+ * Color uses var(--accent) so the mark inherits the marine in light
+ * mode and cyan in dark mode automatically. The static /public/logo.svg
+ * is the same mark but with #0066CC hardcoded for IMG-tag contexts where
+ * CSS variables don't resolve.
  */
 export function GrantPilotMark({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <svg
-        viewBox="0 0 48 32"
+        viewBox="0 0 88 28"
         className="h-7 w-auto shrink-0"
-        fill="none"
         aria-hidden="true"
       >
-        {/* LEFT WING — 3 tapered feathers, swept slightly down */}
-        <g fill="#0066CC">
-          <path d="M16 11 L1 13.2 L1 13.9 L16 13 Z" />
-          <path d="M16 14.5 L4 16.5 L4 17.2 L16 16.5 Z" />
-          <path d="M16 18 L8 19.7 L8 20.4 L16 20 Z" />
+        <g fill="var(--accent)" shapeRendering="crispEdges">
+          {/* Row 0: G top arc */}
+          <rect x="36" y="0" width="12" height="4" />
+          {/* Row 1: G shoulders */}
+          <rect x="32" y="4" width="4" height="4" />
+          <rect x="48" y="4" width="4" height="4" />
+          {/* Row 2: top feathers (longest) + G left bar */}
+          <rect x="0" y="8" width="36" height="4" />
+          <rect x="56" y="8" width="32" height="4" />
+          {/* Row 3: mid feathers + G left bar + crossbar */}
+          <rect x="4" y="12" width="32" height="4" />
+          <rect x="44" y="12" width="8" height="4" />
+          <rect x="56" y="12" width="28" height="4" />
+          {/* Row 4: bottom feathers + G left bar + right bar */}
+          <rect x="8" y="16" width="28" height="4" />
+          <rect x="48" y="16" width="4" height="4" />
+          <rect x="56" y="16" width="24" height="4" />
+          {/* Row 5: G shoulders curving back */}
+          <rect x="32" y="20" width="4" height="4" />
+          <rect x="48" y="20" width="4" height="4" />
+          {/* Row 6: G bottom arc */}
+          <rect x="36" y="24" width="12" height="4" />
         </g>
-
-        {/* RIGHT WING — mirror */}
-        <g fill="#0066CC">
-          <path d="M32 11 L47 13.2 L47 13.9 L32 13 Z" />
-          <path d="M32 14.5 L44 16.5 L44 17.2 L32 16.5 Z" />
-          <path d="M32 18 L40 19.7 L40 20.4 L32 20 Z" />
-        </g>
-
-        {/* CENTRAL G — open on the right, crossbar inward */}
-        <path
-          d="M 30 11.5 A 7.5 7.5 0 1 1 30 20.5 L 30 16 L 25 16"
-          stroke="#0066CC"
-          strokeWidth="2.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
       </svg>
       <span className="font-display text-xl tracking-tight text-ink">
         GrantPilot
