@@ -59,6 +59,14 @@ model User {
   stripePaymentMethodId String?
   outcomesOverdue       Int       @default(0)
 
+  // Voice profile — extracted writing-style characteristics injected into
+  // Smart Fill prompts so output sounds like THIS user, not generic Claude.
+  // Stored as JSON: { tone, sentencePatterns, vocabularyPreferences,
+  // framingPatterns, signaturePhrases, examples }. Extracted from the
+  // user's Content Library and any writing samples they upload.
+  voiceProfile          String?   // JSON blob; nullable until first extraction
+  voiceProfileUpdatedAt DateTime?
+
   accounts      Account[]
   sessions      Session[]
   organization  Organization?
