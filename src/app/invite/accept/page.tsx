@@ -38,9 +38,8 @@ function InviteAcceptShell({ loading }: { loading?: boolean }) {
     <div className="min-h-screen bg-slate-950 flex flex-col">
       <header className="border-b border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-emerald-400" aria-hidden="true" />
-            <span className="font-bold text-white text-lg">GrantPilot</span>
+          <Link href="/" className="flex items-center" aria-label="GrantPilot home">
+            <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} />
           </Link>
         </div>
       </header>
@@ -146,9 +145,8 @@ function InviteAcceptInner() {
     <div className="min-h-screen bg-slate-950 flex flex-col">
       <header className="border-b border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center">
-          <Link href="/" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-emerald-400" aria-hidden="true" />
-            <span className="font-bold text-white text-lg">GrantPilot</span>
+          <Link href="/" className="flex items-center" aria-label="GrantPilot home">
+            <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} />
           </Link>
         </div>
       </header>

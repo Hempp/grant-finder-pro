@@ -72,8 +72,7 @@ export default function StudentLayout({
       {/* Mobile Header - sticky so it stays visible on scroll */}
       <div className="lg:hidden glass-dark border-b border-slate-800 p-3 sm:p-4 flex items-center justify-between sticky top-0 z-30">
         <Link href="/student" className="flex items-center gap-2">
-          <img src="/logo.svg" alt="" height={24} style={{ height: 24, width: "auto" }} />
-          <span className="text-lg font-bold text-white">Grant<span className="text-emerald-400">Pilot</span></span>
+          <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} />
         </Link>
         <div className="flex items-center gap-1">
           <NotificationBell />
@@ -106,10 +105,7 @@ export default function StudentLayout({
         {/* Logo - Desktop only */}
         <div className="hidden lg:flex items-center justify-between p-6 border-b border-slate-800/60">
           <Link href="/student" className="flex items-center gap-2 group">
-            <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} className="group-hover:scale-105 transition-transform duration-200" />
-            <span className="text-xl font-bold text-white">
-              Grant<span className="text-emerald-400">Pilot</span>
-            </span>
+            <img src="/logo.svg" alt="" height={32} style={{ height: 32, width: "auto" }} className="group-hover:scale-105 transition-transform duration-200" />
           </Link>
           <NotificationBell />
         </div>

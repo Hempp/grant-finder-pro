@@ -136,13 +136,7 @@ export default function DashboardLayout({
           className="flex items-center gap-2"
           aria-label="GrantPilot home"
         >
-          <img src="/logo.svg" alt="" height={24} style={{ height: 24, width: "auto" }} />
-          <span
-            className="font-semibold"
-            style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
-          >
-            GrantPilot
-          </span>
+          <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} />
         </Link>
         <div className="flex items-center gap-1">
           <NotificationBell />
@@ -198,16 +192,10 @@ export default function DashboardLayout({
             <img
               src="/logo.svg"
               alt=""
-              height={28}
-              style={{ height: 28, width: "auto" }}
+              height={32}
+              style={{ height: 32, width: "auto" }}
               className="transition-transform group-hover:scale-105"
             />
-            <span
-              className="font-semibold"
-              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
-            >
-              GrantPilot
-            </span>
           </Link>
           <NotificationBell />
         </div>

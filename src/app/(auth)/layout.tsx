@@ -36,12 +36,6 @@ export default function AuthLayout({
               style={{ height: 28, width: "auto" }}
               className="transition-transform group-hover:scale-105"
             />
-            <span
-              className="font-semibold"
-              style={{ fontSize: "var(--text-title)", color: "var(--ink)" }}
-            >
-              GrantPilot
-            </span>
           </Link>
         </header>
         <main className="flex-1 flex items-start sm:items-center justify-center px-4 sm:px-8 pb-12">
