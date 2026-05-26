@@ -23,14 +23,8 @@ export default function DpaPage() {
     >
       <header style={{ borderBottom: "1px solid var(--rule)" }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="GrantPilot home">
-            <img src="/logo.svg" alt="" height={24} style={{ height: 24, width: "auto" }} />
-            <span
-              className="font-semibold"
-              style={{ fontSize: "var(--text-body-lg)", color: "var(--ink)" }}
-            >
-              GrantPilot
-            </span>
+          <Link href="/" className="flex items-center" aria-label="GrantPilot home">
+            <img src="/logo.svg" alt="" height={28} style={{ height: 28, width: "auto" }} />
           </Link>
           <Link
             href="/"
